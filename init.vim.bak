@@ -1,0 +1,433 @@
+set pumheight=10
+set backspace=indent,eol,start
+set ignorecase
+set smartcase
+set ruler
+set cmdheight=1
+set hidden "hide buffer when abandoned
+set showcmd
+set wrap
+set cedit=<C-f>
+set magic
+set nowrapscan
+set nowrap
+set incsearch
+set showmatch
+set autowrite
+set autoread
+set hlsearch
+set autochdir
+set lazyredraw
+set noerrorbells
+set t_vb =
+set scrolloff=8         "lines to keep above/below cursor"
+set showmode
+set background=dark
+set t_Co=256
+set modelines=0
+set shortmess=a
+set shortmess+=I
+set shortmess+=c
+set laststatus=2
+"let python_highlight_all=1
+syntax on
+"set completeopt=noinsert,menuone
+set completeopt=longest,menuone,noinsert,noselect
+"set complete-=i
+"let base16colorspace=256
+set termguicolors
+set relativenumber
+set number
+set signcolumn=no
+"always copy into the clipboard
+set clipboard+=unnamedplus
+set clipboard^=unnamed,unnamedplus
+set history=200
+set noswapfile
+map <silent> j gj
+map <silent> k gk
+
+if exists('g:vscode')
+    filetype plugin on
+    nnoremap <silent> <C-j> :call VSCodeNotify('workbench.action.navigateDown')<CR>
+    xnoremap <silent> <C-j> :call VSCodeNotify('workbench.action.navigateDown')<CR>
+    nnoremap <silent> <C-k> :call VSCodeNotify('workbench.action.navigateUp')<CR>
+    xnoremap <silent> <C-k> :call VSCodeNotify('workbench.action.navigateUp')<CR>
+    nnoremap <silent> <C-h> :call VSCodeNotify('workbench.action.navigateLeft')<CR>
+    xnoremap <silent> <C-h> :call VSCodeNotify('workbench.action.navigateLeft')<CR>
+    nnoremap <silent> <C-l> :call VSCodeNotify('workbench.action.navigateRight')<CR>
+    xnoremap <silent> <C-l> :call VSCodeNotify('workbench.action.navigateRight')<CR>
+    nnoremap <silent> <C-w>_ :<C-u>call VSCodeNotify('workbench.action.toggleEditorWidths')<CR>
+    nnoremap <silent> <Space> :call VSCodeNotify('whichkey.show')<CR>
+    xnoremap <silent> <Space> :call VSCodeNotify('whichkey.show')<CR>
+    call plug#begin()
+        Plug 'tpope/vim-surround'
+    call plug#end()
+else
+    filetype plugin on
+
+    call plug#begin()
+
+    " git managing
+    Plug 'feline-nvim/feline.nvim'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-surround'
+
+    Plug 'easymotion/vim-easymotion'
+    Plug 'preservim/nerdcommenter'
+
+    Plug 'jiangmiao/auto-pairs'
+    Plug 'terryma/vim-multiple-cursors'
+
+    " Extentions to built-in LSP, for example, providing type inlay hints
+    Plug 'nvim-lua/lsp_extensions.nvim'
+
+    " Semantic language support
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'nvim-lua/lsp_extensions.nvim'
+    Plug 'hrsh7th/cmp-nvim-lsp', {'branch': 'main'}
+    Plug 'hrsh7th/cmp-buffer', {'branch': 'main'}
+    Plug 'hrsh7th/cmp-path', {'branch': 'main'}
+    Plug 'hrsh7th/nvim-cmp', {'branch': 'main'}
+    "Plug 'hrsh7th/nvim-cmdline'
+    Plug 'ray-x/lsp_signature.nvim'
+
+    " Syntactic language support
+    Plug 'cespare/vim-toml', {'branch': 'main'}
+    Plug 'stephpy/vim-yaml'
+    Plug 'rust-lang/rust.vim'
+    Plug 'rhysd/vim-clang-format'
+    "Plug 'fatih/vim-go'
+    Plug 'plasticboy/vim-markdown'
+
+    " Snippet engine
+    Plug 'hrsh7th/vim-vsnip'
+    Plug 'hrsh7th/cmp-vsnip', {'branch': 'main'}
+    "end lsp configuration
+
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.4' }
+    Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+
+    Plug 'https://github.com/nanotech/jellybeans.vim.git'
+
+    Plug 'reedes/vim-pencil'
+    Plug 'godlygeek/tabular' "easy-align is easier to use.
+
+    " Javascript
+    "Plug 'pangloss/vim-javascript'
+    Plug 'yuezk/vim-js'
+    Plug 'mxw/vim-jsx'
+    Plug 'maxmellon/vim-jsx-pretty'
+    Plug 'alvan/vim-closetag'
+    Plug 'mattn/emmet-vim'
+
+    Plug 'vimwiki/vimwiki'
+
+    Plug 'junegunn/vim-easy-align'
+
+
+    "Plug 'junegunn/limelight.vim' 
+    "
+    call plug#end()
+
+    filetype plugin indent on
+
+    nnoremap <SPACE> <Nop>
+    let mapleader="\<Space>"
+
+    " Set Vim features"
+    "set backspace=2
+    "color gruvbox
+    color jellybeans
+    highlight Pmenu ctermbg=black guibg=black
+
+    set colorcolumn=80
+    "set textwidth=80
+    "set formatoptions+=a "automatically format paragraph
+    set cursorline
+    set timeoutlen=300
+    set splitright
+    set splitbelow
+    set wildmenu
+    set wildmode=list:longest
+    set wildignore=.hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,*.min.js,*.swp,publish/*,*.o,*.hi
+    set encoding=utf-8
+    set fileencoding=utf-8
+    "set ffs=dos
+
+    map H ^
+    map L $
+
+    " center search result
+    nnoremap <silent> n nzzzv
+    nnoremap <silent> N Nzzzv
+    nnoremap <silent> * *zzzv
+    nnoremap <silent> # #zz
+    nnoremap <silent> g* g*zz
+    nnoremap J m"J`"
+    nnoremap <BS> :bp<Enter>
+
+    nnoremap <left>  :bp<CR>
+    nnoremap <right> :bn<CR>
+    nnoremap <up>    <cmd>Telescope buffers<enter>
+
+    " Undo break points
+    inoremap ,  ,<c-g>u
+    inoremap .  .<c-g>u
+    inoremap [  [<c-g>u
+    inoremap !  !<c-g>u
+    inoremap ?  ?<c-g>u
+
+    " Jumplist mutations
+    nnoremap <expr> k (v:count > 5 ? "m'" . v:count : "") . 'k'
+    nnoremap <expr> j (v:count > 5 ? "m'" . v:count : "") . 'j'
+
+    " moving text
+    vnoremap <leader>j :m '>+1<CR>gv=gv
+    vnoremap <leader>k :m '<-2<CR>gv=gv
+    nnoremap <leader>k :m .-2<CR>==
+    nnoremap <leader>j :m .+1<CR>==
+
+    nnoremap <leader>e :e<space>
+
+    "yank till end if line
+    nnoremap Y y$
+    xnoremap("<leader>p", "\"_dP")
+
+    " insert `;` at end of line
+    inoremap $; <ESC>m`A;<ESC>``a
+    inoremap <C-f> <Right>
+    inoremap <C-b> <Left>
+    inoremap <C-j> <Esc>A<Enter>
+
+    nnoremap <C-k> <Esc>:noh<Cr>:w<Cr>
+    inoremap <C-k> <C-c>
+    vnoremap <C-k> <C-c>:noh<Cr>
+    snoremap <C-k> <C-c>
+    xnoremap <C-k> <C-c>
+    cnoremap <C-k> <C-c>
+    onoremap <C-k> <C-c>
+    lnoremap <C-k> <C-c>
+    tnoremap <C-k> <C-c>
+
+    nnoremap <F5> "="[".strftime("%c")."]: "<CR>PA
+    inoremap <F5> <C-R>="[".strftime("%c")."]: "<CR>
+
+
+    " Unmap any input from mouse
+    map <MiddleMouse> <nop>
+    imap <MiddleMouse> <nop>
+    map <2-MiddleMouse> <Nop>
+    imap <2-MiddleMouse> <Nop>
+    map <3-MiddleMouse> <Nop>
+    imap <3-MiddleMouse> <Nop>
+    map <4-MiddleMouse> <Nop>
+    imap <4-MiddleMouse> <Nop>
+    noremap <MiddleMouse> <LeftMouse>
+
+    " Fold setting
+    set foldmethod=syntax
+    set foldnestmax=10
+    set nofoldenable
+    set foldlevel=3
+
+    " Set indenting
+    set shiftwidth=4
+    set tabstop=4
+    set softtabstop=4
+    set expandtab
+    set smarttab
+    set smartindent
+    set showmatch
+
+    "remove netrw  banner(use I to toggle the banner)
+    let g:netrw_banner = 0
+    "let g:netrw_liststyle = 3
+    "let g:netrw_browse_split = 4
+    "let g:netrw_altv = 1
+    "let g:netrw_winsize = 25
+
+
+    " Copy and paste from outside of vim
+    noremap "y "+y
+    noremap "p "+gP
+    noremap "x "+x
+
+    " Use 'Meta' to force save/close buffers
+    noremap <leader>0 ^
+    noremap <leader>9 $
+    "noremap <leader>w :w<Enter>
+    noremap <leader>s :w<Enter>
+    noremap <leader>q :bd!<Enter>
+    noremap <leader>vn :vnew<Enter>
+
+
+    noremap <M-o> mzo<ESC>`z
+    noremap <M-O> mzO<ESC>`z
+
+
+    " Remap windows split and focus
+    noremap <leader>1 :only<Enter>
+    noremap <leader>2 :vsp<Enter>
+    noremap <leader>3 :sp<Enter>
+    noremap <leader>0 :clo<Enter>
+
+    inoremap <silent> <C-c> <C-c>:w<Enter>
+    "cnoremap <silent> <C-k> <C-c>
+    onoremap <silent> <C-c> <C-c>:noh<enter>
+    vnoremap <silent> <C-c> <C-c>:noh<enter>
+    nnoremap <silent> <C-c> <C-c>:noh<enter>
+
+    "add space after comma
+    inoremap , ,<space>
+
+    nnoremap <leader>fg <cmd>Telescope git_files<enter>
+    nnoremap <leader>fs <cmd>Telescope grep_string<enter>
+    nnoremap <leader>fa <cmd>Telescope live_grep<enter>
+    nnoremap <leader>ff <cmd>Telescope find_files<enter>
+    nnoremap <leader>m <cmd>Telescope marks<enter>
+    nnoremap <leader>b  <cmd>Telescope buffers<enter>
+    nnoremap <leader>h  <cmd>Telescope command_history<enter>
+    nnoremap <leader>r <cmd>Telescope registers<enter>
+    nnoremap <leader>gr <cmd>Telescope lsp_references<enter>
+    nnoremap <leader>gd <cmd>Telescope lsp_definitions<enter>
+
+    " Set updatetime for CursorHold
+    " 300ms of no cursor movement to trigger CursorHold
+    set updatetime=300
+    " Show diagnostic popup on cursor hover
+    "autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
+
+    " Goto previous/next diagnostic warning/error
+    "nnoremap <silent> g[ <cmd>lua vim.diagnostic.goto_prev()<CR>
+    "nnoremap <silent> g] <cmd>lua vim.diagnostic.goto_next()<CR>
+
+    " Enable type inlay hints
+    "autocmd BufWritePost, CursorHold, CursorHoldI *.rs
+                "\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
+    "" end lsp config
+
+    "vimwiki config
+    let g:vimwiki_listsyms = '.○◐●✓'
+    let g:vimwiki_folding='expr'
+    let wiki = {}
+    let wiki.path = '~/Dropbox/vimwiki'
+    let wiki.syntax = 'markdown'
+    let wiki.ext = '.md'
+    let wiki.nested_syntax = {'python':'python', 'rust':'rust', 'c++':'cpp', 'c':'c'}
+    let g:vimwiki_list = [wiki]
+    map <F1> :VimwikiIndex<CR>
+    imap <F1> :VimwikiIndex<CR>
+    nnoremap <leader>it :pu=strftime('%a %m-%d-%Y')<Enter>
+
+    "function GetGitBranch()
+    "    exec "lcd %:p:h"
+    "    let l:is_git_dir = system('echo -n $(git rev-parse --is-inside-work-tree)')
+
+    "    if l:is_git_dir=='true'
+    "        let l:gitstatus = system('echo -n $(git status -s 2>/dev/null)')
+    "        if len(l:gitstatus)>0
+    "            let statcount=system('echo -n $(git status -s | cut -c 2 | sort | uniq -c | sed "s/ //g"| tr "\n" " ")')
+    "            let l:gitstatus=statcount
+    "        else
+    "            let l:gitstatus=""
+    "        endif
+
+    "        let branch = system('bash -c "echo -n $(git rev-parse --abbrev-ref HEAD)"')
+    "        if matchstr(branch, 'unknown revision or path') != ""
+    "            return 'Git Not Init'
+    "        elseif matchstr(branch, 'fatal') != ""
+    "            return 'Git Fatal Init'
+    "        elseif l:is_git_dir == 'true'
+    "            return ' '.branch.' '.l:gitstatus
+    "        else
+    "            return ''
+    "        endif
+    "    else
+    "        return ''
+    "    endif
+    "endfunction
+
+    " Start interactive EasyAlign in visual mode (e.g. vipga)
+    xmap ga <Plug>(EasyAlign)
+
+    "colors of the statusline and unfocused statusline
+
+    "hi statusline guifg=white guibg=black ctermfg=white ctermbg=black 
+    "hi statuslineNc guifg=grey guibg=black ctermfg=white ctermbg=black 
+    "hi LineNr term=bold cterm=bold ctermfg=red guifg=grey  guibg=black
+    "hi CursorLineNr guifg=orange guibg=Black
+    "set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor
+
+    "function! SetLocalStatusLine()
+    "    hi statusline guifg=white guibg=black ctermfg=white ctermbg=black
+    "    hi statuslineNc guifg=grey guibg=black ctermfg=white ctermbg=black 
+    "    if !exists("b:git_branch")
+    "        let b:git_branch = GetGitBranch()
+    "    endif
+    "    setlocal statusline=
+    "    setlocal statusline+=\ %n:%t%m%h%r 
+    "    setlocal statusline+=\ %(%{PencilMode()}%)
+    "    "setlocal statusline+=%=
+    "    setlocal statusline+=\ %q%y
+    "    setlocal statusline+=\ %([%{b:git_branch}]%)
+    "    setlocal statusline+=\ [%l/%L-%c] "line and column
+    "    "set rulerformat=%-12.(%l,%c%V%)%{PencilMode()}\ %P
+    "endfunction
+
+    "function! UpdateLocalStatusLine()
+    "    let b:git_branch = GetGitBranch()
+    "endfunction
+
+    ""autocmd BufEnter,BufReadPost,BufWritePost * call GetGitBranch()
+    "autocmd BufEnter * call SetLocalStatusLine()
+    "autocmd BufWritePost * call UpdateLocalStatusLine()
+
+    " Close tag setup
+    let g:closetag_filetypes = 'html,xhtml,jsx,javascript.jsx'
+    augroup JSX
+        autocmd!
+        autocmd FileType jsx,javascript.jsx iabbrev $j  </><Esc><Left><Left>a
+    augroup END
+
+    "Terminal
+    "nnoremap <leader>bn :bn<Enter>
+    "nnoremap <leader>bp :bp<Enter>
+    "nnoremap <leader>tt :terminal<Enter>
+    tnoremap <Esc> <C-\><C-n>
+
+    " === commands =================================================================
+
+    autocmd BufReadPost,FileReadPost,BufNewFile,BufEnter * call system("tmux rename-window vim:'" . expand("%:t") . "'")
+    autocmd ExitPre * call system("tmux rename-window 'zsh'")
+
+    let g:pencil#mode_indicators = {'hard': '␍', 'auto': 'ª', 'soft': '⤸', 'off': '',}
+    augroup pencil
+        autocmd!
+        autocmd FileType markdown,mkd,vimwiki,md call pencil#init({'wrap':'soft'})
+        ""autocmd BufWritePre *.md normal! mzgggqG`z
+    augroup END
+
+
+    autocmd TermClose term://*lazygit lua vim.api.nvim_input("<CR>")
+
+
+    au BufRead,BufNewFile *.md set filetype=markdown
+    au BufRead,BufNewFile *.md setlocal textwidth=80
+
+    " Autopairs config
+    au FileType rust let b:AutoPairs = AutoPairsDefine({'\w\zs<': '>', "|":"|", ":<":">"})
+
+    " won't auto insert comment symbols
+    au BufEnter Vim set fo-=c fo-=r fo-=o
+
+
+" LSP configuration
+lua << EOF
+    require("mylspconfig")
+    require('feline').setup()
+EOF
+
+endif
+
