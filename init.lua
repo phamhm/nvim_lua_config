@@ -22,7 +22,11 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-    {'nanotech/jellybeans.vim'},
+    --schemes
+    { 'rktjmp/lush.nvim'},
+    {'metalelf0/jellybeans-nvim'},
+    { "EdenEast/nightfox.nvim" },
+    -- end schems
     {"HakonHarnes/img-clip.nvim", 
         event = "VeryLazy",
         opts = {
@@ -92,7 +96,7 @@ require('lazy').setup({
 
 vim.opt.termguicolors = true
 --require('kanagawa').setup()
-vim.cmd.colorscheme('jellybeans')
+vim.cmd.colorscheme('jellybeans-nvim')
 
 local lsp_zero = require('lsp-zero')
 
