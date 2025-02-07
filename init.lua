@@ -25,7 +25,7 @@ require('lazy').setup({
     --schemes
     { 'rktjmp/lush.nvim'},
     {'metalelf0/jellybeans-nvim'},
-    { "EdenEast/nightfox.nvim" },
+    --{ "EdenEast/nightfox.nvim" },
     -- end schems
     {"HakonHarnes/img-clip.nvim", 
         event = "VeryLazy",
