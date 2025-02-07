@@ -16,6 +16,7 @@ vim.keymap.set('n', '<leader>f/', telescopeBuiltin.current_buffer_fuzzy_find, {}
 -- git fugitive
 
 vim.keymap.set('n', '<leader>gg', ":Git<CR>", {})
+vim.keymap.set('n', '<leader>gp', ":Git push<CR>", {})
 -- end git fugitive
 
 vim.keymap.set('n', '<leader>q', ":bd<CR>", {})
