@@ -45,10 +45,10 @@ require('lazy').setup({
     init = function() 
         vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
         vim.g.vimwiki_listsyms = '.○◐●✓'
-        vim.g.vimwiki_folding='expr'
+        vim.g.vimwiki_folding=''
         vim.g.vimwiki_list = {
             {
-                path = '~/Dropbox/vimwiki',
+                path = 'G:/My Drive/vimwiki',
                 syntax = 'markdown',
                 ext = '.md',
             },

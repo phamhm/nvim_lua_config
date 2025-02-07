@@ -19,11 +19,29 @@ require('lualine').setup {
 		}
 	},
 	sections = {
-		lualine_a = { 'mode', 'PencilMode' },
-		lualine_b = {'filename','searchcount', 'selectioncount'},
+		lualine_a = {},
+
+
+		lualine_b = {
+			{
+				'filename',
+				file_status = true,      -- Displays file status (readonly status, modified status)
+				newfile_status = true,  -- Display new file status (new file means no write after created)
+				path = 0,                -- 0: Just the filename 1: Relative path 2: Absolute path 3: Absolute path, with tilde as the home directory 4: Filename and parent dir, with tilde as the home directory
+				shorting_target = 20,    -- Shortens path to leave 40 spaces in the window
+				-- for other components. (terrible name, any suggestions?)
+				symbols = {
+					modified = '[+]',      -- Text to show when the file is modified.
+					readonly = '[READ ONLY]',      -- Text to show when the file is non-modifiable or readonly.
+					unnamed = '[No Name]', -- Text to show for unnamed buffers.
+					newfile = '[New]',     -- Text to show for newly created file before first write
+				}
+			}
+		},
+
 		lualine_c = { 'branch', 'diff', 'diagnostics'},
-		lualine_x = {'encoding', 'fileformat', 'filetype'},
-		lualine_y = {'location',},
+		lualine_x = {'encoding', 'fileformat', 'filetype','PencilMode'},
+		lualine_y = {'searchcount', 'selectioncount','location', },
         lualine_z = {},
 	},
 	inactive_sections = {
