@@ -78,25 +78,25 @@ end
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 lspconfig.pyright.setup {}
-lspconfig.rust_analyzer.setup {
-	on_attach = on_attach,
-	flags = {
-		debounce_text_changes = 150,
-	},
-	settings = {
-		["rust-analyzer"] = {
-			cargo = {
-				allFeatures = true,
-			},
-			completion = {
-				postfix = {
-					enable = false,
-				},
-			},
-		},
-	},
-	capabilities = capabilities,
-}
+--lspconfig.rust_analyzer.setup {
+	--on_attach = on_attach,
+	--flags = {
+		--debounce_text_changes = 150,
+	--},
+	--settings = {
+		--["rust-analyzer"] = {
+			--cargo = {
+				--allFeatures = true,
+			--},
+			--completion = {
+				--postfix = {
+					--enable = false,
+				--},
+			--},
+		--},
+	--},
+	--capabilities = capabilities,
+--}
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 vim.lsp.diagnostic.on_publish_diagnostics, {

@@ -52,7 +52,7 @@ require('lazy').setup({
         vim.g.vimwiki_folding=''
         vim.g.vimwiki_list = {
             {
-                path = 'G:/My Drive/vimwiki',
+                path = '/mnt/g/My Drive/vimwiki',
                 syntax = 'markdown',
                 ext = '.md',
             },
@@ -70,7 +70,7 @@ require('lazy').setup({
 {'L3MON4D3/LuaSnip'},
 {'tpope/vim-surround'},
 {'tpope/vim-fugitive'},
-{'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
+{'nvim-lualine/lualine.nvim'},
 
 {'easymotion/vim-easymotion'},
 {'preservim/nerdcommenter'},
@@ -79,7 +79,7 @@ require('lazy').setup({
     event = "InsertEnter",
     config = true
 },
-{'nvim-tree/nvim-web-devicons'},
+--{'nvim-tree/nvim-web-devicons'},
 { "preservim/vim-lexical" },
 { "preservim/vim-pencil"},
 { "preservim/vim-litecorrect"},
@@ -97,6 +97,13 @@ require('lazy').setup({
 vim.opt.termguicolors = true
 --require('kanagawa').setup()
 vim.cmd.colorscheme('jellybeans-nvim')
+local hl_groups = vim.api.nvim_get_hl(0, {})
+
+for key, hl_group in pairs(hl_groups) do
+    if hl_group.italic then
+        vim.api.nvim_set_hl(0, key, vim.tbl_extend("force", hl_group, {italic = false}))
+    end
+end
 
 local lsp_zero = require('lsp-zero')
 
@@ -122,6 +129,22 @@ require('mason-lspconfig').setup({
         end,
     },
 })
+
+require("nvim-treesitter.configs").setup(
+    {
+        indent = { enable = false },
+        context_commentstring = {
+            enable = false
+        }
+    }
+)
+
+require('telescope').setup {
+    defaults = {
+        color_devicons=false,
+    }
+}
+
 
 require('nvim-autopairs').setup({
     -- default values
@@ -156,9 +179,16 @@ require('nvim-autopairs').setup({
                                                                               },
   })
 
+
+vim.cmd [[
+augroup tmux
+  autocmd BufReadPost,FileReadPost,BufNewFile,BufEnter * call system("tmux rename-window vim:'" . expand("%:t") . "'")
+  autocmd ExitPre * call system("tmux rename-window 'zsh'")
+augroup END
+]]
+
 require('my_keys')
 require('lualine_config')
 require('vimwiki_config')
 require('my_vim_pencil')
 require('myoptions')
-require('cmp_config')

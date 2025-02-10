@@ -20,6 +20,7 @@ vim.keymap.set('n', '<leader>gp', ":Git push<CR>", {})
 -- end git fugitive
 
 vim.keymap.set('n', '<leader>q', ":bd<CR>", {})
+vim.keymap.set('n', '<leader>0', ":clo<CR>",{})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
 vim.keymap.set('n', 'k', "gk", {silent=true})
@@ -27,13 +28,25 @@ vim.keymap.set('n', 'k', "gk", {silent=true})
 vim.keymap.set('n', '<leader>1', ":only<CR>",{})
 vim.keymap.set('n', '<leader>2', ":vsp<CR>",{})
 vim.keymap.set('n', '<leader>3', ":sp<CR>",{})
-vim.keymap.set('n', '<leader>c', ":clo<CR>",{})
 vim.keymap.set('n', '<leader>bp', ":bp<CR>",{})
 vim.keymap.set('n', '<leader>bn', ":bn<CR>",{})
 
-vim.keymap.set('n', '<leader>e', ":NERDTree<CR>",{})
+vim.keymap.set('n', '<leader>e', ":NERDTreeExplore<CR>",{})
 vim.keymap.set('n', ';.', ":noh<CR>",{silent = true})
 vim.keymap.set('n', '<C-s>', ":w<CR>",{silent = true})
 vim.keymap.set('i', '<C-s>', "<Esc>:w<CR>",{silent = true})
-vim.keymap.set('i', '<C-k><C-s>', "<Esc>:w<Cr>",{})
+vim.keymap.set('i', '<C-c>', "<Esc>:noh<CR>",{silent = true})
+vim.keymap.set('n', '<C-c>', "<Esc>:noh<CR>",{silent = true})
+
+
+-- quickfix list nav
+vim.keymap.set('n', '<M-p>', "<Esc>:cprev<CR>",{silent = true})
+vim.keymap.set('n', '<M-n>', "<Esc>:cnext<CR>",{silent = true})
+vim.keymap.set('n', '<M-o>', "<Esc>:copen<CR>",{silent = true})
+vim.keymap.set('n', '<M-c>', "<Esc>:cclose<CR>",{silent = true})
+-- end quickfix list nav
+
+
+
+
 -- end key maps
