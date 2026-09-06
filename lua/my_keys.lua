@@ -4,6 +4,9 @@ local layout_actions = require('telescope.actions.layout')
 
 require('telescope').setup({
   defaults = {
+      preview = {
+          treesitter = false, -- Disables Treesitter in the preview
+      },
       mappings = {
           n = {
               -- Toggle preview with 'p' in normal mode
@@ -28,6 +31,14 @@ require('telescope').setup({
 })
 
 -- start key maps
+--
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    vim.keymap.set('n', 'gr', telescopeBuiltin.lsp_references, { buffer = args.buf })
+    vim.keymap.set('n', 'gd', telescopeBuiltin.lsp_definitions, { buffer = args.buf })
+    vim.keymap.set('n', '<leader>ds', telescopeBuiltin.lsp_document_symbols, { buffer = args.buf })
+  end,
+})
 vim.keymap.set('n', '<leader>ff', telescopeBuiltin.find_files, {})
 vim.keymap.set('n', '<leader>gf', telescopeBuiltin.git_files, {})
 vim.keymap.set('n', '<leader>fg', telescopeBuiltin.live_grep, {})

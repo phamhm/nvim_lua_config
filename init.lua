@@ -24,49 +24,86 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+    require('mylspconfig'),
     --schemes
-    {'rktjmp/lush.nvim'},
-    {'metalelf0/jellybeans-nvim'},
-    {"HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
-        opts = {
-            default = {
-                dir_path = function()
-                    return  "assets/images/" .. vim.fn.expand("%:t:r")
-                end,
-                file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
-                extension = "png",
-            }
-        },
+
+    {
+        "folke/trouble.nvim",
+        opts = {}, -- for default options, refer to the configuration section for custom setup.
+        cmd = "Trouble",
         keys = {
-            -- suggested keymap
-            { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+            {
+                "<leader>xx",
+                "<cmd>Trouble diagnostics toggle<cr>",
+                desc = "Diagnostics (Trouble)",
+            },
+            {
+                "<leader>xX",
+                "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                desc = "Buffer Diagnostics (Trouble)",
+            },
+            {
+                "<leader>cs",
+                "<cmd>Trouble symbols toggle focus=false<cr>",
+                desc = "Symbols (Trouble)",
+            },
+            {
+                "<leader>cl",
+                "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                desc = "LSP Definitions / references / ... (Trouble)",
+            },
+            {
+                "<leader>xL",
+                "<cmd>Trouble loclist toggle<cr>",
+                desc = "Location List (Trouble)",
+            },
+            {
+                "<leader>xQ",
+                "<cmd>Trouble qflist toggle<cr>",
+                desc = "Quickfix List (Trouble)",
+            },
         },
     },
 
-    {"nvim-treesitter/nvim-treesitter"},
-    {'vimwiki/vimwiki'},
-    {'preservim/nerdtree'},
-    {"vimwiki/vimwiki",
-    init = function()
-        vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
-        vim.g.vimwiki_listsyms = '.○◐●✓'
-        --vim.g.vimwiki_folding=''
-        vim.g.vim_markdown_folding_disabled=1
-        vim.g.vimwiki_list = {
-            {
-                path = '~/Documents/vimwiki',
-                syntax = 'markdown',
-                ext = '.md',
-            },
+
+    {'rktjmp/lush.nvim'},
+    {'metalelf0/jellybeans-nvim'},
+    {"HakonHarnes/img-clip.nvim",
+    event = "VeryLazy",
+    opts = {
+        default = {
+            dir_path = function()
+                return  "assets/images/" .. vim.fn.expand("%:t:r")
+            end,
+            file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
+            extension = "png",
         }
-    end,
+    },
+    keys = {
+        -- suggested keymap
+        { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+    },
 },
 
-{'VonHeikemen/lsp-zero.nvim', branch = 'v3.x'},
-{'neovim/nvim-lspconfig'},
-{'williamboman/mason-lspconfig.nvim'},
-{'hrsh7th/cmp-nvim-lsp'},
+{"nvim-treesitter/nvim-treesitter"},
+{'vimwiki/vimwiki'},
+{'preservim/nerdtree'},
+{"vimwiki/vimwiki",
+init = function()
+    vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
+    vim.g.vimwiki_listsyms = '.○◐●✓'
+    --vim.g.vimwiki_folding=''
+    vim.g.vim_markdown_folding_disabled=1
+    vim.g.vimwiki_list = {
+        {
+            path = '~/Documents/vimwiki',
+            syntax = 'markdown',
+            ext = '.md',
+        },
+    }
+end,
+},
+
 {'williamboman/mason.nvim'},
 {'hrsh7th/nvim-cmp'},
 {'L3MON4D3/LuaSnip'},
@@ -87,21 +124,21 @@ require('lazy').setup({
 { "preservim/vim-textobj-sentence"},
 { "kana/vim-textobj-user"},
 { 'preservim/vim-markdown',
-    config = function()
-        vim.g.vim_markdown_conceal_code_blocks = 0
-        vim.g.vim_markdown_folding_style_pythonic = 1
-        vim.g.vim_markdown_no_default_key_mappings = 1
-        vim.g.vim_markdown_new_list_item_indent = 0
-    end,
+config = function()
+    vim.g.vim_markdown_conceal_code_blocks = 0
+    vim.g.vim_markdown_folding_style_pythonic = 1
+    vim.g.vim_markdown_no_default_key_mappings = 1
+    vim.g.vim_markdown_new_list_item_indent = 0
+end,
 },
 { "iamcco/markdown-preview.nvim",
-    --https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && yarn install",
-    init = function()
-        vim.g.mkdp_filetypes = { "markdown" }
-    end,
-    ft = { "markdown" },
+--https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
+cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+build = "cd app && yarn install",
+init = function()
+    vim.g.mkdp_filetypes = { "markdown" }
+end,
+ft = { "markdown" },
 },
 {'nvim-telescope/telescope.nvim', tag = '0.1.6', dependencies = { 'nvim-lua/plenary.nvim' } },
 })
@@ -112,8 +149,6 @@ vim.opt.termguicolors = true
 -- setup must be called before loading
 vim.cmd("colorscheme jellybeans-nvim")
 
-local lsp_zero = require('lsp-zero')
-
 vim.diagnostic.config({
     virtual_text = false,
     signs = true,
@@ -121,21 +156,6 @@ vim.diagnostic.config({
     underline = false,
 })
 
-lsp_zero.on_attach(function(client, bufnr)
-    -- see :help lsp-zero-keybindings
-    -- to learn the available actions
-    lsp_zero.default_keymaps({buffer = bufnr})
-end)
-
-
-require('mason').setup({})
-require('mason-lspconfig').setup({
-    handlers = {
-        function(server_name)
-            require('lspconfig')[server_name].setup({})
-        end,
-    },
-})
 
 -- https://github.com/windwp/nvim-autopairs
 require('nvim-autopairs').setup({
@@ -178,15 +198,6 @@ require('vimwiki_config')
 require('my_vim_pencil')
 require('myoptions')
 require('cmp_config')
-
-require("telescope").setup({
-    defaults = {
-        preview = {
-            treesitter = false, -- Disables Treesitter in the preview
-        },
-    },
-})
-
 
 vim.api.nvim_create_autocmd('BufWritePre', {
   desc = 'Removes trailing whitespace on save',
