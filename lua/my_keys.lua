@@ -6,17 +6,22 @@ require('telescope').setup({
   defaults = {
       preview = {
           treesitter = false, -- Disables Treesitter in the preview
+          hide_on_startup = true,
       },
       mappings = {
           n = {
               -- Toggle preview with 'p' in normal mode
-              ['p'] = layout_actions.toggle_preview,
-              ["<C-j>"] = actions.preview_scrolling_down,
-              ["<C-k>"] = actions.preview_scrolling_up,
+              ['<C-M-p>'] = layout_actions.toggle_preview,
+              ["<C-M-j>"] = actions.preview_scrolling_down,
+              ["<C-M-k>"] = actions.preview_scrolling_up,
               --["<C-h>"] = actions.preview_scrolling_left, -- Alternative
               --["<C-l>"] = actions.preview_scrolling_right,   -- Alternative
           },
-          i = { -- Insert mode mappings
+          i = { -- Inser<C-p>t mode mappings
+              ['<C-M-p>'] = layout_actions.toggle_preview,
+              ["<C-M-j>"] = actions.preview_scrolling_down,
+              ["<C-M-k>"] = actions.preview_scrolling_up,
+              ["<C-d>"] = actions.delete_buffer,
           },
       },
       layout_strategy = 'horizontal',
@@ -54,7 +59,7 @@ vim.keymap.set('n', '<leader>fo', telescopeBuiltin.oldfiles, {})
 vim.keymap.set('n', '<leader>fm', telescopeBuiltin.marks, {})
 vim.keymap.set('n', '<leader>fr', telescopeBuiltin.registers, {})
 vim.keymap.set('n', '<leader>f/', telescopeBuiltin.current_buffer_fuzzy_find, {})
-vim.keymap.set('n', '<C-p>', telescopeBuiltin.commands, {})
+vim.keymap.set('n', '<leader>fp', telescopeBuiltin.commands, {})
 
 -- git fugitive
 
@@ -98,8 +103,7 @@ vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = tr
 -- end key maps
 --
 
-local ls = require("luasnip")
-
+--local ls = require("luasnip")
 --vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
 --vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
 --vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})

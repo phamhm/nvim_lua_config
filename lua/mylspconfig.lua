@@ -1,3 +1,5 @@
+--local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 return {
   {
     "williamboman/mason.nvim",
@@ -13,7 +15,8 @@ return {
       require("mason-lspconfig").setup({
         ensure_installed = {
           "basedpyright", -- Python LSP
-          "ts_ls"         -- JavaScript/TypeScript LSP
+          "ts_ls",        -- JavaScript/TypeScript LSP
+          "lua_ls", -- Lua/Neovim
         },
       })
 

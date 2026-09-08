@@ -24,7 +24,11 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+
+    require('cmp_config'),
+
     require('mylspconfig'),
+
     --schemes
 
     {
@@ -33,33 +37,27 @@ require('lazy').setup({
         cmd = "Trouble",
         keys = {
             {
-                "<leader>xx",
-                "<cmd>Trouble diagnostics toggle<cr>",
+                "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",
                 desc = "Diagnostics (Trouble)",
             },
             {
-                "<leader>xX",
-                "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
                 desc = "Buffer Diagnostics (Trouble)",
             },
             {
-                "<leader>cs",
-                "<cmd>Trouble symbols toggle focus=false<cr>",
+                "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",
                 desc = "Symbols (Trouble)",
             },
             {
-                "<leader>cl",
-                "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
                 desc = "LSP Definitions / references / ... (Trouble)",
             },
             {
-                "<leader>xL",
-                "<cmd>Trouble loclist toggle<cr>",
+                "<leader>xL", "<cmd>Trouble loclist toggle<cr>",
                 desc = "Location List (Trouble)",
             },
             {
-                "<leader>xQ",
-                "<cmd>Trouble qflist toggle<cr>",
+                "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",
                 desc = "Quickfix List (Trouble)",
             },
         },
@@ -86,9 +84,9 @@ require('lazy').setup({
 },
 
 {"nvim-treesitter/nvim-treesitter"},
-{'vimwiki/vimwiki'},
 {'preservim/nerdtree'},
 {"vimwiki/vimwiki",
+--{'vimwiki/vimwiki'},
 init = function()
     vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
     vim.g.vimwiki_listsyms = '.○◐●✓'
@@ -105,8 +103,8 @@ end,
 },
 
 {'williamboman/mason.nvim'},
-{'hrsh7th/nvim-cmp'},
-{'L3MON4D3/LuaSnip'},
+
+--{'L3MON4D3/LuaSnip'},
 {'tpope/vim-surround'},
 {'tpope/vim-fugitive'},
 {'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
@@ -192,12 +190,11 @@ require('nvim-autopairs').setup({
   })
 
 require('my_keys')
-require('my_luasnip')
 require('lualine_config')
 require('vimwiki_config')
 require('my_vim_pencil')
 require('myoptions')
-require('cmp_config')
+--require('my_luasnip')
 
 vim.api.nvim_create_autocmd('BufWritePre', {
   desc = 'Removes trailing whitespace on save',
