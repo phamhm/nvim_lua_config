@@ -49,6 +49,7 @@ vim.keymap.set('n', '<leader>gf', telescopeBuiltin.git_files, {})
 vim.keymap.set('n', '<leader>fg', telescopeBuiltin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', telescopeBuiltin.buffers, {})
 vim.keymap.set('n', '<leader>fh', telescopeBuiltin.command_history, {})
+vim.keymap.set('n', '<leader>ft', telescopeBuiltin.help_tags, {})
 vim.keymap.set('n', '<leader>fj', telescopeBuiltin.jumplist, {})
 vim.keymap.set('n', '<leader>fk', telescopeBuiltin.keymaps, {})
 vim.keymap.set('n', '<leader>fd', telescopeBuiltin.diagnostics, {})
@@ -119,7 +120,8 @@ vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gz
 
 --vim.keymap.set("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --vim.keymap.set("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
-
+vim.keymap.set('n', '<leader>L', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
+vim.keymap.set('n', '<leader>H', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
 vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
 
@@ -139,3 +141,6 @@ vim.keymap.set('i', '<M-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
 -- Visual mode
 vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
+
+
+vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:nohlsearch<CR>", { silent = true })

@@ -138,7 +138,23 @@ init = function()
 end,
 ft = { "markdown" },
 },
-{'nvim-telescope/telescope.nvim', tag = '0.1.6', dependencies = { 'nvim-lua/plenary.nvim' } },
+
+{
+    'nvim-telescope/telescope.nvim', tag = '0.1.x',
+    dependencies = {
+        'nvim-lua/plenary.nvim',
+        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+    },
+    config = function()
+        local telescope = require('telescope')
+        telescope.setup({
+            -- Your custom configurations go here
+        })
+        -- Load the faster native fuzzy searching extension
+        telescope.load_extension('fzf')
+    end
+}
+
 })
 
 vim.opt.termguicolors = true
