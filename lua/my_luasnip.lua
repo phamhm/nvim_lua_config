@@ -1,8 +1,8 @@
-local ls = require("luasnip")
-local s = ls.snippet
-local t = ls.text_node
-local i = ls.insert_node
-local f = ls.function_node
+local luasnip = require("luasnip")
+local s = luasnip.snippet
+local t = luasnip.text_node
+local i = luasnip.insert_node
+local f = luasnip.function_node
 local fmt = require("luasnip.extras.fmt").fmt
 
 local markdown_snippets = {
@@ -57,14 +57,14 @@ local markdown_snippets = {
 
 }
 
-ls.add_snippets("markdown", markdown_snippets)
-ls.add_snippets("vimwiki", markdown_snippets)
+luasnip.add_snippets("markdown", markdown_snippets)
+luasnip.add_snippets("vimwiki", markdown_snippets)
 
 
 -- Expand snippet or jump forward
 vim.keymap.set({"i", "s"}, "<C-1>", function()
-  if ls.expand_or_jumpable() then
-    ls.expand_or_jump()
+  if luasnip.expand_or_jumpable() then
+    luasnip.expand_or_jump()
   else
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, false, true), "n", false)
   end
@@ -72,7 +72,9 @@ end, {silent = true})
 
 -- Jump backward
 vim.keymap.set({"i", "s"}, "<C-0>", function()
-  if ls.jumpable(-1) then
-    ls.jump(-1)
+  if luasnip.jumpable(-1) then
+    luasnip.jump(-1)
   end
 end, {silent = true})
+
+return luasnip

@@ -104,7 +104,6 @@ end,
 
 {'williamboman/mason.nvim'},
 
---{'L3MON4D3/LuaSnip'},
 {'tpope/vim-surround'},
 {'tpope/vim-fugitive'},
 {'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
@@ -172,6 +171,14 @@ vim.diagnostic.config({
 
 
 -- https://github.com/windwp/nvim-autopairs
+-- Fast Wrap Example
+-- Before        Input                    After         Note
+-- -----------------------------------------------------------------
+-- (|foobar      <M-e> then press $       (|foobar)
+-- (|)(foobar)   <M-e> then press q       (|(foobar))
+-- (|foo bar     <M-e> then press qh      (|foo) bar
+-- (|foo bar     <M-e> then press qH      (foo|) bar
+-- (|foo bar     <M-e> then press qH      (foo)| bar    if cursor_pos_before = false
 require('nvim-autopairs').setup({
     -- default values
     disable_filetype = { "TelescopePrompt", "spectre_panel" },
@@ -191,7 +198,7 @@ require('nvim-autopairs').setup({
     map_c_h = true, -- Map the <C-h> key to delete a pair
     --map_c_w = false, -- map <c-w> to delete a pair if possible
     fast_wrap = {
-        map = '<M-e>',
+        map = '<M-e>', -- REMEMBER THIS
         chars = { '{', '[', '(', '"', "'" },
         pattern = [=[[%'%"%>%]%)%}%,]]=],
         end_key = '$',
@@ -210,7 +217,6 @@ require('lualine_config')
 require('vimwiki_config')
 require('my_vim_pencil')
 require('myoptions')
---require('my_luasnip')
 
 vim.api.nvim_create_autocmd('BufWritePre', {
   desc = 'Removes trailing whitespace on save',
