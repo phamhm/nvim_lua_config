@@ -139,7 +139,7 @@ ft = { "markdown" },
 },
 
 {
-    'nvim-telescope/telescope.nvim', tag = '0.1.x',
+    'nvim-telescope/telescope.nvim',
     dependencies = {
         'nvim-lua/plenary.nvim',
         { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
@@ -160,7 +160,8 @@ vim.opt.termguicolors = true
 -- Default options:
 
 -- setup must be called before loading
-vim.cmd("colorscheme jellybeans-nvim")
+vim.opt.background = "dark" -- set this to dark or light
+vim.cmd.colorscheme "jellybeans-nvim"
 
 vim.diagnostic.config({
     virtual_text = false,
