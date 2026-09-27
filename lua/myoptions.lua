@@ -45,6 +45,8 @@ local options = {
   --laststatus = 3,
   spell = false,
   autoread=true,
+  title=true,
+  titlestring="nv:%t"
 }
 
 vim.opt.shortmess:append "c"

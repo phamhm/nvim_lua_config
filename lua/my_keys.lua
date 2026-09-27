@@ -85,7 +85,6 @@ vim.keymap.set('n', '<leader>.', ":noh<CR>",{silent = true})
 vim.keymap.set('n', '<C-s>', ":w<CR>",{silent = true})
 vim.keymap.set('i', '<C-s>', "<Esc>:w<CR>",{silent = true})
 --vim.keymap.set('i', '<C-j>', "<CR>",{silent = true})
-vim.keymap.set('i', '<C-k><C-s>', "<Esc>:w<Cr>",{})
 vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
@@ -143,4 +142,4 @@ vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
 
-vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:nohlsearch<CR>", { silent = true })
+vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>" , {noremap = true})
