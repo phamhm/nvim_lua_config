@@ -156,7 +156,7 @@ vim.keymap.set("n", "<leader>fx", function()
     vim.cmd("edit ".. file_path)
 end, {})
 
-vim.keymap.set("n", "<leader>hw", ":term curl wttr.in<CR>", {silent = true})
+vim.keymap.set("n", "<leader>hw", ":term curl 'wttr.in' <CR>", {silent = true})
 
 vim.keymap.set('n', '<leader>t', function()
   -- Check if a terminal buffer already exists
