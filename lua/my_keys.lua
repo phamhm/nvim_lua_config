@@ -88,7 +88,7 @@ vim.keymap.set('i', '<C-s>', "<Esc>:w<CR>",{silent = true})
 vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
-vim.keymap.set('n', '<leader>t', "Gzt",{silent = true})
+--vim.keymap.set('n', '<leader>t', "Gzt",{silent = true})
 
 vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 --
@@ -142,4 +142,44 @@ vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
 
-vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>" , {noremap = true})
+vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
+
+
+vim.keymap.set("n", "<leader>hl", function()
+    local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
+    local lines = vim.fn.readfile(file_path)
+    print(table.concat(lines, '\n'))
+end, {})
+
+vim.keymap.set("n", "<leader>fx", function()
+    local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
+    vim.cmd("edit ".. file_path)
+end, {})
+
+vim.keymap.set("n", "<leader>hw", ":term curl wttr.in<CR>", {silent = true})
+
+vim.keymap.set('n', '<leader>t', function()
+  -- Check if a terminal buffer already exists
+  local term_buf = nil
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].buftype == "terminal" then
+      term_buf = buf
+      break
+    end
+  end
+
+  if term_buf then
+    -- If it exists, check if it's visible in any window
+    local term_win = vim.fn.bufwinid(term_buf)
+    if term_win ~= -1 then
+      -- Switch focus to that window
+      vim.api.nvim_set_current_win(term_win)
+    else
+      -- If it's hidden, switch the current buffer to it
+      vim.api.nvim_set_current_buf(term_buf)
+    end
+  else
+    -- If no terminal buffer exists, open a new one
+    vim.cmd("terminal")
+  end
+end, { desc = "Toggle/Switch to Terminal" })

@@ -182,11 +182,11 @@ vim.diagnostic.config({
 -- Fast Wrap Example
 -- Before        Input                    After         Note
 -- -----------------------------------------------------------------
--- (|foobar      <M-e> then press $       (|foobar)
--- (|)(foobar)   <M-e> then press q       (|(foobar))
--- (|foo bar     <M-e> then press qh      (|foo) bar
--- (|foo bar     <M-e> then press qH      (foo|) bar
--- (|foo bar     <M-e> then press qH      (foo)| bar    if cursor_pos_before = false
+-- (|foobar      <C-e> then press $       (|foobar)
+-- (|)(foobar)   <C-e> then press q       (|(foobar))
+-- (|foo bar     <C-e> then press qh      (|foo) bar
+-- (|foo bar     <C-e> then press qH      (foo|) bar
+-- (|foo bar     <C-e> then press qH      (foo)| bar    if cursor_pos_before = false
 require('nvim-autopairs').setup({
     -- default values
     disable_filetype = { "TelescopePrompt", "spectre_panel" },
@@ -206,7 +206,7 @@ require('nvim-autopairs').setup({
     map_c_h = true, -- Map the <C-h> key to delete a pair
     --map_c_w = false, -- map <c-w> to delete a pair if possible
     fast_wrap = {
-        map = '<M-e>', -- REMEMBER THIS
+        map = '<C-e>', -- REMEMBER THIS
         chars = { '{', '[', '(', '"', "'" },
         pattern = [=[[%'%"%>%]%)%}%,]]=],
         end_key = '$',
