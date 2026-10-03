@@ -1,73 +1,3 @@
-local telescopeBuiltin = require('telescope.builtin')
-local actions = require('telescope.actions')
-local layout_actions = require('telescope.actions.layout')
-
-require('telescope').setup({
-  defaults = {
-      preview = {
-          treesitter = false, -- Disables Treesitter in the preview
-          hide_on_startup = true,
-      },
-      mappings = {
-          n = {
-              -- Toggle preview with 'p' in normal mode
-              ['<C-M-p>'] = layout_actions.toggle_preview,
-              ["<C-M-j>"] = actions.preview_scrolling_down,
-              ["<C-M-k>"] = actions.preview_scrolling_up,
-              --["<C-h>"] = actions.preview_scrolling_left, -- Alternative
-              --["<C-l>"] = actions.preview_scrolling_right,   -- Alternative
-          },
-          i = { -- Inser<C-p>t mode mappings
-              ['<C-M-p>'] = layout_actions.toggle_preview,
-              ["<C-M-j>"] = actions.preview_scrolling_down,
-              ["<C-M-k>"] = actions.preview_scrolling_up,
-              ["<C-d>"] = actions.delete_buffer,
-          },
-      },
-      layout_strategy = 'horizontal',
-      layout_config = {
-          horizontal = {
-              width = 0.50,     -- 90% of screen width
-              height = 0.50,    -- 85% of screen height
-              preview_width = 0.6, -- 60% for the preview window
-          },
-      },
-  },
-})
-
--- start key maps
---
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(args)
-    vim.keymap.set('n', 'gr', telescopeBuiltin.lsp_references, { buffer = args.buf })
-    vim.keymap.set('n', 'gd', telescopeBuiltin.lsp_definitions, { buffer = args.buf })
-    vim.keymap.set('n', '<leader>ds', telescopeBuiltin.lsp_document_symbols, { buffer = args.buf })
-  end,
-})
-vim.keymap.set('n', '<leader>ff', telescopeBuiltin.find_files, {})
-vim.keymap.set('n', '<leader>gf', telescopeBuiltin.git_files, {})
-vim.keymap.set('n', '<leader>fg', telescopeBuiltin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', telescopeBuiltin.buffers, {})
-vim.keymap.set('n', '<leader>fh', telescopeBuiltin.command_history, {})
-vim.keymap.set('n', '<leader>ft', telescopeBuiltin.help_tags, {})
-vim.keymap.set('n', '<leader>fj', telescopeBuiltin.jumplist, {})
-vim.keymap.set('n', '<leader>fk', telescopeBuiltin.keymaps, {})
-vim.keymap.set('n', '<leader>fd', telescopeBuiltin.diagnostics, {})
-vim.keymap.set('n', '<leader>fc', telescopeBuiltin.commands, {})
-vim.keymap.set('n', '<leader>fl', telescopeBuiltin.loclist, {})
-vim.keymap.set('n', '<leader>fq', telescopeBuiltin.quickfix, {})
-vim.keymap.set('n', '<leader>fo', telescopeBuiltin.oldfiles, {})
-vim.keymap.set('n', '<leader>fm', telescopeBuiltin.marks, {})
-vim.keymap.set('n', '<leader>fr', telescopeBuiltin.registers, {})
-vim.keymap.set('n', '<leader>f/', telescopeBuiltin.current_buffer_fuzzy_find, {})
-vim.keymap.set('n', '<leader>fp', telescopeBuiltin.commands, {})
-
--- git fugitive
-
-vim.keymap.set('n', '<leader>gg', ":Git<CR>", {})
-vim.keymap.set('n', '<leader>gp', ":Git push<CR>", {})
--- end git fugitive
-
 vim.keymap.set('n', '<leader>q', ":bd<CR>", {})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
@@ -76,19 +6,12 @@ vim.keymap.set('n', 'k', "gk", {silent=true})
 vim.keymap.set('n', '<leader>1', ":only<CR>",{})
 vim.keymap.set('n', '<leader>2', ":vsp<CR>",{})
 vim.keymap.set('n', '<leader>3', ":sp<CR>",{})
-vim.keymap.set('n', '<leader>c', ":clo<CR>",{})
-vim.keymap.set('n', '<leader>bp', ":bp<CR>",{})
-vim.keymap.set('n', '<leader>bn', ":bn<CR>",{})
+vim.keymap.set('n', '<leader>0', ":clo<CR>",{})
 
-vim.keymap.set('n', '<leader>e', ":NERDTreeToggle<CR>",{})
-vim.keymap.set('n', '<leader>.', ":noh<CR>",{silent = true})
-vim.keymap.set('n', '<C-s>', ":w<CR>",{silent = true})
-vim.keymap.set('i', '<C-s>', "<Esc>:w<CR>",{silent = true})
+vim.keymap.set({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
 --vim.keymap.set('i', '<C-j>', "<CR>",{silent = true})
 vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
-
---vim.keymap.set('n', '<leader>t', "Gzt",{silent = true})
 
 vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 --
@@ -124,9 +47,7 @@ vim.keymap.set('n', '<leader>H', '<Plug>(easymotion-bl)', { desc = 'EasyMotion m
 
 vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
 
-
 vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
-
 
 -- Bringing the whole line up or down
 -- Normal mode
@@ -143,7 +64,6 @@ vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
-
 
 vim.keymap.set("n", "<leader>hl", function()
     local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
@@ -183,3 +103,43 @@ vim.keymap.set('n', '<leader>t', function()
     vim.cmd("terminal")
   end
 end, { desc = "Toggle/Switch to Terminal" })
+
+
+-- shortcut to google
+local google_shortcut ="<leader>gg"
+local google_prompt = "Google: "
+local opts = { noremap=true, silient=true}
+
+local function google_search(input)
+    if input and input ~="" then
+        local query = vim.uri_encode(input)
+        vim.ui.open("https://www.google.com/search?q=" .. query)
+    end
+end
+
+vim.keymap.set("n", google_shortcut, function()
+    vim.ui.input( { prompt = google_prompt}, google_search)
+end, opt)
+
+vim.keymap.set("v", google_shortcut, function()
+   vim.cmd('noautocmd normal! "vy') -- yank selected into register v
+
+   local selected_text = vim.fn.getreg('v')
+
+   vim.ui.input({
+       prompt = google_prompt,
+       default = selected_text,
+     },
+   google_search)
+end, opt)
+-- end googling, }
+
+-- Open mini.files at the current working directory (CWD)
+vim.keymap.set('n', '<leader>em', function()
+  require('mini.files').open(vim.uv.cwd(), true)
+end, { desc = 'Open mini.files (Root)' })
+
+-- Open mini.files targeting the directory of the active buffer
+vim.keymap.set('n', '<leader>ex', function()
+  require('mini.files').open(vim.api.nvim_buf_get_name(0), true)
+end, { desc = 'Open mini.files (Current File)' })

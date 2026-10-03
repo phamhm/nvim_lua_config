@@ -24,6 +24,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+    require('m_snacks'),
+
+    require('m_mini'),
 
     require('cmp_config'),
 
@@ -84,9 +87,8 @@ require('lazy').setup({
 },
 
 {"nvim-treesitter/nvim-treesitter"},
-{'preservim/nerdtree'},
+--{'preservim/nerdtree'},
 {"vimwiki/vimwiki",
---{'vimwiki/vimwiki'},
 init = function()
     vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
     vim.g.vimwiki_listsyms = '.○◐●✓'
@@ -104,16 +106,15 @@ end,
 
 {'williamboman/mason.nvim'},
 
-{'tpope/vim-surround'},
+--{'tpope/vim-surround'},
 {'tpope/vim-fugitive'},
-{'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
 {'easymotion/vim-easymotion'},
-{'preservim/nerdcommenter'},
-{
-    'windwp/nvim-autopairs',
-    event = "InsertEnter",
-    config = true
-},
+-- {'preservim/nerdcommenter'},
+--{
+    --'windwp/nvim-autopairs',
+    --event = "InsertEnter",
+    --config = true
+--},
 {'nvim-tree/nvim-web-devicons'},
 { "preservim/vim-lexical" },
 { "preservim/vim-pencil"},
@@ -137,29 +138,6 @@ init = function()
 end,
 ft = { "markdown" },
 },
-
-{
-    'nvim-telescope/telescope.nvim',
-    dependencies = {
-        'nvim-lua/plenary.nvim',
-        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
-    },
-    config = function()
-        local telescope = require('telescope')
-        local actions = require('telescope.actions')
-        telescope.setup({
-            -- Your custom configurations go here
-            defaults = {
-                mappings = {
-                    i = { ["<C-c>"] = actions.close, },
-                    n = { ["<C-c>"] = actions.close, },
-                },
-            },
-        })
-        -- Load the faster native fuzzy searching extension
-        telescope.load_extension('fzf')
-    end
-}
 
 })
 
@@ -187,41 +165,40 @@ vim.diagnostic.config({
 -- (|foo bar     <C-e> then press qh      (|foo) bar
 -- (|foo bar     <C-e> then press qH      (foo|) bar
 -- (|foo bar     <C-e> then press qH      (foo)| bar    if cursor_pos_before = false
-require('nvim-autopairs').setup({
-    -- default values
-    disable_filetype = { "TelescopePrompt", "spectre_panel" },
-    disable_in_macro = true, -- disable when recording or executing a macro
-    --disable_in_visualblock = false, -- disable when insert after visual block mode
-    --disable_in_replace_mode = true,
-    --ignored_next_char = [=[[%w%%%'%[%"%.%`%$]]=],
-    enable_moveright = true,
-    enable_afterquote = true, -- add bracket pairs after quote
-    --enable_check_bracket_line = true, --- check bracket in same line
-    --enable_bracket_in_quote = true, --
-    --enable_abbr = false, -- trigger abbreviation
-    --break_undo = true, -- switch for basic rule break undo sequence
-    check_ts = true,
-    --map_cr = true, -- true is default
-    --map_bs = true, -- true is default, map the <BS> key
-    map_c_h = true, -- Map the <C-h> key to delete a pair
-    --map_c_w = false, -- map <c-w> to delete a pair if possible
-    fast_wrap = {
-        map = '<C-e>', -- REMEMBER THIS
-        chars = { '{', '[', '(', '"', "'" },
-        pattern = [=[[%'%"%>%]%)%}%,]]=],
-        end_key = '$',
-        before_key = 'h',
-        after_key = 'l',
-        cursor_pos_before = true,
-        keys = 'qwertyuiopzxcvbnmasdfghjkl',
-        manual_position = true,
-        highlight = 'Search',
-        highlight_grey='Comment'
-                                                                              },
-  })
+-- require('nvim-autopairs').setup({
+    ---- default values
+    --disable_filetype = { "TelescopePrompt", "spectre_panel" },
+    --disable_in_macro = true, -- disable when recording or executing a macro
+    ----disable_in_visualblock = false, -- disable when insert after visual block mode
+    ----disable_in_replace_mode = true,
+    ----ignored_next_char = [=[[%w%%%'%[%"%.%`%$]]=],
+    --enable_moveright = true,
+    --enable_afterquote = true, -- add bracket pairs after quote
+    ----enable_check_bracket_line = true, --- check bracket in same line
+    ----enable_bracket_in_quote = true, --
+    ----enable_abbr = false, -- trigger abbreviation
+    ----break_undo = true, -- switch for basic rule break undo sequence
+    --check_ts = true,
+    ----map_cr = true, -- true is default
+    ----map_bs = true, -- true is default, map the <BS> key
+    --map_c_h = true, -- Map the <C-h> key to delete a pair
+    ----map_c_w = false, -- map <c-w> to delete a pair if possible
+    --fast_wrap = {
+        --map = '<C-e>', -- REMEMBER THIS
+        --chars = { '{', '[', '(', '"', "'" },
+        --pattern = [=[[%'%"%>%]%)%}%,]]=],
+        --end_key = '$',
+        --before_key = 'h',
+        --after_key = 'l',
+        --cursor_pos_before = true,
+        --keys = 'qwertyuiopzxcvbnmasdfghjkl',
+        --manual_position = true,
+        --highlight = 'Search',
+        --highlight_grey='Comment'
+                                                                              --},
+  --})
 
 require('my_keys')
-require('lualine_config')
 require('vimwiki_config')
 require('my_vim_pencil')
 require('myoptions')
