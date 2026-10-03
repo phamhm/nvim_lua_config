@@ -26,11 +26,11 @@ return {
         callback = function(ev)
           local opts = { buffer = ev.buf }
 
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)          -- Go to definition
-          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)          -- Find references
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)                -- Show documentation
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)      -- Smart rename
-          vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- Code actions
+          -- vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)          -- Go to definition
+          -- vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)          -- Find references
+          -- vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)                -- Show documentation
+          -- vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)      -- Smart rename
+          -- vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- Code actions
         end,
       })
 
@@ -40,6 +40,25 @@ return {
       if has_cmp then
         capabilities = cmp_lsp.default_capabilities()
       end
+
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {"snacks_picker_input", "snacks_picker", "snacks_input" },
+        callback = function()
+          vim.opt_local.autocomplete = false
+          vim.o.autocomplete=false
+          vim.b.minicompletion_disable = true
+        end,
+      })
+
+      vim.api.nvim_create_autocmd({"BufEnter", "WinEnter"}, {
+        callback = function()
+          if vim.bo.filetype == "snacks_picker" then
+            vim.o.autocomplete = false
+            vim.b.minicompletion_disable = true
+          end
+        end,
+      })
 
       -- 5. Native Neovim 0.11+ LSP initialization (Zero lspconfig requires!)
       local servers = { "basedpyright", "ts_ls" }

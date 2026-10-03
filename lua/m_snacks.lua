@@ -5,8 +5,7 @@ return {
   ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
-    dashboard = { enabled = true },
-    explorer = { enabled = false },
+    explorer = { enabled = true },
     indent = {
         enabled = true,
         indent = { only_scope = true },
@@ -20,12 +19,15 @@ return {
     },
     picker = {
         enabled = true ,
-        layout = { preset = "ivy" }
+        layout = {
+          -- options include default, ivy, dropdown, vertical, sidebar, telescope
+          preset = "dropdown"
+        }
     },
     quickfile = { enabled = true },
     scope = { enabled = true },
     scroll = { enabled = true },
-    statuscolumn = { enabled = true },
+    statuscolumn = { enabled = false },
     words = { enabled = true },
     styles = {
       input = {
@@ -52,6 +54,7 @@ return {
     { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
+    { "<leader>ee", function() Snacks.explorer() end, desc = "File Explorer" },
     -- make sure that explorer isn't called because using mini.files
     { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
     -- find
@@ -90,7 +93,7 @@ return {
               if item and item.reg then
                 -- Feed keys: <C-o> runs one normal command then returns to insert mode,
                 -- followed by `"regp` to paste the selected register content.
-                local keys = string.format("\"%sp", item.reg)
+                local keys = string.format("\"%sp==", item.reg)
                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
               end
             end,
@@ -130,8 +133,19 @@ return {
     -- Other
     { "<leader>z",  function() Snacks.zen() end, desc = "Toggle Zen Mode" },
     { "<leader>Z",  function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
+
     { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
+    {
+      "<leader>`", function()
+        Snacks.scratch({
+          file = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"),
+          -- optionally set enter = true to focus the window immediately
+          enter = true,
+        })
+      end,
+      desc="snack scrach notes"
+    },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
     { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
@@ -162,6 +176,27 @@ return {
     }
   },
   init = function()
+      vim.api.nvim_create_autocmd("FileType", {
+          pattern = "help",
+          callback = function(ev)
+              -- Check if it's already a floating window to prevent infinite loops
+              if vim.api.nvim_win_get_config(0).relative ~= "" then
+                  return
+              end
+
+              local buf = ev.buf
+              -- Close the default help split window right after it opens
+              vim.cmd("wincmd c")
+
+              -- Re-open the help buffer using snacks.win in a styled float
+              Snacks.win({
+                  buf = buf,
+                  style = "vscode", -- Uses snacks.nvim's built-in help window style layout
+                  border = "rounded"
+              })
+          end,
+      })
+
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       callback = function()
@@ -181,7 +216,6 @@ return {
         else
           vim.print = _G.dd
         end
-
         -- Create some toggle mappings
         Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
         Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")

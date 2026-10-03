@@ -28,47 +28,47 @@ require('lazy').setup({
 
     require('m_mini'),
 
-    require('cmp_config'),
+    require('m_lsp'),
 
-    require('mylspconfig'),
+    require('m_treesitter'),
 
     --schemes
 
-    {
-        "folke/trouble.nvim",
-        opts = {}, -- for default options, refer to the configuration section for custom setup.
-        cmd = "Trouble",
-        keys = {
-            {
-                "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",
-                desc = "Diagnostics (Trouble)",
-            },
-            {
-                "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-                desc = "Buffer Diagnostics (Trouble)",
-            },
-            {
-                "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",
-                desc = "Symbols (Trouble)",
-            },
-            {
-                "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-                desc = "LSP Definitions / references / ... (Trouble)",
-            },
-            {
-                "<leader>xL", "<cmd>Trouble loclist toggle<cr>",
-                desc = "Location List (Trouble)",
-            },
-            {
-                "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",
-                desc = "Quickfix List (Trouble)",
-            },
-        },
-    },
-
+    -- {
+    --   "folke/trouble.nvim",
+    --   opts = {}, -- for default options, refer to the configuration section for custom setup.
+    --   cmd = "Trouble",
+    --   keys = {
+    --     {
+    --       "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",
+    --       desc = "Diagnostics (Trouble)",
+    --     },
+    --     {
+    --       "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+    --       desc = "Buffer Diagnostics (Trouble)",
+    --     },
+    --     {
+    --       "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",
+    --       desc = "Symbols (Trouble)",
+    --     },
+    --     {
+    --       "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+    --       desc = "LSP Definitions / references / ... (Trouble)",
+    --     },
+    --     {
+    --       "<leader>xL", "<cmd>Trouble loclist toggle<cr>",
+    --       desc = "Location List (Trouble)",
+    --     },
+    --     {
+    --       "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",
+    --       desc = "Quickfix List (Trouble)",
+    --     },
+    --   },
+    -- },
 
     {'rktjmp/lush.nvim'},
     {'metalelf0/jellybeans-nvim'},
+    { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
     {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
     opts = {
@@ -86,7 +86,6 @@ require('lazy').setup({
     },
 },
 
-{"nvim-treesitter/nvim-treesitter"},
 --{'preservim/nerdtree'},
 {"vimwiki/vimwiki",
 init = function()
@@ -138,7 +137,7 @@ vim.opt.termguicolors = true
 
 -- setup must be called before loading
 vim.opt.background = "dark" -- set this to dark or light
-vim.cmd.colorscheme "jellybeans-nvim"
+vim.cmd.colorscheme "catppuccin-mocha"
 
 vim.diagnostic.config({
     virtual_text = false,
@@ -147,10 +146,10 @@ vim.diagnostic.config({
     underline = false,
 })
 
-require('my_keys')
+require('m_keys')
 require('vimwiki_config')
 require('my_vim_pencil')
-require('myoptions')
+require('m_options')
 
 vim.api.nvim_create_autocmd('BufWritePre', {
   desc = 'Removes trailing whitespace on save',

@@ -123,13 +123,12 @@ end, opt)
 -- end googling, }
 
 -- Open mini.files at the current working directory (CWD)
-vim.keymap.set('n', '<leader>em', function()
+vim.keymap.set('n', '<leader>er', function()
   require('mini.files').open(vim.uv.cwd(), true)
 end, { desc = 'Open mini.files (Root)' })
 
 -- Open mini.files targeting the directory of the active buffer
-vim.keymap.set('n', '<leader>ex', function()
+vim.keymap.set('n', '<leader>ec', function()
   require('mini.files').open(vim.api.nvim_buf_get_name(0), true)
 end, { desc = 'Open mini.files (Current File)' })
 
-vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })
