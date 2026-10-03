@@ -106,15 +106,7 @@ end,
 
 {'williamboman/mason.nvim'},
 
---{'tpope/vim-surround'},
-{'tpope/vim-fugitive'},
 {'easymotion/vim-easymotion'},
--- {'preservim/nerdcommenter'},
---{
-    --'windwp/nvim-autopairs',
-    --event = "InsertEnter",
-    --config = true
---},
 {'nvim-tree/nvim-web-devicons'},
 { "preservim/vim-lexical" },
 { "preservim/vim-pencil"},
@@ -154,49 +146,6 @@ vim.diagnostic.config({
     update_in_insert = false,
     underline = false,
 })
-
-
--- https://github.com/windwp/nvim-autopairs
--- Fast Wrap Example
--- Before        Input                    After         Note
--- -----------------------------------------------------------------
--- (|foobar      <C-e> then press $       (|foobar)
--- (|)(foobar)   <C-e> then press q       (|(foobar))
--- (|foo bar     <C-e> then press qh      (|foo) bar
--- (|foo bar     <C-e> then press qH      (foo|) bar
--- (|foo bar     <C-e> then press qH      (foo)| bar    if cursor_pos_before = false
--- require('nvim-autopairs').setup({
-    ---- default values
-    --disable_filetype = { "TelescopePrompt", "spectre_panel" },
-    --disable_in_macro = true, -- disable when recording or executing a macro
-    ----disable_in_visualblock = false, -- disable when insert after visual block mode
-    ----disable_in_replace_mode = true,
-    ----ignored_next_char = [=[[%w%%%'%[%"%.%`%$]]=],
-    --enable_moveright = true,
-    --enable_afterquote = true, -- add bracket pairs after quote
-    ----enable_check_bracket_line = true, --- check bracket in same line
-    ----enable_bracket_in_quote = true, --
-    ----enable_abbr = false, -- trigger abbreviation
-    ----break_undo = true, -- switch for basic rule break undo sequence
-    --check_ts = true,
-    ----map_cr = true, -- true is default
-    ----map_bs = true, -- true is default, map the <BS> key
-    --map_c_h = true, -- Map the <C-h> key to delete a pair
-    ----map_c_w = false, -- map <c-w> to delete a pair if possible
-    --fast_wrap = {
-        --map = '<C-e>', -- REMEMBER THIS
-        --chars = { '{', '[', '(', '"', "'" },
-        --pattern = [=[[%'%"%>%]%)%}%,]]=],
-        --end_key = '$',
-        --before_key = 'h',
-        --after_key = 'l',
-        --cursor_pos_before = true,
-        --keys = 'qwertyuiopzxcvbnmasdfghjkl',
-        --manual_position = true,
-        --highlight = 'Search',
-        --highlight_grey='Comment'
-                                                                              --},
-  --})
 
 require('my_keys')
 require('vimwiki_config')

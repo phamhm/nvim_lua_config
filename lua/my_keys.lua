@@ -26,18 +26,6 @@ vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = tr
 -- end key maps
 --
 
---local ls = require("luasnip")
---vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
---vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
---vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})
-
---vim.keymap.set({"i", "s"}, "<C-E>", function()
-	--if ls.choice_active() then
-		--ls.change_choice(1)
-	--end
---end, {silent = true})
-
-
 vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gzt", { noremap = true, silent = true, desc = "Open init.lua" })
 
 --vim.keymap.set("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
@@ -143,3 +131,5 @@ end, { desc = 'Open mini.files (Root)' })
 vim.keymap.set('n', '<leader>ex', function()
   require('mini.files').open(vim.api.nvim_buf_get_name(0), true)
 end, { desc = 'Open mini.files (Current File)' })
+
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })

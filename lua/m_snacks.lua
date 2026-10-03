@@ -13,9 +13,7 @@ return {
         chunk = { enabled = true },
         animate = { enabled = false}
     },
-    input = {
-        enabled = true ,
-    },
+    input = { enabled = true , },
     notifier = {
       enabled = true,
       timeout = 2000,
@@ -54,10 +52,8 @@ return {
     { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<leader>e", false},
-    { "<leader>E", false},
-    { "<leader>fe", false},
-    { "<leader>fE", false},
+    -- make sure that explorer isn't called because using mini.files
+    { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
     -- find
     { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
@@ -84,8 +80,23 @@ return {
     { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
     -- search
-    { '<C-r>', function() Snacks.picker.registers() end, desc = "Registers", mode='i' },
-    { '<leader>fr"', function() Snacks.picker.registers() end, desc = "Registers" },
+    { '<C-r>', function()
+          -- Call snacks picker for registers and handle the selection confirmation
+          Snacks.picker.registers({
+            confirm = function(picker, item)
+              picker:close()
+
+              -- The selected item contains the register name/char
+              if item and item.reg then
+                -- Feed keys: <C-o> runs one normal command then returns to insert mode,
+                -- followed by `"regp` to paste the selected register content.
+                local keys = string.format("\"%sp", item.reg)
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
+              end
+            end,
+          })
+        end, desc = "Registers", mode='i' },
+    { '<leader>fr', function() Snacks.picker.registers() end, desc = "Registers" },
     { '<leader>s/', function() Snacks.picker.search_history() end, desc = "Search History" },
     { "<leader>sa", function() Snacks.picker.autocmds() end, desc = "Autocmds" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },

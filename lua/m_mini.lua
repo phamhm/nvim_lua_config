@@ -17,6 +17,8 @@ return {
       require('mini.files').setup()
 
       require('mini.statusline').setup()
+
+      -- require('mini.trailspace').setup()
     end,
   },
 }
