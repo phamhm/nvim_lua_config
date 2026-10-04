@@ -19,6 +19,17 @@ return {
     },
     picker = {
         enabled = false ,
+        sources = {
+          files = {
+            excludes = {
+              "node_modules",
+              ".env",
+              "target",
+              "build",
+              "archive"
+            }
+          }
+        },
         win = {
           input = {
             keys = {
@@ -37,7 +48,7 @@ return {
             col = 0,
             width = 0.8,
             height = 0.3,
-            border = "none",
+            border = "rounded",
             title = " {title} {live} {flags}",
             align = "left",
             title_pos = "left",
@@ -89,7 +100,8 @@ return {
     -- find
     { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
-    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
+    { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/vimwiki")}) end, desc = "Find Config File" },
+    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Config File" },
     { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
     { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
     { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent" },
