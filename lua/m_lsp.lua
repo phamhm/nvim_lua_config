@@ -45,18 +45,7 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         pattern = {"snacks_picker_input", "snacks_picker", "snacks_input" },
         callback = function()
-          vim.opt_local.autocomplete = false
-          vim.o.autocomplete=false
           vim.b.minicompletion_disable = true
-        end,
-      })
-
-      vim.api.nvim_create_autocmd({"BufEnter", "WinEnter"}, {
-        callback = function()
-          if vim.bo.filetype == "snacks_picker" then
-            vim.o.autocomplete = false
-            vim.b.minicompletion_disable = true
-          end
         end,
       })
 

@@ -51,7 +51,8 @@ local options = {
   foldlevel = 9,
   foldlevelstart = 9,
   foldenable = true,
-  timeoutlen = 300
+  -- timeoutlen = 300
+  statuscolumn = "",
 }
 
 vim.opt.shortmess:append "c"

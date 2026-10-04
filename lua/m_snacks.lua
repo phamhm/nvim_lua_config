@@ -18,16 +18,45 @@ return {
       timeout = 2000,
     },
     picker = {
-        enabled = true ,
+        enabled = false ,
+        win = {
+          input = {
+            keys = {
+              ["<C-p>"] = { "toggle_preview", mode = { "i", "n" } },
+            }
+          }
+        },
         layout = {
           -- options include default, ivy, dropdown, vertical, sidebar, telescope
-          preset = "dropdown"
+          preset = "ivy",
+          preview = false,
+          layout = {
+            box = "vertical",
+            backdrop = false,
+            row = vim.o.lines - 5,
+            col = 0,
+            width = 0.8,
+            height = 0.3,
+            border = "none",
+            title = " {title} {live} {flags}",
+            align = "left",
+            title_pos = "left",
+            { win = "input", height = 1, border = "none" },
+            {
+              box = "horizontal",
+              { win = "list", border = "none" },
+              { win = "preview", title = "{preview}", width = 0.6, border = "left" },
+            },
+          },
         }
     },
     quickfile = { enabled = true },
     scope = { enabled = true },
     scroll = { enabled = true },
-    statuscolumn = { enabled = false },
+    statuscolumn = {
+      enabled = true ,
+      git =  { enabled = false}
+    },
     words = { enabled = true },
     styles = {
       input = {
@@ -144,7 +173,7 @@ return {
           enter = true,
         })
       end,
-      desc="snack scrach notes"
+      desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
@@ -156,24 +185,6 @@ return {
     { "<c-_>",      function() Snacks.terminal() end, desc = "which_key_ignore" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
-    {
-      "<leader>N",
-      desc = "Neovim News",
-      function()
-        Snacks.win({
-          file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
-          width = 0.6,
-          height = 0.6,
-          wo = {
-            spell = false,
-            wrap = false,
-            signcolumn = "yes",
-            statuscolumn = " ",
-            conceallevel = 3,
-          },
-        })
-      end,
-    }
   },
   init = function()
       vim.api.nvim_create_autocmd("FileType", {

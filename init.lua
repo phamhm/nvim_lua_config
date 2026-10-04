@@ -25,11 +25,8 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
     require('m_snacks'),
-
     require('m_mini'),
-
     require('m_lsp'),
-
     require('m_treesitter'),
 
     --schemes
@@ -66,23 +63,23 @@ require('lazy').setup({
     --   },
     -- },
 
-    {'rktjmp/lush.nvim'},
-    {'metalelf0/jellybeans-nvim'},
+    -- {'rktjmp/lush.nvim'},
+    -- {'metalelf0/jellybeans-nvim'},
     { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
     {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
     opts = {
-        default = {
-            dir_path = function()
-                return  "assets/images/" .. vim.fn.expand("%:t:r")
-            end,
-            file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
-            extension = "png",
-        }
+      default = {
+        dir_path = function()
+          return  "assets/images/" .. vim.fn.expand("%:t:r")
+        end,
+        file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
+        extension = "png",
+      }
     },
     keys = {
-        -- suggested keymap
-        { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+      -- suggested keymap
+      { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
     },
 },
 
