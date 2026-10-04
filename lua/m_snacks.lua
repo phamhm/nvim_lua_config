@@ -47,7 +47,7 @@ return {
             row = vim.o.lines - 5,
             col = 0,
             width = 0.8,
-            height = 0.3,
+            height = 0.5,
             border = "rounded",
             title = " {title} {live} {flags}",
             align = "left",
@@ -78,13 +78,26 @@ return {
     },
 
     dashboard = {
-        sections = {
-            { section = "header" },
-            { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-            { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-            { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-            { section = "startup" },
-        },
+      preset = {
+        keys = {
+          { icon = "W ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
+          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
+          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
+          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
+          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        }
+      },
+      sections = {
+        { section = "header" },
+        { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 3, padding = 1 },
+        { icon = " ", title = "Projects", section = "projects", indent = 3, padding = 1 },
+        { section = "startup" },
+      },
     }
   },
   keys = {

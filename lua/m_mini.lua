@@ -73,7 +73,10 @@ return {
         },
       })
 
+
+      -- start minipick config & setup
       -- require('mini.pick').setup()
+      -- require('mini.pick').setup({})
     end,
   },
 }
