@@ -40,7 +40,7 @@ return {
         layout = {
           -- options include default, ivy, dropdown, vertical, sidebar, telescope
           preset = "ivy",
-          preview = false,
+          preview = true,
           layout = {
             box = "vertical",
             backdrop = false,
