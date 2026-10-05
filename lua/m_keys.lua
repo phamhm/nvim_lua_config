@@ -30,8 +30,8 @@ vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gz
 
 --vim.keymap.set("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --vim.keymap.set("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
-vim.keymap.set('n', '<leader>L', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
-vim.keymap.set('n', '<leader>H', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
+vim.keymap.set('n', '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
+vim.keymap.set('n', '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
 vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
 
@@ -39,59 +39,18 @@ vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-vim.keymap.set('n', '<M-j>', ':m .+1<CR>==', { silent = true })
-vim.keymap.set('n', '<M-k>', ':m .-2<CR>==', { silent = true })
-
--- Insert mode
-vim.keymap.set('i', '<M-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
-vim.keymap.set('i', '<M-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
-
--- Visual mode
-vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { silent = true })
-vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
-
+local move_line_down = "<C-M-j>"
+local move_line_up = "<C-M-k>"
+vim.keymap.set('n', move_line_down, ':m .+1<CR>==', { silent = true })
+vim.keymap.set('i', move_line_down, '<Esc>:m .+1<CR>==gi', { silent = true })
+vim.keymap.set('v', move_line_down, ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set('n', move_line_up, ':m .-2<CR>==', { silent = true })
+vim.keymap.set('i', move_line_up, '<Esc>:m .-2<CR>==gi', { silent = true })
+vim.keymap.set('v', move_line_up, ":m '<-2<CR>gv=gv", { silent = true })
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
-vim.keymap.set("n", "<leader>hl", function()
-    local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
-    local lines = vim.fn.readfile(file_path)
-    print(table.concat(lines, '\n'))
-end, {})
-
-vim.keymap.set("n", "<leader>fx", function()
-    local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
-    vim.cmd("edit ".. file_path)
-end, {})
-
 vim.keymap.set("n", "<leader>hw", ":term curl 'wttr.in' <CR>", {silent = true})
-
-vim.keymap.set('n', '<leader>t', function()
-  -- Check if a terminal buffer already exists
-  local term_buf = nil
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.bo[buf].buftype == "terminal" then
-      term_buf = buf
-      break
-    end
-  end
-
-  if term_buf then
-    -- If it exists, check if it's visible in any window
-    local term_win = vim.fn.bufwinid(term_buf)
-    if term_win ~= -1 then
-      -- Switch focus to that window
-      vim.api.nvim_set_current_win(term_win)
-    else
-      -- If it's hidden, switch the current buffer to it
-      vim.api.nvim_set_current_buf(term_buf)
-    end
-  else
-    -- If no terminal buffer exists, open a new one
-    vim.cmd("terminal")
-  end
-end, { desc = "Toggle/Switch to Terminal" })
-
 
 -- shortcut to google
 local google_shortcut ="<leader>gg"
@@ -132,3 +91,6 @@ vim.keymap.set('n', '<leader>ec', function()
   require('mini.files').open(vim.api.nvim_buf_get_name(0), true)
 end, { desc = 'Open mini.files (Current File)' })
 
+
+vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
+vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})

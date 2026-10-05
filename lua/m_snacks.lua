@@ -5,7 +5,6 @@ return {
   ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
-    explorer = { enabled = true },
     indent = {
         enabled = true,
         indent = { only_scope = true },
@@ -13,15 +12,34 @@ return {
         animate = { enabled = false}
     },
     input = { enabled = true , },
+    terminal = {
+      win = {
+        title = "terminal",
+        title_post = "left",
+        border = "rounded",
+        position = "float"
+      }
+    },
     notifier = {
       enabled = true,
-      timeout = 2000,
+      timeout = 5000,
     },
     picker = {
         enabled = false ,
         sources = {
+          explorer = {
+            auto_close = false,
+            layout = {
+              layout = {
+                border="none",
+                position="left",
+                width=0.15
+              }
+            }
+          },
           files = {
-            excludes = {
+            exclude = {
+              ".git",
               "node_modules",
               ".env",
               "target",
@@ -34,6 +52,7 @@ return {
           input = {
             keys = {
               ["<C-p>"] = { "toggle_preview", mode = { "i", "n" } },
+              ["<C-n>"] = { "toggle_preview", mode = { "i", "n" } },
             }
           }
         },
@@ -174,6 +193,13 @@ return {
     { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
     { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
     { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
+    { "<leader>mp", function()
+      vim.ui.input({prompt = "Man page"}, function(word)
+        if word == "" then return end
+        Snacks.terminal.open("man "..word)
+      end)
+    end, desc = "Colorschemes" },
+
     -- LSP
     { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
     { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
@@ -206,7 +232,7 @@ return {
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
-    { "<c-/>",      function() Snacks.terminal() end, desc = "Toggle Terminal" },
+    { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "<c-_>",      function() Snacks.terminal() end, desc = "which_key_ignore" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
@@ -266,5 +292,74 @@ return {
         Snacks.toggle.dim():map("<leader>uD")
       end,
     })
+
+
+    local function open_markdown_links_picker()
+      -- 1. Define the path to your file
+      local file_path = vim.fn.expand("~/Documents/vimwiki/bookmarks.md") -- Change this to your file path
+
+      -- 2. Read lines from the file
+      local lines = vim.fn.readfile(file_path)
+      local items = {}
+
+      -- 3. Parse each line for the [title](link) format
+      for _, line in ipairs(lines) do
+        local title, link = line:match("%[(.-)%]%((.-)%)")
+        if title and link then
+          table.insert(items, {
+            text = title,    -- What shows up and is searchable in the picker
+            link = link,     -- Store the URL to use on confirmation
+          })
+        end
+      end
+
+      -- 4. Open the Snacks picker if we found any links
+      if #items == 0 then
+        vim.notify("No valid Markdown links found in the file", vim.log.levels.WARN)
+        return
+      end
+
+      Snacks.picker.pick({
+        source = "markdown_links",
+        items = items,
+        title = "Select Link to Open",
+        format = "text", -- Display only the title in the list
+        layout = {
+          preview = false,
+          layout = {
+            width = 0.3,
+            height = 0.3,
+          }
+        },
+        confirm = function(picker, item)
+          picker:close()
+          if item and item.link then
+            -- 5. Open the link using your system's default handler
+            local cmd
+            if item.link:match("http://") or item.link:match("https://") then
+              cmd = {"google-chrome", item.link}
+            elseif  item.link:match(".zsh") then
+              cmd = {"$(which zsh)", item.link}
+            elseif item.link == "edit" then
+              vim.cmd.edit(file_path)
+              return
+            else
+              vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
+            end
+            vim.system(cmd, { detach = true}, function(err, _)
+              if err and err.code ~= 0 then
+                vim.schedule(function()
+                  vim.notify("Failed to run:" .. vim.inspect(err), vim.log.levels.ERROR)
+                end)
+              end
+            end)
+          end
+        end,
+      })
+    end
+
+    -- 6. Create a user command or keymap to run it
+    vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
+    vim.keymap.set("n", "<leader>bm", open_markdown_links_picker, { desc = "Open Link Picker" })
   end,
 }

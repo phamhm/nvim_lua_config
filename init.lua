@@ -134,10 +134,10 @@ vim.opt.termguicolors = true
 
 -- setup must be called before loading
 vim.opt.background = "dark" -- set this to dark or light
-vim.cmd.colorscheme "catppuccin-mocha"
+vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
-    virtual_text = false,
+    virtual_text = true,
     signs = true,
     update_in_insert = false,
     underline = false,
