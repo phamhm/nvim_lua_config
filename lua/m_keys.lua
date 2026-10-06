@@ -15,10 +15,10 @@ vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")
 -- vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 --
 
-vim.keymap.set('n', '<C-h>', "<C-w>h",{})
-vim.keymap.set('n', '<C-j>', "<C-w>j",{})
-vim.keymap.set('n', '<C-k>', "<C-w>k",{})
-vim.keymap.set('n', '<C-l>', "<C-w>l",{})
+-- vim.keymap.set('n', '<C-h>', "<C-w>h",{})
+-- vim.keymap.set('n', '<C-j>', "<C-w>j",{})
+-- vim.keymap.set('n', '<C-k>', "<C-w>k",{})
+-- vim.keymap.set('n', '<C-l>', "<C-w>l",{})
 
 vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
 
@@ -32,7 +32,7 @@ vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gz
 vim.keymap.set('n', '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
 vim.keymap.set('n', '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
-vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
+-- vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
 
 vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
