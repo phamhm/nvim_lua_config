@@ -11,7 +11,13 @@ return {
         chunk = { enabled = true },
         animate = { enabled = false}
     },
-    input = { enabled = true , },
+    input = {
+      enabled = true ,
+      win = {
+        relative = "editor",
+        row = vim.o.lines,
+      }
+    },
     terminal = {
       win = {
         title = "terminal",
@@ -25,7 +31,7 @@ return {
       timeout = 5000,
     },
     picker = {
-        enabled = false ,
+        enabled = true ,
         sources = {
           explorer = {
             auto_close = false,
@@ -59,13 +65,13 @@ return {
         layout = {
           -- options include default, ivy, dropdown, vertical, sidebar, telescope
           preset = "ivy",
-          preview = true,
+          preview = false,
           layout = {
             box = "vertical",
             backdrop = false,
             row = vim.o.lines - 5,
             col = 0,
-            width = 0.8,
+            width = 0.5,
             height = 0.5,
             border = "rounded",
             title = " {title} {live} {flags}",
@@ -126,7 +132,7 @@ return {
     { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<leader>ee", function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     -- make sure that explorer isn't called because using mini.files
     { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
     -- find
@@ -327,7 +333,7 @@ return {
         layout = {
           preview = false,
           layout = {
-            width = 0.3,
+            width = 0.2,
             height = 0.3,
           }
         },
@@ -359,7 +365,7 @@ return {
     end
 
     -- 6. Create a user command or keymap to run it
-    vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
-    vim.keymap.set("n", "<leader>bm", open_markdown_links_picker, { desc = "Open Link Picker" })
+    -- vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
+    vim.keymap.set("n", "<leader>bm", function() open_markdown_links_picker() end, { desc = "Open Link Picker" })
   end,
 }

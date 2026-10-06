@@ -13,7 +13,7 @@ vim.keymap.set({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
 vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
-vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
+-- vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 --
 
 vim.keymap.set('n', '<C-h>', "<C-w>h",{})
@@ -48,6 +48,9 @@ vim.keymap.set('n', move_line_up, ':m .-2<CR>==', { silent = true })
 vim.keymap.set('i', move_line_up, '<Esc>:m .-2<CR>==gi', { silent = true })
 vim.keymap.set('v', move_line_up, ":m '<-2<CR>gv=gv", { silent = true })
 
+vim.keymap.set("v", "<leader>td", ":'<,'>m ?TODO? <CR>")
+vim.keymap.set("n", "<leader>td", ":m ?TODO? <CR>")
+
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
 vim.keymap.set("n", "<leader>hw", ":term curl 'wttr.in' <CR>", {silent = true})
@@ -80,6 +83,18 @@ vim.keymap.set("v", google_shortcut, function()
    google_search)
 end, opt)
 -- end googling, }
+
+-- capture
+
+vim.keymap.set('n', '<leader>gc', function()
+  vim.ui.input({ prompt = 'Text to append: ' }, function(input)
+    if input and input ~= '' then
+      vim.fn.writefile({ "- " .. input }, vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"), "a")
+    end
+  end)
+end, { desc = 'Ask for text and append to end of file' })
+
+-- end capture
 
 -- Open mini.files at the current working directory (CWD)
 vim.keymap.set('n', '<leader>er', function()

@@ -34,31 +34,21 @@ return {
           active = function()
             local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
             local git           = MiniStatusline.section_git({ trunc_width = 40 })
-            local diff          = MiniStatusline.section_diff({ trunc_width = 75 })
+            -- local diff          = MiniStatusline.section_diff({ trunc_width = 75 })
             local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
             local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
             local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
             -- local location      = MiniStatusline.section_location({ trunc_width = 75 })
-            local search        = MiniStatusline.section_searchcount({ trunc_width = 75 })
-            local filename      = MiniStatusline.section_filename({ trunc_width = 20 })
-
-            -- Split the path into segments
-            local segments = vim.split(filename, '/')
-
-            -- If the path has more than 3 levels, grab only the last 3
-            if #segments > 2 then
-              segments = vim.list_slice(segments, #segments - 2, #segments)
-              filename=table.concat(segments, '/')
-            end
-
+            -- local search        = MiniStatusline.section_searchcount({ trunc_width = 75 })
+            -- local filename      = MiniStatusline.section_filename({ trunc_width = 20 })
+            -- local filename      =  MiniStatusline.section_filename({trunc_width = 10 })
 
             return MiniStatusline.combine_groups({
               { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-              -- { hl = 'MiniStatuslineDevinfo',  strings = { git, lsp } },
               '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = { filename } },
+              { hl = 'MiniStatuslineFilename', strings = { "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
               '%=', -- End left alignment
-              { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+              { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics," ", fileinfo } },
               -- { hl = mode_hl,                  strings = { git, diff,lsp,  dianostics } },
             })
           end
