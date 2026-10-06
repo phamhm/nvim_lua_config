@@ -23,17 +23,16 @@ vim.keymap.set('n', '<C-l>', "<C-w>l",{})
 
 vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
 
+vim.keymap.set('n', '<leader>c<space>', 'gcc', { remap = true, silent = true, desc = 'Toggle comment' })
+vim.keymap.set('v', '<leader>c<space>', 'gc', { remap = true, silent = true, desc = 'Toggle comment' })
+
 -- end key maps
 --
 
-vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gzt", { noremap = true, silent = true, desc = "Open init.lua" })
-
 --vim.keymap.set("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --vim.keymap.set("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
-vim.keymap.set('n', '<leader>L', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
-vim.keymap.set('n', '<leader>H', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
-
-vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
+vim.keymap.set('n', '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
+vim.keymap.set('n', '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
 vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
@@ -52,17 +51,6 @@ vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
-
-vim.keymap.set("n", "<leader>hl", function()
-    local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
-    local lines = vim.fn.readfile(file_path)
-    print(table.concat(lines, '\n'))
-end, {})
-
-vim.keymap.set("n", "<leader>fx", function()
-    local file_path = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md")
-    vim.cmd("edit ".. file_path)
-end, {})
 
 vim.keymap.set("n", "<leader>hw", ":term curl 'wttr.in' <CR>", {silent = true})
 
@@ -132,3 +120,70 @@ vim.keymap.set('n', '<leader>ec', function()
   require('mini.files').open(vim.api.nvim_buf_get_name(0), true)
 end, { desc = 'Open mini.files (Current File)' })
 
+local function open_link_picker(filepath)
+  local expanded_path = vim.fn.expand(filepath)
+
+  -- Ensure the file is readable
+  if vim.fn.filereadable(expanded_path) == 0 then
+    vim.notify("File not found or unreadable: " .. filepath, vim.log.levels.ERROR)
+    return
+  end
+
+  local items = {}
+
+  -- Read the file line-by-line
+  for line in io.lines(expanded_path) do
+    -- Lua pattern matching for: [title](link)
+    local title, link = line:match("^%[(.-)%]%((.-)%)")
+    if title and link then
+      table.insert(items, {
+        text = title, -- Field used by snacks for filtering/searching
+        link = link,  -- Custom field to store the URI
+      })
+    end
+  end
+
+  -- Launch the Snacks Picker
+  Snacks.picker({
+    title = "Bookmarks",
+    items = items,
+    layout = { preview = false},
+    format = function(item, _)
+      return {
+        { item.text, "SnackPickerLabel"}
+      }
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      if item and item.link then
+        if item.link:match(".applescript") then
+          -- Run the link as a system script/command
+          cmd = {"/usr/bin/osascript", item.link}
+        elseif item.link:match(".zsh") then
+          -- Run the link as a system script/command
+          cmd = {"/bin/zsh", item.link}
+        else
+          cmd = { "open", item.link} -- 'open' is a osx  command
+        end
+        vim.system(cmd, {detach = true}, function(err, data)
+          if err and err.code ~=0 then
+            vim.schedule(function()
+              vim.notify("Failed to open:" .. vim.inspect(err), vim.log.levels.ERROR)
+            end)
+          end
+        end)
+
+      end
+    end,
+  })
+end
+
+-- Example Keymap (Adjust the path to your actual file)
+vim.keymap.set("n", "<leader>bm", function()
+  open_link_picker("~/Documents/vimwiki/bookmarks.md")
+end, { desc = "Search Bookmarks File" })
+
+dofile(vim.fn.expand("~/Workspace/poweroninstall/nvim/poweron_upload.lua"))
+
+
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })

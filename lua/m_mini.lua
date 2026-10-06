@@ -6,7 +6,17 @@ return {
       -- Initialize mini.ai
       require('mini.ai').setup()
 
-      require('mini.surround').setup()
+      require('mini.surround').setup({
+          mappings = {
+            add = 'Sa',
+            delete = 'Sd',
+            find = 'Sf',
+            find_left = 'SF',
+            highlight = 'Sh',
+            replace = 'Sr',
+            update_n_lines = 'Sn',
+          },
+        })
 
       require('mini.align').setup()
 
@@ -29,17 +39,7 @@ return {
             local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
             -- local location      = MiniStatusline.section_location({ trunc_width = 75 })
             local search        = MiniStatusline.section_searchcount({ trunc_width = 75 })
-            local filename      = MiniStatusline.section_filename({ trunc_width = 20 })
-
-            -- Split the path into segments
-            local segments = vim.split(filename, '/')
-
-            -- If the path has more than 3 levels, grab only the last 3
-            if #segments > 2 then
-              segments = vim.list_slice(segments, #segments - 2, #segments)
-              filename=table.concat(segments, '/')
-            end
-
+            local filename      = MiniStatusline.section_filename({ trunc_width = 10 })
 
             return MiniStatusline.combine_groups({
               { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },

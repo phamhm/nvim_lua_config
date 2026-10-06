@@ -17,11 +17,21 @@ return {
       enabled = true,
       timeout = 2000,
     },
+    terminal = {
+      win = {
+        title="terminal",
+        title_pos = "left",
+        position = "float",
+        border = "rounded",
+        width = 0.8,
+        height = 0.8,
+      }
+    },
     picker = {
         enabled = false ,
         sources = {
           files = {
-            excludes = {
+            exclude = {
               "node_modules",
               ".env",
               "target",
@@ -47,7 +57,7 @@ return {
             row = vim.o.lines - 5,
             col = 0,
             width = 0.8,
-            height = 0.3,
+            height = 0.5,
             border = "rounded",
             title = " {title} {live} {flags}",
             align = "left",
@@ -78,13 +88,35 @@ return {
     },
 
     dashboard = {
-        sections = {
-            { section = "header" },
-            { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-            { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-            { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-            { section = "startup" },
+      preset={
+        keys = {
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
+          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
+          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
+          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({ cwd = vim.fn.stdpath('config') })" },
+          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         },
+
+        header = [[
+    ███╗   ██╗██╗   ██╗██╗███╗   ███╗
+    ████╗  ██║██║   ██║██║████╗ ████║
+    ██╔██╗ ██║██║   ██║██║██╔████╔██║
+    ██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║
+    ██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║
+    ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝]],
+
+
+      },
+      sections = {
+        { section = "header" },
+        { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+        { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+        { section = "startup" },
+      },
     }
   },
   keys = {
@@ -99,12 +131,13 @@ return {
     { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
     -- find
     { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
     { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/vimwiki")}) end, desc = "Find Config File" },
-    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Config File" },
+    { "<leader>fp", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Workspace/poweroninstall/repwriterspecs/")}) end, desc = "Find Config File" },
     { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
-    { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
     { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent" },
+    { "<leader>fR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     -- git
     { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
     { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
@@ -155,12 +188,21 @@ return {
     { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
     { "<leader>sl", function() Snacks.picker.loclist() end, desc = "Location List" },
     { "<leader>sm", function() Snacks.picker.marks() end, desc = "Marks" },
-    { "<leader>sM", function() Snacks.picker.man() end, desc = "Man Pages" },
+    -- { "<leader>sM", function() Snacks.picker.man() end, desc = "Man Pages" },
     { "<leader>sp", function() Snacks.picker.lazy() end, desc = "Search for Plugin Spec" },
     { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
     { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
     { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
     { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
+    { "<leader>mp", function()
+      -- Prompt the user for the command/man page they want to look up
+      vim.ui.input({prompt = "Man page for: "}, function(word)
+        if word == "" then return end
+
+        -- Open the man page in a floating terminal window
+        Snacks.terminal.open("man " .. word)
+      end)
+    end, desc = "man page in floating windows" },
     -- LSP
     { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
     { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
@@ -189,14 +231,12 @@ return {
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-    { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
-    { "<c-/>",      function() Snacks.terminal() end, desc = "Toggle Terminal" },
-    { "<c-_>",      function() Snacks.terminal() end, desc = "which_key_ignore" },
-    { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
-    { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+    { "<C-/>", function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
+    { "g]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
+    { "g[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   },
   init = function()
       vim.api.nvim_create_autocmd("FileType", {

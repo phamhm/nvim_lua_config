@@ -17,6 +17,7 @@ return {
           "basedpyright", -- Python LSP
           "ts_ls",        -- JavaScript/TypeScript LSP
           "lua_ls", -- Lua/Neovim
+          "ltex", -- markdown
         },
       })
 
@@ -50,7 +51,7 @@ return {
       })
 
       -- 5. Native Neovim 0.11+ LSP initialization (Zero lspconfig requires!)
-      local servers = { "basedpyright", "ts_ls" }
+      local servers = { "basedpyright", "ts_ls", "lua_ls", "ltex"}
 
       for _, server in ipairs(servers) do
         -- Modifies server config with your client capabilities
