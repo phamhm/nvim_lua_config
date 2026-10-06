@@ -2,21 +2,26 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate", -- Automatically updates parsers when the plugin updates
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     config = function()
       local configs = require("nvim-treesitter")
 
       configs.setup({
         -- A list of parser names, or "all" to install everything
-        ensure_installed = { "lua",
-        "vim",
-        "vimdoc",
-        "query",
-        "javascript",
-        "typescript",
-        "c",
-        "rust",
-        "markdown",
-        "markdown_inline"
+        ensure_installed = {
+          "lua",
+          "vim",
+          "vimdoc",
+          "query",
+          "javascript",
+          "typescript",
+          "c",
+          "rust",
+          "markdown",
+          "markdown_inline",
+          "python",
       },
 
 

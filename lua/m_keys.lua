@@ -15,10 +15,10 @@ vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")
 vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 --
 
-vim.keymap.set('n', '<C-h>', "<C-w>h",{})
-vim.keymap.set('n', '<C-j>', "<C-w>j",{})
-vim.keymap.set('n', '<C-k>', "<C-w>k",{})
-vim.keymap.set('n', '<C-l>', "<C-w>l",{})
+-- vim.keymap.set('n', '<C-h>', "<C-w>h",{})
+-- vim.keymap.set('n', '<C-j>', "<C-w>j",{})
+-- vim.keymap.set('n', '<C-k>', "<C-w>k",{})
+-- vim.keymap.set('n', '<C-l>', "<C-w>l",{})
 
 vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
 
@@ -42,8 +42,12 @@ vim.keymap.set('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent =
 vim.keymap.set('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
 vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
-vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { silent = true })
-vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { silent = true })
+vim.keymap.set("v", "<leader>td", ":'<,'>m ?# Capture?-2 <CR>")
+vim.keymap.set("n", "<leader>td", ":m ?# Capture?-2 <CR>")
+
+vim.keymap.set("v", "<leader>tc", ":'<,'>m $ <CR>")
+vim.keymap.set("n", "<leader>tc", ":m $ <CR>")
+
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 

@@ -15,15 +15,17 @@ return {
       enabled = true ,
       win = {
         relative = "editor",
-        row = vim.o.lines,
+        -- row = vim.o.lines,
+        -- col = 0
+        row = 0
       }
     },
     terminal = {
       win = {
-        title="terminal",
-        title_pos = "left",
+        title = "terminal",
+        title_post = "left",
         border = "rounded",
-        height = 0.8,
+        position = "float"
       }
     },
     notifier = {
@@ -71,7 +73,7 @@ return {
             backdrop = false,
             row = vim.o.lines - 5,
             col = 0,
-            width = 0.8,
+            width = 0.5,
             height = 0.5,
             border = "rounded",
             title = " {title} {live} {flags}",
@@ -140,9 +142,9 @@ return {
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-D-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     -- make sure that explorer isn't called because using mini.files
-    { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
+    { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
     -- find
     -- { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
@@ -170,6 +172,7 @@ return {
     { "<leader>sb", function() Snacks.picker.grep() end, desc = "Buffer Lines" },
     { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Open Buffers" },
     { "<leader>sv", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
+    { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd() }) end, desc = "Grep in current file's directory" },
     -- search
     { '<C-r>', function()
           -- Call snacks picker for registers and handle the selection confirmation
@@ -211,7 +214,7 @@ return {
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end
-        Snacks.terminal.open("man " .. word)
+        Snacks.terminal.open("man "..word)
       end)
     end, desc = "man page in floating windows" },
     -- LSP
@@ -241,7 +244,7 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
     { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },

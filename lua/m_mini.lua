@@ -4,7 +4,43 @@ return {
     version = false,
     config = function()
       -- Initialize mini.ai
-      require('mini.ai').setup()
+
+      local ai = require('mini.ai')
+      require('mini.ai').setup({
+        n_lines = 500, -- Number of lines to search for textobjects
+        custom_textobjects = {
+          -- Function definition
+          f = ai.gen_spec.treesitter({
+            a = '@function.outer',
+            i = '@function.inner',
+          }),
+
+          -- Class/Struct definition
+          c = ai.gen_spec.treesitter({
+            a = '@class.outer',
+            i = '@class.inner',
+          }),
+
+          -- Code block, loop, or conditional statement
+          o = ai.gen_spec.treesitter({
+            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
+            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+          }),
+
+          -- Function/Method call
+          C = ai.gen_spec.treesitter({
+            a = '@call.outer',
+            i = '@call.inner',
+          }),
+
+          -- Function parameters / arguments
+          -- Note: 'a' overrides mini.ai's builtin argument finder with Tree-sitter's
+          a = ai.gen_spec.treesitter({
+            a = '@parameter.outer',
+            i = '@parameter.inner',
+          }),
+        },
+      })
 
       require('mini.surround').setup({
           mappings = {
