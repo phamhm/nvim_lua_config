@@ -101,7 +101,6 @@ end,
 },
 
 {'williamboman/mason.nvim'},
-
 {'easymotion/vim-easymotion'},
 {'nvim-tree/nvim-web-devicons'},
 { "preservim/vim-lexical" },
@@ -156,4 +155,3 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     vim.fn.setpos('.', save_cursor)
   end,
 })
-
