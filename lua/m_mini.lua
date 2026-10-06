@@ -28,6 +28,10 @@ return {
       require('mini.diff').setup()
 
       require('mini.files').setup()
+      -- Open mini.files at the current working directory (CWD)
+      vim.keymap.set('n', '<C-e>', function()
+        require('mini.files').open()
+      end, { desc = 'Open mini.files (Root)' })
 
       require('mini.statusline').setup({
         content = {
