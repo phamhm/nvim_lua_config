@@ -46,8 +46,8 @@ vim.keymap.set('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent =
 vim.keymap.set('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
 vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
-vim.keymap.set("v", "<leader>td", ":'<,'>m ?TODO? <CR>")
-vim.keymap.set("n", "<leader>td", ":m ?TODO? <CR>")
+vim.keymap.set("v", "<leader>td", ":'<,'>m ?=Capture=?-2 <CR>")
+vim.keymap.set("n", "<leader>td", ":m ?=Capture=?-2 <CR>")
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
