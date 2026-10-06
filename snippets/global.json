@@ -1,0 +1,10 @@
+{
+  "Todo Comment": {
+    "prefix": "todo",
+    "body": "TODO(${1:author}): $0"
+  },
+  "Console Log": {
+    "prefix": "clog",
+    "body": "console.log('$1: ', $1);"
+  }
+}

@@ -5,33 +5,47 @@ return {
   ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
-    explorer = { enabled = true },
     indent = {
         enabled = true,
         indent = { only_scope = true },
         chunk = { enabled = true },
         animate = { enabled = false}
     },
-    input = { enabled = true , },
-    notifier = {
-      enabled = true,
-      timeout = 2000,
+    input = {
+      enabled = true ,
+      win = {
+        relative = "editor",
+        row = vim.o.lines,
+      }
     },
     terminal = {
       win = {
         title="terminal",
         title_pos = "left",
-        position = "float",
         border = "rounded",
-        width = 0.8,
         height = 0.8,
       }
+    },
+    notifier = {
+      enabled = true,
+      timeout = 5000,
     },
     picker = {
         enabled = false ,
         sources = {
+          explorer = {
+            auto_close = false,
+            layout = {
+              layout = {
+                border="none",
+                position="left",
+                width=0.15
+              }
+            }
+          },
           files = {
             exclude = {
+              ".git",
               "node_modules",
               ".env",
               "target",
@@ -44,13 +58,14 @@ return {
           input = {
             keys = {
               ["<C-p>"] = { "toggle_preview", mode = { "i", "n" } },
+              ["<C-n>"] = { "toggle_preview", mode = { "i", "n" } },
             }
           }
         },
         layout = {
           -- options include default, ivy, dropdown, vertical, sidebar, telescope
           preset = "ivy",
-          preview = true,
+          preview = false,
           layout = {
             box = "vertical",
             backdrop = false,
@@ -90,7 +105,8 @@ return {
     dashboard = {
       preset={
         keys = {
-          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
+          { icon = "W ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
@@ -121,23 +137,21 @@ return {
   },
   keys = {
     -- Top Pickers & Explorer
-    { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
-    { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<leader>ee", function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     -- make sure that explorer isn't called because using mini.files
     { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
     -- find
-    { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
-    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
+    -- { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
     { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/vimwiki")}) end, desc = "Find Config File" },
-    { "<leader>fp", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Workspace/poweroninstall/repwriterspecs/")}) end, desc = "Find Config File" },
+    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Config File" },
+    { "<leader>fs", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
+    { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
     { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent" },
-    { "<leader>fR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     -- git
     { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
     { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
@@ -152,10 +166,10 @@ return {
     { "<leader>gp", function() Snacks.picker.gh_pr() end, desc = "GitHub Pull Requests (open)" },
     { "<leader>gP", function() Snacks.picker.gh_pr({ state = "all" }) end, desc = "GitHub Pull Requests (all)" },
     -- Grep
-    { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
+    { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
+    { "<leader>sb", function() Snacks.picker.grep() end, desc = "Buffer Lines" },
     { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Open Buffers" },
-    { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
-    { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
+    { "<leader>sv", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
     -- search
     { '<C-r>', function()
           -- Call snacks picker for registers and handle the selection confirmation
@@ -188,18 +202,15 @@ return {
     { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
     { "<leader>sl", function() Snacks.picker.loclist() end, desc = "Location List" },
     { "<leader>sm", function() Snacks.picker.marks() end, desc = "Marks" },
-    -- { "<leader>sM", function() Snacks.picker.man() end, desc = "Man Pages" },
+    { "<leader>sM", function() Snacks.picker.man() end, desc = "Man Pages" },
     { "<leader>sp", function() Snacks.picker.lazy() end, desc = "Search for Plugin Spec" },
     { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
     { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
     { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
     { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
     { "<leader>mp", function()
-      -- Prompt the user for the command/man page they want to look up
-      vim.ui.input({prompt = "Man page for: "}, function(word)
+      vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end
-
-        -- Open the man page in a floating terminal window
         Snacks.terminal.open("man " .. word)
       end)
     end, desc = "man page in floating windows" },
@@ -231,12 +242,13 @@ return {
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     { "<C-/>", function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
-    { "g]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
-    { "g[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+    { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
+    { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   },
   init = function()
       vim.api.nvim_create_autocmd("FileType", {
@@ -293,5 +305,69 @@ return {
         Snacks.toggle.dim():map("<leader>uD")
       end,
     })
+
+
+    local function open_link_picker(filepath)
+      local expanded_path = vim.fn.expand(filepath)
+
+      -- Ensure the file is readable
+      if vim.fn.filereadable(expanded_path) == 0 then
+        vim.notify("File not found or unreadable: " .. filepath, vim.log.levels.ERROR)
+        return
+      end
+
+      local items = {}
+
+      -- Read the file line-by-line
+      for line in io.lines(expanded_path) do
+        -- Lua pattern matching for: [title](link)
+        local title, link = line:match("^%[(.-)%]%((.-)%)")
+        if title and link then
+          table.insert(items, {
+            text = title, -- Field used by snacks for filtering/searching
+            link = link,  -- Custom field to store the URI
+          })
+        end
+      end
+
+      -- Launch the Snacks Picker
+      Snacks.picker({
+        title = "Bookmarks",
+        items = items,
+        layout = { preview = false},
+        format = function(item, _)
+          return {
+            { item.text, "SnackPickerLabel"}
+          }
+        end,
+        confirm = function(picker, item)
+          picker:close()
+          if item and item.link then
+            if item.link:match(".applescript") then
+              -- Run the link as a system script/command
+              cmd = {"/usr/bin/osascript", item.link}
+            elseif item.link:match(".zsh") then
+              -- Run the link as a system script/command
+              cmd = {"/bin/zsh", item.link}
+            else
+              cmd = { "open", item.link} -- 'open' is a osx  command
+            end
+            vim.system(cmd, {detach = true}, function(err, data)
+              if err and err.code ~=0 then
+                vim.schedule(function()
+                  vim.notify("Failed to open:" .. vim.inspect(err), vim.log.levels.ERROR)
+                end)
+              end
+            end)
+
+          end
+        end,
+      })
+    end
+
+    -- Example Keymap (Adjust the path to your actual file)
+    vim.keymap.set("n", "<leader>bm", function()
+      open_link_picker("~/Documents/vimwiki/bookmarks.md")
+    end, { desc = "Search Bookmarks File" })
   end,
 }
