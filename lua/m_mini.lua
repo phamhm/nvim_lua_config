@@ -53,7 +53,7 @@ return {
               { hl = 'MiniStatuslineFilename', strings = { "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
               '%=', -- End left alignment
               { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics," ", fileinfo } },
-              -- { hl = mode_hl,                  strings = { git, diff,lsp,  dianostics } },
+              -- { hl = 'MiniStatuslineModeNormal',                  strings = { os.date("%H:%M")  } },
             })
           end
         }
