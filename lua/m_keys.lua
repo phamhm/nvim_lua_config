@@ -39,14 +39,13 @@ vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-local move_line_down = "<C-M-j>"
-local move_line_up = "<C-M-k>"
-vim.keymap.set('n', move_line_down, ':m .+1<CR>==', { silent = true })
-vim.keymap.set('i', move_line_down, '<Esc>:m .+1<CR>==gi', { silent = true })
-vim.keymap.set('v', move_line_down, ":m '>+1<CR>gv=gv", { silent = true })
-vim.keymap.set('n', move_line_up, ':m .-2<CR>==', { silent = true })
-vim.keymap.set('i', move_line_up, '<Esc>:m .-2<CR>==gi', { silent = true })
-vim.keymap.set('v', move_line_up, ":m '<-2<CR>gv=gv", { silent = true })
+local move_line_prefix = "C-M"
+vim.keymap.set('n', '<' .. move_line_prefix .. '-j>', ':m .+1<CR>==', { silent = true })
+vim.keymap.set('i', '<' .. move_line_prefix .. '-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
+vim.keymap.set('v', '<' .. move_line_prefix .. '-j>', ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent = true })
+vim.keymap.set('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
+vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
 vim.keymap.set("v", "<leader>td", ":'<,'>m ?TODO? <CR>")
 vim.keymap.set("n", "<leader>td", ":m ?TODO? <CR>")
@@ -95,7 +94,6 @@ vim.keymap.set('n', '<leader>gc', function()
 end, { desc = 'Ask for text and append to end of file' })
 
 -- end capture
-
 
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
