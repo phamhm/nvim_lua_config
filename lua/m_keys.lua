@@ -1,4 +1,3 @@
-vim.keymap.set('n', '<leader>q', ":bd<CR>", {})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
 vim.keymap.set('n', 'k', "gk", {silent=true})
