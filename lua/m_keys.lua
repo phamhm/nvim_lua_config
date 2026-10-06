@@ -97,15 +97,9 @@ end, { desc = 'Ask for text and append to end of file' })
 -- end capture
 
 -- Open mini.files at the current working directory (CWD)
-vim.keymap.set('n', '<leader>er', function()
-  require('mini.files').open(vim.uv.cwd(), true)
+vim.keymap.set('n', '<C-e>', function()
+  require('mini.files').open()
 end, { desc = 'Open mini.files (Root)' })
-
--- Open mini.files targeting the directory of the active buffer
-vim.keymap.set('n', '<leader>ec', function()
-  require('mini.files').open(vim.api.nvim_buf_get_name(0), true)
-end, { desc = 'Open mini.files (Current File)' })
-
 
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
