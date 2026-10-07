@@ -1,3 +1,4 @@
+vim.keymap.set('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
 vim.keymap.set('n', 'k', "gk", {silent=true})
@@ -34,7 +35,7 @@ vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-local move_line_prefix = "C-M"
+local move_line_prefix = "C-D"
 vim.keymap.set('n', '<' .. move_line_prefix .. '-j>', ':m .+1<CR>==', { silent = true })
 vim.keymap.set('i', '<' .. move_line_prefix .. '-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
 vim.keymap.set('v', '<' .. move_line_prefix .. '-j>', ":m '>+1<CR>gv=gv", { silent = true })
@@ -45,8 +46,8 @@ vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { sile
 vim.keymap.set("v", "<leader>td", ":'<,'>m ?# Capture?-2 <CR>")
 vim.keymap.set("n", "<leader>td", ":m ?# Capture?-2 <CR>")
 
-vim.keymap.set("v", "<leader>tc", ":'<,'>m $ <CR>")
-vim.keymap.set("n", "<leader>tc", ":m $ <CR>")
+vim.keymap.set("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
+vim.keymap.set("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})

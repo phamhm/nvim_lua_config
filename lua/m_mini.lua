@@ -15,6 +15,11 @@ return {
             i = '@function.inner',
           }),
 
+          F = ai.gen_spec.treesitter({
+            a = '@call.outer',
+            i = '@call.inner'
+          }),
+
           -- Class/Struct definition
           c = ai.gen_spec.treesitter({
             a = '@class.outer',
@@ -101,6 +106,13 @@ return {
         snippets = {
           gen_loader.from_file('~/.config/nvim/snippets/global.json'),
           gen_loader.from_lang(),
+        },
+        mappings = {
+          -- Expand snippet at cursor position. Created globally in Insert mode.
+          expand = '<C-.>',
+          jump_next = '<C-n>',
+          jump_prev = '<C-p>',
+          stop = '<C-c>',
         },
       })
     end,

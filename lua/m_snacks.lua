@@ -1,4 +1,4 @@
-return {
+  return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
@@ -16,8 +16,8 @@ return {
       win = {
         relative = "editor",
         -- row = vim.o.lines,
-        -- col = 0
-        row = 0
+        col = 0,
+        row = vim.o.lines-5,
       }
     },
     terminal = {
@@ -59,8 +59,8 @@ return {
         win = {
           input = {
             keys = {
-              ["<C-p>"] = { "toggle_preview", mode = { "i", "n" } },
-              ["<C-n>"] = { "toggle_preview", mode = { "i", "n" } },
+              ["<D-p>"] = { "toggle_preview", mode = { "i", "n" } },
+              -- ["<C-n>"] = { "toggle_preview", mode = { "i", "n" } },
             }
           }
         },
@@ -95,7 +95,7 @@ return {
       enabled = true ,
       git =  { enabled = false}
     },
-    words = { enabled = true },
+    words = { enabled = false },
     styles = {
       input = {
           keys = {
@@ -107,7 +107,7 @@ return {
     dashboard = {
       preset={
         keys = {
-          { icon = "W ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
+          { icon = "󰬱 ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
@@ -142,6 +142,7 @@ return {
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
+    { "<leader>fw", function() Snacks.explorer({ cwd = "~/Workspace/"}) end, desc = "File Explorer" },
     { "<C-D-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     -- make sure that explorer isn't called because using mini.files
     { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
@@ -174,23 +175,8 @@ return {
     { "<leader>sv", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd() }) end, desc = "Grep in current file's directory" },
     -- search
-    { '<C-r>', function()
-          -- Call snacks picker for registers and handle the selection confirmation
-          Snacks.picker.registers({
-            confirm = function(picker, item)
-              picker:close()
-
-              -- The selected item contains the register name/char
-              if item and item.reg then
-                -- Feed keys: <C-o> runs one normal command then returns to insert mode,
-                -- followed by `"regp` to paste the selected register content.
-                local keys = string.format("\"%sp==", item.reg)
-                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
-              end
-            end,
-          })
-        end, desc = "Registers", mode='i' },
-    { '<leader>fr', function() Snacks.picker.registers() end, desc = "Registers" },
+    { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
+    { '<leader>fr', function() Snacks.picker.registers({ confirm = { "paste", "close"} }) end, desc = "Registers" },
     { '<leader>s/', function() Snacks.picker.search_history() end, desc = "Search History" },
     { "<leader>sa", function() Snacks.picker.autocmds() end, desc = "Autocmds" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
@@ -234,10 +220,9 @@ return {
     { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
-      "<leader>`", function()
+      "<C-`>", function()
         Snacks.scratch({
           file = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"),
-          -- optionally set enter = true to focus the window immediately
           enter = true,
         })
       end,
@@ -369,7 +354,7 @@ return {
     end
 
     -- Example Keymap (Adjust the path to your actual file)
-    vim.keymap.set("n", "<leader>bm", function()
+    vim.keymap.set("n", "<leader>`", function()
       open_link_picker("~/Documents/vimwiki/bookmarks.md")
     end, { desc = "Search Bookmarks File" })
   end,

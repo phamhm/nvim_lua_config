@@ -1,0 +1,6 @@
+{
+  "Markdown/Vimwiki Link": {
+    "prefix": "link",
+    "body": "[${1:Desc}](${2:url})"
+  }
+}
