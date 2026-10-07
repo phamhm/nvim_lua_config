@@ -1,6 +1,9 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     build = ":TSUpdate", -- Automatically updates parsers when the plugin updates
     config = function()
       local configs = require("nvim-treesitter")
@@ -16,7 +19,9 @@ return {
         "c",
         "rust",
         "markdown",
-        "markdown_inline"
+        "markdown_inline",
+        "python",
+        "regex"
       },
 
 

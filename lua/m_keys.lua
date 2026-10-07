@@ -1,3 +1,4 @@
+vim.keymap.set('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
 vim.keymap.set('n', 'k', "gk", {silent=true})
@@ -13,28 +14,18 @@ vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
 -- vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
---
-
--- vim.keymap.set('n', '<C-h>', "<C-w>h",{})
--- vim.keymap.set('n', '<C-j>', "<C-w>j",{})
--- vim.keymap.set('n', '<C-k>', "<C-w>k",{})
--- vim.keymap.set('n', '<C-l>', "<C-w>l",{})
 
 vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
-
--- end key maps
---
 
 vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gzt", { noremap = true, silent = true, desc = "Open init.lua" })
 
 --vim.keymap.set("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --vim.keymap.set("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
-vim.keymap.set('n', '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
-vim.keymap.set('n', '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
+vim.keymap.set({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
+vim.keymap.set({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
 -- vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
-
-vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
+-- vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
@@ -46,8 +37,11 @@ vim.keymap.set('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent =
 vim.keymap.set('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
 vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
-vim.keymap.set("v", "<leader>td", ":'<,'>m ?=Capture=?-2 <CR>")
-vim.keymap.set("n", "<leader>td", ":m ?=Capture=?-2 <CR>")
+vim.keymap.set("v", "<leader>td", ":'<,'>m ?^# Capture$?-2 <CR>")
+vim.keymap.set("n", "<leader>td", ":m ?^# Capture$?-2 <CR>")
+
+vim.keymap.set("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
+vim.keymap.set("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
@@ -92,7 +86,52 @@ vim.keymap.set('n', '<leader>gc', function()
   end)
 end, { desc = 'Ask for text and append to end of file' })
 
+vim.keymap.set('n', '<leader>vd',
+function()
+  local today_date = os.date('%Y-%m-%d')
+  local file_path = "~/Documents/vimwiki/diary/" .. today_date .. ".md"
+  file_path = vim.fn.expand(file_path)
+  vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
+    local file = io.open(file_path, "a")
+    if file then
+      file:write("- " .. content .. '\n')
+      file:close()
+      print("Saved to " .. file_path)
+    else
+      vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
+    end
+  end)
+end, { desc = 'Ask for text and append to end of file' })
+
+
+
+
+
 -- end capture
 
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
+
+local function prompt_and_run_lua()
+  vim.ui.input({ prompt = 'Execute Lua: ' }, function(input)
+    -- If the user hits Esc or Cancels, input is nil
+    if not input or input == "" then return end
+
+    -- Compile the string into an executable Lua chunk
+    local chunk, err = load(input)
+
+    if chunk then
+      -- Safely execute the compiled chunk
+      local success, result = pcall(chunk)
+      if not success then
+        vim.notify("Runtime Error: " .. tostring(result), vim.log.levels.ERROR)
+      end
+    else
+      vim.notify("Syntax Error: " .. tostring(err), vim.log.levels.ERROR)
+    end
+  end)
+end
+
+-- Map it to a key (e.g., <leader>le for "Lua Execute")
+vim.keymap.set('n', '<leader>lu', prompt_and_run_lua, { desc = 'Prompt and execute Lua code' })
+

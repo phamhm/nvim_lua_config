@@ -15,7 +15,8 @@ return {
       enabled = true ,
       win = {
         relative = "editor",
-        row = vim.o.lines,
+        row = vim.o.lines / 4,
+        -- col = 0,
       }
     },
     terminal = {
@@ -57,8 +58,7 @@ return {
         win = {
           input = {
             keys = {
-              ["<C-p>"] = { "toggle_preview", mode = { "i", "n" } },
-              ["<C-n>"] = { "toggle_preview", mode = { "i", "n" } },
+              ["<M-p>"] = { "toggle_preview", mode = { "i", "n" } },
             }
           }
         },
@@ -93,7 +93,7 @@ return {
       enabled = true ,
       git =  { enabled = false}
     },
-    words = { enabled = true },
+    words = { enabled = false },
     styles = {
       input = {
           keys = {
@@ -112,6 +112,7 @@ return {
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
           { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
           { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua MiniSessions.select()" },
           { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         }
@@ -130,6 +131,7 @@ return {
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
+    { "<leader>fw", function() Snacks.explorer({ cwd = "~/Workspace" }) end, desc = "open workspace" },
     { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     -- make sure that explorer isn't called because using mini.files
     { "<leader>e", false}, { "<leader>E", false}, { "<leader>fe", false}, { "<leader>fE", false},
@@ -148,7 +150,7 @@ return {
     { "<leader>gL", function() Snacks.picker.git_log_line() end, desc = "Git Log Line" },
     { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git Status" },
     { "<leader>gS", function() Snacks.picker.git_stash() end, desc = "Git Stash" },
-    { "<leader>gd", function() Snacks.picker.git_diff() end, desc = "Git Diff (Hunks)" },
+    { "<leader>gD", function() Snacks.picker.git_diff() end, desc = "Git Diff (Hunks)" },
     { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
     -- gh
     { "<leader>gi", function() Snacks.picker.gh_issue() end, desc = "GitHub Issues (open)" },
@@ -160,24 +162,11 @@ return {
     { "<leader>sb", function() Snacks.picker.grep() end, desc = "Buffer Lines" },
     { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Open Buffers" },
     { "<leader>sv", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
-    -- search
-    { '<C-r>', function()
-          -- Call snacks picker for registers and handle the selection confirmation
-          Snacks.picker.registers({
-            confirm = function(picker, item)
-              picker:close()
+    { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
 
-              -- The selected item contains the register name/char
-              if item and item.reg then
-                -- Feed keys: <C-o> runs one normal command then returns to insert mode,
-                -- followed by `"regp` to paste the selected register content.
-                local keys = string.format("\"%sp==", item.reg)
-                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
-              end
-            end,
-          })
-        end, desc = "Registers", mode='i' },
-    { '<leader>fr', function() Snacks.picker.registers() end, desc = "Registers" },
+    -- search
+    { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
+    { '<leader>fr', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { '<leader>s/', function() Snacks.picker.search_history() end, desc = "Search History" },
     { "<leader>sa", function() Snacks.picker.autocmds() end, desc = "Autocmds" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
@@ -213,7 +202,7 @@ return {
     { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
     { "gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
-    { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+    -- { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
     -- Other
     { "<leader>z",  function() Snacks.zen() end, desc = "Toggle Zen Mode" },
@@ -222,11 +211,13 @@ return {
     { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
-      "<leader>`", function()
+      "<C-`>", function()
         Snacks.scratch({
           file = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"),
-          -- optionally set enter = true to focus the window immediately
           enter = true,
+          win = {
+            title = "Daily reminder"
+          }
         })
       end,
       desc="snack scrach reminder notes"
@@ -350,6 +341,7 @@ return {
               return
             else
               vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
+              return
             end
             vim.system(cmd, { detach = true}, function(err, _)
               if err and err.code ~= 0 then
@@ -365,6 +357,6 @@ return {
 
     -- 6. Create a user command or keymap to run it
     -- vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
-    vim.keymap.set("n", "<leader>bm", function() open_markdown_links_picker() end, { desc = "Open Link Picker" })
+    vim.keymap.set("n", "<leader>`", function() open_markdown_links_picker() end, { desc = "Open Link Picker" })
   end,
 }

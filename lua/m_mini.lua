@@ -4,7 +4,48 @@ return {
     version = false,
     config = function()
       -- Initialize mini.ai
-      require('mini.ai').setup()
+      local ai = require('mini.ai')
+      ai.setup({
+        n_lines = 500, -- Extend search scope for larger textobjects
+        custom_textobjects = {
+          -- Function definitions
+          f = ai.gen_spec.treesitter({
+            a = '@function.outer',
+            i = '@function.inner',
+          }),
+
+          -- Function calls (e.g., `func(val)`)
+          F = ai.gen_spec.treesitter({
+            a = '@call.outer',
+            i = '@call.inner',
+          }),
+
+          -- Class definitions
+          c = ai.gen_spec.treesitter({
+            a = '@class.outer',
+            i = '@class.inner',
+          }),
+
+          -- function/method call
+          C = ai.gen_spec.treesitter({
+            a = '@call.outer',
+            i = '@call.inner'
+          }),
+
+
+          -- Code blocks, loops, or conditionals
+          o = ai.gen_spec.treesitter({
+            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
+            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+          }),
+
+          -- Function/Method parameters or arguments
+          a = ai.gen_spec.treesitter({
+            a = '@parameter.outer',
+            i = '@parameter.inner',
+          }),
+        },
+      })
 
       require('mini.surround').setup(
         {
@@ -28,9 +69,10 @@ return {
       require('mini.diff').setup()
 
       require('mini.files').setup()
+      local mfiles = require('mini.files')
       -- Open mini.files at the current working directory (CWD)
       vim.keymap.set('n', '<C-e>', function()
-        require('mini.files').open()
+        mfiles.open()
       end, { desc = 'Open mini.files (Root)' })
 
       require('mini.statusline').setup({
@@ -67,7 +109,36 @@ return {
           gen_loader.from_file('~/.config/nvim/snippets/global.json'),
           gen_loader.from_lang(),
         },
+        mappings = {
+          -- Expand snippet at cursor position. Created globally in Insert mode.
+          expand = '<C-.>',
+          -- Interact with default `expand.insert` session.
+          -- Created for the duration of active session(s)
+          jump_next = '<C-n>',
+          jump_prev = '<C-p>',
+          stop = '<C-c>',
+        },
       })
+
+      require('mini.sessions').setup()
+      local mSessions = require("mini.sessions")
+      -- Save the current session
+      vim.keymap.set('n', '<leader>ss', function() mSessions.select() end, { desc = 'Save current session' })
+      vim.keymap.set('n', '<leader>sw', function() mSessions.write() end, { desc = 'Save current session' })
+      vim.keymap.set('n', '<leader>sn', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end, { desc = 'Show current session' })
+      vim.keymap.set('n', '<leader>sr', function()
+        mfiles.open(vim.fn.stdpath('data') .. '/session/')
+      end, { desc = 'Open mini.files Workspace' })
+
+      -- Save a session with a specific name prompt
+      vim.keymap.set('n', '<leader>sN', function()
+        vim.ui.input({ prompt = 'Session Name: ' }, function(name)
+          if name ~= '' then
+            mSessions.write(name)
+            require('snacks').bufdelete.all()
+          end
+        end)
+      end, { desc = 'Save named session' })
     end,
   },
 }

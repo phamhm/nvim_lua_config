@@ -137,15 +137,15 @@ vim.opt.background = "dark" -- set this to dark or light
 vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     update_in_insert = false,
     underline = false,
 })
 
 require('m_keys')
-require('vimwiki_config')
-require('my_vim_pencil')
+require('m_vimwiki')
+require('m_vimpencil')
 require('m_options')
 
 vim.api.nvim_create_autocmd('BufWritePre', {

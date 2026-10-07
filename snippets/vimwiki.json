@@ -1,0 +1,7 @@
+
+{
+  "Markdown Link": {
+    "prefix": "link",
+    "body": "[${1:desc}]($2)"
+  }
+}
