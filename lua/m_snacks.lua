@@ -56,6 +56,15 @@
           }
         },
         win = {
+
+          preview = {
+            wo = {
+              number = false,          -- Disables absolute line numbers
+              relativenumber = false,  -- Disables relative line numbers
+            },
+          },
+
+
           input = {
             keys = {
               ["<D-p>"] = { "toggle_preview", mode = { "i", "n" } },
@@ -65,26 +74,46 @@
         },
         layout = {
           -- options include default, ivy, dropdown, vertical, sidebar, telescope
-          preset = "ivy",
+          preset = "dropdown",
           preview = false,
           layout = {
-            box = "vertical",
             backdrop = false,
             row = vim.o.lines - 5,
             col = 0,
-            width = 0.5,
-            height = 0.5,
-            border = "rounded",
-            title = " {title} {live} {flags}",
-            align = "left",
+            width = 0.4,
             title_pos = "left",
-            { win = "input", height = 1, border = "none" },
+            min_width = 80,
+            height = 0.8,
+            border = "none",
+            box = "vertical",
+            { win = "preview", title = "{preview}", height = 0.7, border = true },
             {
-              box = "horizontal",
+              box = "vertical",
+              border = true,
+              title = "{title} {live} {flags}",
+              title_pos = "center",
+              { win = "input", height = 1, border = "none" },
               { win = "list", border = "none" },
-              { win = "preview", title = "{preview}", width = 0.6, border = "left" },
             },
           },
+          -- layout = {
+          --   box = "vertical",
+          --   backdrop = false,
+          --   row = vim.o.lines - 5,
+          --   col = 0,
+          --   width = 0.7,
+          --   height = 0.6,
+          --   border = "rounded",
+          --   title = " {title} {live} {flags}",
+          --   align = "left",
+          --   title_pos = "left",
+          --   { win = "preview", title = "{preview}", height=0.8},
+          --   {
+          --     box="vertical",
+          --     { win = "input", height = 1, border = "none" },
+          --     { win = "list", border = "none" },
+          --   }
+          -- },
         }
     },
     quickfile = { enabled = true },
