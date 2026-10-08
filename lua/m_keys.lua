@@ -1,6 +1,6 @@
 local function truncate(str, max_len)
   if #str > max_len then
-    return str:sub(1, max_len - 3) .. "..."
+    return str:sub(1, max_len - 3) .. ".."
   end
   return str
 end
