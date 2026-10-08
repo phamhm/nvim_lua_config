@@ -91,7 +91,7 @@ return {
     scroll = { enabled = true },
     statuscolumn = {
       enabled = true ,
-      git =  { enabled = false}
+      git =  { enabled = true}
     },
     words = { enabled = false },
     styles = {
