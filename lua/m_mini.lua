@@ -59,7 +59,7 @@ return {
           },
         })
 
-      require('mini.align').setup()
+      -- require('mini.align').setup()
 
       require('mini.pairs').setup()
       require('mini.bracketed').setup()
@@ -68,10 +68,9 @@ return {
       require('mini.diff').setup()
 
       require('mini.files').setup()
+      local mFiles = require('mini.files')
       -- Open mini.files at the current working directory (CWD)
-      vim.keymap.set('n', '<C-e>', function()
-        require('mini.files').open()
-      end, { desc = 'Open mini.files (Root)' })
+      vim.keymap.set('n', '<C-e>', function() mFiles.open() end, { desc = 'Open mini.files (Root)' })
 
       require('mini.statusline').setup({
         content = {
@@ -115,6 +114,24 @@ return {
           stop = '<C-c>',
         },
       })
+
+      require("mini.sessions").setup()
+      local mSession  = require('mini.sessions')
+      vim.keymap.set('n', "<leader>ss", function() mSession.select() end, {desc = "select and load sessino"})
+      vim.keymap.set('n', "<leader>sw", function() mSession.write() end, {desc = "write to session"})
+      vim.keymap.set('n', "<leader>sn", function() vim.notify("Current Session:" .. vim.fs.basename(vim.v.this_session)) end, {desc = "Current session"})
+      vim.keymap.set('n', "<leader>sr", function()
+        mFiles.open(vim.fn.stdpath('data') .. '/session/')
+      end, {desc = "Current session"})
+      vim.keymap.set("n", "<leader>sN", function()
+        vim.ui.input({ prompt = "New session name:" }, function(session_name)
+          if session_name ~= "" then
+            mSession.write(session_name)
+            require("snacks").bufdelete.all()
+          end
+        end)
+      end, { desc = "new session"})
+
     end,
   },
 }

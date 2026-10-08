@@ -1,3 +1,10 @@
+local function truncate(str, max_len)
+  if #str > max_len then
+    return str:sub(1, max_len - 3) .. ".."
+  end
+  return str
+end
+
 vim.keymap.set('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
@@ -84,12 +91,40 @@ end, opt)
 -- end googling, }
 
 vim.keymap.set('n', '<leader>gc', function()
-  vim.ui.input({ prompt = 'Text to append: ' }, function(input)
+  vim.ui.input({ prompt = 'Todo:' }, function(input)
     if input and input ~= '' then
       vim.fn.writefile({ "- " .. input }, vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"), "a")
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
+
+vim.keymap.set('n', '<leader>gw', function()
+  local reg_p = vim.fn.getreg('+')
+  vim.ui.input({ prompt = "Bookmark: " .. truncate(reg_p, 40) }, function(input)
+    if input and input ~= '' and reg_p and reg_p ~='' then
+      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand("~/Documents/vimwiki/bookmarks.md"), "a")
+    end
+  end)
+end, {silent = true, desc = 'Ask for text and append to end of file' })
+
+vim.keymap.set('n', '<leader>vd', function()
+  local today_date = os.date("%Y-%m-%d")
+  local file_path = "~/Documents/vimwiki/diary/" .. today_date .. ".md"
+  file_path = vim.fn.expand(file_path)
+  vim.ui.input({ prompt = "Today Diary Entry:" }, function(content)
+    local file = io.open(file_path, "a")
+    if file then
+      file:write("- " .. content .. "\n")
+      file:close()
+      print("Saved to " .. file_path)
+    else
+      vim.notify("Error: Could not write diary entry", vim.log.levels.ERROR)
+    end
+  end)
+
+end, { desc = 'Ask for text and append to end of file' })
+
+vim.keymap.set("n", "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, {desc="get help for current file type"})
 
 dofile(vim.fn.expand("~/Workspace/poweroninstall/nvim/poweron_upload.lua"))
 
@@ -97,3 +132,21 @@ dofile(vim.fn.expand("~/Workspace/poweroninstall/nvim/poweron_upload.lua"))
 
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
+
+local function prompt_and_run_lua()
+  vim.ui.input({ prompt = "Execute lua" }, function(input)
+    if not input or input == "" then return end
+
+    local chunk, err = load(input)
+    if chunk then
+      local success, result = pcall(chunk)
+      if not success then
+        vim.notify("Runtime error: " .. tostring(result), vim.log.levels.ERROR)
+      end
+    else
+      vim.notify("Synxtax error: " .. tostring(err), vim.log.levels.ERROR)
+    end
+  end)
+end
+
+vim.keymap.set("n", "<leader>lu", prompt_and_run_lua, {remap = true, silent=true, desc = "Prompt and execute lua code"})

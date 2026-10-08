@@ -28,43 +28,8 @@ require('lazy').setup({
     require('m_mini'),
     require('m_lsp'),
     require('m_treesitter'),
+    require('m_vimwiki'),
 
-    --schemes
-
-    -- {
-    --   "folke/trouble.nvim",
-    --   opts = {}, -- for default options, refer to the configuration section for custom setup.
-    --   cmd = "Trouble",
-    --   keys = {
-    --     {
-    --       "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",
-    --       desc = "Diagnostics (Trouble)",
-    --     },
-    --     {
-    --       "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-    --       desc = "Buffer Diagnostics (Trouble)",
-    --     },
-    --     {
-    --       "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",
-    --       desc = "Symbols (Trouble)",
-    --     },
-    --     {
-    --       "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-    --       desc = "LSP Definitions / references / ... (Trouble)",
-    --     },
-    --     {
-    --       "<leader>xL", "<cmd>Trouble loclist toggle<cr>",
-    --       desc = "Location List (Trouble)",
-    --     },
-    --     {
-    --       "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",
-    --       desc = "Quickfix List (Trouble)",
-    --     },
-    --   },
-    -- },
-
-    -- {'rktjmp/lush.nvim'},
-    -- {'metalelf0/jellybeans-nvim'},
     { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
     {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
@@ -84,30 +49,9 @@ require('lazy').setup({
 },
 
 --{'preservim/nerdtree'},
-{"vimwiki/vimwiki",
-init = function()
-    vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
-    vim.g.vimwiki_listsyms = '.○◐●✓'
-    --vim.g.vimwiki_folding=''
-    vim.g.vim_markdown_folding_disabled=1
-    vim.g.vimwiki_list = {
-        {
-            path = '~/Documents/vimwiki',
-            syntax = 'markdown',
-            ext = '.md',
-        },
-    }
-end,
-},
-
 {'williamboman/mason.nvim'},
 {'easymotion/vim-easymotion'},
 {'nvim-tree/nvim-web-devicons'},
-{ "preservim/vim-lexical" },
-{ "preservim/vim-pencil"},
-{ "preservim/vim-litecorrect"},
-{ "preservim/vim-textobj-sentence"},
-{ "kana/vim-textobj-user"},
 { 'preservim/vim-markdown',
 config = function()
     vim.g.vim_markdown_conceal_code_blocks = 0
@@ -143,7 +87,6 @@ vim.diagnostic.config({
 })
 
 require('m_keys')
-require('vimwiki_config')
 require('my_vim_pencil')
 require('m_options')
 

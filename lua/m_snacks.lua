@@ -11,13 +11,11 @@
         chunk = { enabled = true },
         animate = { enabled = false}
     },
-    input = {
-      enabled = true ,
+    input = { enabled = true ,
       win = {
         relative = "editor",
-        -- row = vim.o.lines,
-        col = 0,
-        row = vim.o.lines-5,
+        row = vim.o.lines /3,
+        -- col = 0
       }
     },
     terminal = {
@@ -33,7 +31,8 @@
       timeout = 5000,
     },
     picker = {
-        enabled = false ,
+        enabled = true ,
+        ui_select = true,
         sources = {
           explorer = {
             auto_close = false,
@@ -93,7 +92,7 @@
     scroll = { enabled = true },
     statuscolumn = {
       enabled = true ,
-      git =  { enabled = false}
+      git =  { enabled = true}
     },
     words = { enabled = false },
     styles = {
@@ -114,19 +113,12 @@
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
           { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({ cwd = vim.fn.stdpath('config') })" },
           { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua MiniSessions.select()" },
           { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         },
 
-        header = [[
-    ███╗   ██╗██╗   ██╗██╗███╗   ███╗
-    ████╗  ██║██║   ██║██║████╗ ████║
-    ██╔██╗ ██║██║   ██║██║██╔████╔██║
-    ██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║
-    ██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║
-    ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝]],
-
-
+        header = [[boooooooooo]],
       },
       sections = {
         { section = "header" },
@@ -204,14 +196,14 @@
       end)
     end, desc = "man page in floating windows" },
     -- LSP
-    { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
-    { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
-    { "gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
-    { "gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
-    { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
-    { "gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
-    { "gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
-    { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+    { "<leader>gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
+    { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
+    { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
+    { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
+    { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
+    { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
+    { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
+    -- { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
     -- Other
     { "<leader>z",  function() Snacks.zen() end, desc = "Toggle Zen Mode" },
@@ -331,6 +323,7 @@
         confirm = function(picker, item)
           picker:close()
           if item and item.link then
+            local cmd
             if item.link:match(".applescript") then
               -- Run the link as a system script/command
               cmd = {"/usr/bin/osascript", item.link}
@@ -340,7 +333,7 @@
             else
               cmd = { "open", item.link} -- 'open' is a osx  command
             end
-            vim.system(cmd, {detach = true}, function(err, data)
+            vim.system(cmd, {detach = true}, function(err, _)
               if err and err.code ~=0 then
                 vim.schedule(function()
                   vim.notify("Failed to open:" .. vim.inspect(err), vim.log.levels.ERROR)
