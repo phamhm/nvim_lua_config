@@ -1,3 +1,10 @@
+local function truncate(str, max_len)
+  if #str > max_len then
+    return str:sub(1, max_len - 3) .. "..."
+  end
+  return str
+end
+
 vim.keymap.set('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
 vim.keymap.set('n', '<leader>vn', ":vnew<CR>", {})
 vim.keymap.set('n', 'j', "gj", {silent=true})
@@ -85,6 +92,15 @@ vim.keymap.set('n', '<leader>gc', function()
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
+
+vim.keymap.set('n', '<leader>gw', function()
+  local reg_p = vim.fn.getreg('+')
+  vim.ui.input({ prompt = "Bookmarking: " .. truncate(reg_p, 40) }, function(input)
+    if input and input ~= '' and reg_p and reg_p ~='' then
+      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand("~/Documents/vimwiki/bookmarks.md"), "a")
+    end
+  end)
+end, {silent = true, desc = 'Ask for text and append to end of file' })
 
 vim.keymap.set('n', '<leader>vd',
 function()

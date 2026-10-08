@@ -124,7 +124,7 @@ return {
       -- Save the current session
       vim.keymap.set('n', '<leader>ss', function() mSessions.select() end, { desc = 'Save current session' })
       vim.keymap.set('n', '<leader>sw', function() mSessions.write() end, { desc = 'Save current session' })
-      vim.keymap.set('n', '<leader>sn', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end, { desc = 'Show current session' })
+      vim.keymap.set('n', '<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end, { desc = 'Show current session' })
       vim.keymap.set('n', '<leader>sr', function()
         mfiles.open(vim.fn.stdpath('data') .. '/session/')
       end, { desc = 'Open mini.files Workspace' })
