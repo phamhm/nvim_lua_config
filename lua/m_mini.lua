@@ -102,7 +102,7 @@ return {
             '%<', -- Mark general truncate point
             { hl = 'MiniStatuslineFilename', strings = { "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
             '%=', -- End left alignment
-            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics," ", fileinfo } },
+            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics,"|", fileinfo } },
           })
         end
       }

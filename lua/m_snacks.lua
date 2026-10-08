@@ -15,7 +15,7 @@ return {
       enabled = true ,
       win = {
         relative = "editor",
-        row = vim.o.lines / 4,
+        row = vim.o.lines / 5,
         -- col = 0,
       }
     },
@@ -106,20 +106,19 @@ return {
     dashboard = {
       preset = {
         header = [[
-      boooooo
-      __J"L__
-  ,-"`--...--'"-.
- /  /\       /\   \
-J  /__\  _  /__\   L
-|       / \        |
-J    _  """  _     F
- \   \\/\_/\//    /
-  "-._\/\_/\/_,-"
-      """""""
-
+                          boooooo
+                          __J"L__
+                      ,-"`--...--'"-.
+                     /  /\       /\   \
+                    J  /__\  _  /__\   L
+                    |       / \        |
+                    J    _  """  _     F
+                     \   \\/\_/\//    /
+                      "-._\/\_/\/_,-"
+                          """""""
         ]],
         keys = {
-          { icon = "W ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
+          { icon = "󰬱 ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
