@@ -323,7 +323,7 @@ return {
         layout = {
           preview = false,
           layout = {
-            width = 0.2,
+            width = 0.15,
             height = 0.3,
           }
         },

@@ -32,7 +32,6 @@ return {
             i = '@call.inner'
           }),
 
-
           -- Code blocks, loops, or conditionals
           o = ai.gen_spec.treesitter({
             a = { '@block.outer', '@conditional.outer', '@loop.outer' },

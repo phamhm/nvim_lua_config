@@ -79,7 +79,7 @@ end, opt)
 -- capture
 
 vim.keymap.set('n', '<leader>gc', function()
-  vim.ui.input({ prompt = 'Text to append: ' }, function(input)
+  vim.ui.input({ prompt = 'Todo: ' }, function(input)
     if input and input ~= '' then
       vim.fn.writefile({ "- " .. input }, vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"), "a")
     end
@@ -103,10 +103,7 @@ function()
   end)
 end, { desc = 'Ask for text and append to end of file' })
 
-
-
-
-
+vim.keymap.set('n', "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, { desc = "get help for current file type" } )
 -- end capture
 
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})

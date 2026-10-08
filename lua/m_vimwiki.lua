@@ -1,20 +1,39 @@
-vim.cmd [[
-    let wiki = {}
-    let wiki.nested_syntaxes = {'python':'python', 'rust':'rust', 'c++':'cpp', 'c':'c'}
+return {
+  "vimwiki/vimwiki",
+  init = function()
+    vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
+    vim.g.vimwiki_listsyms = '.○◐●✓'
+    vim.g.vim_markdown_folding_disabled=1
+    -- Vimwiki setup
+    local wiki = {
+      nested_syntaxes = { python = 'python', rust = 'rust', ['c++'] = 'cpp', c = 'c' },
+      path = '~/Documents/vimwiki',
+      syntax = 'markdown',
+      ext = '.md',
+    }
 
-    map <F1> :VimwikiIndex<CR>
+    vim.g.vimwiki_list = { wiki }
 
-    let g:vimwiki_list = [wiki]
+    -- Keymap
+    vim.keymap.set('n', '<F1>', '<cmd>VimwikiIndex<CR>', { noremap = true, silent = true })
 
-    hi @markup.link term=italic ctermfg=cyan guifg=cyan gui=italic
-    hi mkdLink term=italic ctermfg=grey guifg=grey gui=italic
+    -- Highlights
+    vim.api.nvim_set_hl(0, '@markup.link', { fg = 'cyan', italic = true })
+    vim.api.nvim_set_hl(0, 'mkdLink', { fg = 'white', italic = true })
 
+    -- Markdown Autocmds
+    local mkd_group = vim.api.nvim_create_augroup('Mkd', { clear = true })
 
-    augroup Mkd
-    au BufRead,BufWinEnter,BufNewFile *.{md,mdx,mdown,mkd,mkdn,markdown,mdwn} setlocal syntax=markdown
-    au BufRead,BufWinEnter,BufNewFile *.{md,mdx,mdown,mkd,mkdn,markdown,mdwn} setlocal nospell
-    au BufRead,BufWinEnter,BufNewFile *.{md,mdx,mdown,mkd,mkdn,markdown,mdwn}.{des3,des,bf,bfa,aes,idea,cast,rc2,rc4,rc5,desx} setlocal syntax=markdown
-    augroup END
-]]
-
-
+    vim.api.nvim_create_autocmd({ 'BufRead', 'BufWinEnter', 'BufNewFile' }, {
+      group = mkd_group,
+      pattern = {
+        '*.md', '*.mdx', '*.mdown', '*.mkd', '*.mkdn', '*.markdown', '*.mdwn',
+        '*.md.*', '*.mdx.*', '*.mdown.*', '*.mkd.*', '*.mkdn.*', '*.markdown.*', '*.mdwn.*',
+      },
+      callback = function()
+        vim.opt_local.syntax = 'markdown'
+        vim.opt_local.spell = false
+      end,
+    })
+  end,
+}
