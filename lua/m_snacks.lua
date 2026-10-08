@@ -6,10 +6,10 @@ return {
   opts = {
     bigfile = { enabled = true },
     indent = {
-        enabled = true,
-        indent = { only_scope = true },
-        chunk = { enabled = true },
-        animate = { enabled = false}
+      enabled = true,
+      indent = { only_scope = true },
+      chunk = { enabled = true },
+      animate = { enabled = false}
     },
     input = {
       enabled = true ,
@@ -32,59 +32,60 @@ return {
       timeout = 5000,
     },
     picker = {
-        enabled = true ,
-        sources = {
-          explorer = {
-            auto_close = false,
-            layout = {
-              layout = {
-                border="none",
-                position="left",
-                width=0.15
-              }
-            }
-          },
-          files = {
-            exclude = {
-              ".git",
-              "node_modules",
-              ".env",
-              "target",
-              "build",
-              "archive"
-            }
-          }
-        },
-        win = {
-          input = {
-            keys = {
-              ["<M-p>"] = { "toggle_preview", mode = { "i", "n" } },
-            }
-          }
-        },
-        layout = {
-          -- options include default, ivy, dropdown, vertical, sidebar, telescope
-          preset = "ivy",
-          preview = false,
+      hidden=true,
+      enabled = true ,
+      sources = {
+        explorer = {
+          auto_close = false,
           layout = {
-            box = "vertical",
-            backdrop = false,
-            row = vim.o.lines - 5,
-            col = 0,
-            width = 0.5,
-            height = 0.5,
-            border = "rounded",
-            title = " {title} {live} {flags}",
-            align = "left",
-            title_pos = "left",
-            { win = "input", height = 1, border = "none" },
-            {
-              box = "horizontal",
-              { win = "list", border = "none" },
-              { win = "preview", title = "{preview}", width = 0.6, border = "left" },
-            },
-          },
+            layout = {
+              border="none",
+              position="left",
+              width=0.15
+            }
+          }
+        },
+        files = {
+          exclude = {
+            ".git",
+            "node_modules",
+            ".env",
+            "target",
+            "build",
+            "archive"
+          }
         }
+      },
+      win = {
+        input = {
+          keys = {
+            ["<M-p>"] = { "toggle_preview", mode = { "i", "n" } },
+          }
+        }
+      },
+      layout = {
+        -- options include default, ivy, dropdown, vertical, sidebar, telescope
+        preset = "ivy",
+        preview = false,
+        layout = {
+          box = "vertical",
+          backdrop = false,
+          row = vim.o.lines - 5,
+          col = 0,
+          width = 0.5,
+          height = 0.5,
+          border = "rounded",
+          title = " {title} {live} {flags}",
+          align = "left",
+          title_pos = "left",
+          { win = "input", height = 1, border = "none" },
+          {
+            box = "horizontal",
+            { win = "list", border = "none" },
+            { win = "preview", title = "{preview}", width = 0.6, border = "left" },
+          },
+        },
+      }
     },
     quickfile = { enabled = true },
     scope = { enabled = true },
@@ -96,14 +97,27 @@ return {
     words = { enabled = false },
     styles = {
       input = {
-          keys = {
-              ["<C-c>"] = { "close", mode = { "i", "n" } },
-          },
+        keys = {
+          ["<C-c>"] = { "close", mode = { "i", "n" } },
+        },
       },
     },
 
     dashboard = {
       preset = {
+        header = [[
+      boooooo
+      __J"L__
+  ,-"`--...--'"-.
+ /  /\       /\   \
+J  /__\  _  /__\   L
+|       / \        |
+J    _  """  _     F
+ \   \\/\_/\//    /
+  "-._\/\_/\/_,-"
+      """""""
+
+        ]],
         keys = {
           { icon = "W ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
@@ -127,8 +141,19 @@ return {
     }
   },
   keys = {
+    {
+      "z=",
+      function()
+        if vim.v.count == 0 then
+          Snacks.picker.spelling()
+        else
+          vim.cmd("normal! " .. vim.v.count .. " z=")
+        end
+      end,
+      desc = "Spelling Suggestions",
+    },
     -- Top Pickers & Explorer
-    { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+    { "<leader>,", function() Snacks.picker.buffers({hidden=true, nofile=true}) end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
     { "<leader>fw", function() Snacks.explorer({ cwd = "~/Workspace" }) end, desc = "open workspace" },
@@ -138,12 +163,13 @@ return {
     -- find
     -- { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
-    { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/vimwiki")}) end, desc = "Find Config File" },
+    { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end, desc = "Find Config File" },
     { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Config File" },
     { "<leader>fs", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
     { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
     { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent" },
+    { "<leader>fr", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     -- git
     { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
     { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
@@ -166,7 +192,7 @@ return {
 
     -- search
     { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
-    { '<leader>fr', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
+    { '<leader>r', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { '<leader>s/', function() Snacks.picker.search_history() end, desc = "Search History" },
     { "<leader>sa", function() Snacks.picker.autocmds() end, desc = "Autocmds" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
@@ -213,7 +239,7 @@ return {
     {
       "<C-`>", function()
         Snacks.scratch({
-          file = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"),
+          file = vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"),
           enter = true,
           win = {
             title = "Daily reminder"
@@ -224,7 +250,6 @@ return {
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-    { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
@@ -234,26 +259,26 @@ return {
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   },
   init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-          pattern = "help",
-          callback = function(ev)
-              -- Check if it's already a floating window to prevent infinite loops
-              if vim.api.nvim_win_get_config(0).relative ~= "" then
-                  return
-              end
-
-              local buf = ev.buf
-              -- Close the default help split window right after it opens
-              vim.cmd("wincmd c")
-
-              -- Re-open the help buffer using snacks.win in a styled float
-              Snacks.win({
-                  buf = buf,
-                  style = "vscode", -- Uses snacks.nvim's built-in help window style layout
-                  border = "rounded"
-              })
-          end,
-      })
+    -- vim.api.nvim_create_autocmd("FileType", {
+    --   pattern = "help",
+    --   callback = function(ev)
+    --     -- Check if it's already a floating window to prevent infinite loops
+    --     if vim.api.nvim_win_get_config(0).relative ~= "" then
+    --       return
+    --     end
+    --
+    --     local buf = ev.buf
+    --     -- Close the default help split window right after it opens
+    --     vim.cmd("wincmd c")
+    --
+    --     -- Re-open the help buffer using snacks.win in a styled float
+    --     Snacks.win({
+    --       buf = buf,
+    --       style = "vscode", -- Uses snacks.nvim's built-in help window style layout
+    --       border = "rounded"
+    --     })
+    --   end,
+    -- })
 
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
@@ -292,7 +317,7 @@ return {
 
     local function open_markdown_links_picker()
       -- 1. Define the path to your file
-      local file_path = vim.fn.expand("~/Documents/vimwiki/bookmarks.md") -- Change this to your file path
+      local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
 
       -- 2. Read lines from the file
       local lines = vim.fn.readfile(file_path)

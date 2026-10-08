@@ -16,7 +16,8 @@ vim.keymap.set('n', '<leader>3', ":sp<CR>",{})
 vim.keymap.set('n', '<leader>0', ":clo<CR>",{})
 
 vim.keymap.set({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
---vim.keymap.set('i', '<C-j>', "<CR>",{silent = true})
+vim.keymap.set('i', '<C-j>', "<Esc>o",{silent = true})
+vim.keymap.set('i', '<C-a>', "<Esc>A",{silent = true})
 vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
@@ -86,9 +87,9 @@ end, opt)
 -- capture
 
 vim.keymap.set('n', '<leader>gc', function()
-  vim.ui.input({ prompt = 'Todo: ' }, function(input)
+  vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
-      vim.fn.writefile({ "- " .. input }, vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"), "a")
+      vim.fn.writefile({ "- " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
@@ -97,7 +98,7 @@ vim.keymap.set('n', '<leader>gw', function()
   local reg_p = vim.fn.getreg('+')
   vim.ui.input({ prompt = "Bookmarking: " .. truncate(reg_p, 40) }, function(input)
     if input and input ~= '' and reg_p and reg_p ~='' then
-      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand("~/Documents/vimwiki/bookmarks.md"), "a")
+      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md"), "a")
     end
   end)
 end, {silent = true, desc = 'Ask for text and append to end of file' })
@@ -105,7 +106,7 @@ end, {silent = true, desc = 'Ask for text and append to end of file' })
 vim.keymap.set('n', '<leader>vd',
 function()
   local today_date = os.date('%Y-%m-%d')
-  local file_path = "~/Documents/vimwiki/diary/" .. today_date .. ".md"
+  local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
   file_path = vim.fn.expand(file_path)
   vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
     local file = io.open(file_path, "a")
@@ -148,3 +149,9 @@ end
 -- Map it to a key (e.g., <leader>le for "Lua Execute")
 vim.keymap.set('n', '<leader>lu', prompt_and_run_lua, { desc = 'Prompt and execute Lua code' })
 
+
+vim.keymap.set('n', 'K', function()
+  vim.lsp.buf.hover({ border = 'rounded' })
+end, { desc = 'LSP Hover Documentation', silent = true })
+
+vim.keymap.set('n', "<leader>cc", function() vim.fn.setreg("+", vim.fn.getreg('"')) end, {desc = 'copy yanked @" into system clipboard @+'})

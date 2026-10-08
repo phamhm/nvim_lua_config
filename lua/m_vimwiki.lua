@@ -7,7 +7,7 @@ return {
     -- Vimwiki setup
     local wiki = {
       nested_syntaxes = { python = 'python', rust = 'rust', ['c++'] = 'cpp', c = 'c' },
-      path = '~/Documents/vimwiki',
+      path = vim.g.m_vimwiki_path,
       syntax = 'markdown',
       ext = '.md',
     }

@@ -3,6 +3,7 @@
 vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.g.m_vimwiki_path = "~/Documents/vimwiki"
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 local uv = vim.uv or vim.loop
@@ -32,53 +33,50 @@ require('lazy').setup({
 
   -- {'rktjmp/lush.nvim'},
   -- {'metalelf0/jellybeans-nvim'},
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  {"catppuccin/nvim", name = "catppuccin", priority = 1000 },
   {"HakonHarnes/img-clip.nvim",
-  event = "VeryLazy",
-  opts = {
-    default = {
-      dir_path = function()
-        return  "assets/images/" .. vim.fn.expand("%:t:r")
-      end,
-      file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
-      extension = "png",
-    }
+    event = "VeryLazy",
+    opts = {
+      default = {
+        dir_path = function()
+          return  "assets/images/" .. vim.fn.expand("%:t:r")
+        end,
+        file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
+        extension = "png",
+      }
+    },
+    keys = {
+      -- suggested keymap
+      { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+    },
   },
-  keys = {
-    -- suggested keymap
-    { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+
+  --{'preservim/nerdtree'},
+
+  {'williamboman/mason.nvim'},
+
+  {'easymotion/vim-easymotion'},
+  {'nvim-tree/nvim-web-devicons'},
+  -- { "preservim/vim-lexical" },
+  -- { "preservim/vim-pencil"},
+  -- { "preservim/vim-litecorrect"},
+  -- { "preservim/vim-textobj-sentence"},
+  -- { "kana/vim-textobj-user"},
+  { 'preservim/vim-markdown',
+    config = function()
+      vim.g.vim_markdown_conceal_code_blocks = 0
+      vim.g.vim_markdown_folding_style_pythonic = 1
+      vim.g.vim_markdown_no_default_key_mappings = 1
+      vim.g.vim_markdown_new_list_item_indent = 0
+    end,
   },
-},
-
---{'preservim/nerdtree'},
-
-{'williamboman/mason.nvim'},
-
-{'easymotion/vim-easymotion'},
-{'nvim-tree/nvim-web-devicons'},
--- { "preservim/vim-lexical" },
--- { "preservim/vim-pencil"},
--- { "preservim/vim-litecorrect"},
--- { "preservim/vim-textobj-sentence"},
--- { "kana/vim-textobj-user"},
-{ 'preservim/vim-markdown',
-config = function()
-  vim.g.vim_markdown_conceal_code_blocks = 0
-  vim.g.vim_markdown_folding_style_pythonic = 1
-  vim.g.vim_markdown_no_default_key_mappings = 1
-  vim.g.vim_markdown_new_list_item_indent = 0
-end,
-},
-{ "iamcco/markdown-preview.nvim",
---https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
-cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-build = "cd app && yarn install",
-init = function()
-  vim.g.mkdp_filetypes = { "markdown" }
-end,
-ft = { "markdown" },
-},
-
+  {
+    -- https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
 })
 
 vim.opt.termguicolors = true
@@ -107,4 +105,3 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     vim.fn.setpos('.', save_cursor)
   end,
 })
-
