@@ -1,50 +1,55 @@
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
-    },
-    build = ":TSUpdate", -- Automatically updates parsers when the plugin updates
-    config = function()
-      local configs = require("nvim-treesitter")
+  "nvim-treesitter/nvim-treesitter",
+  dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", },
+  lazy = false,
+  build = ":TSUpdate",
+  config = function()
+    local ts = require("nvim-treesitter")
+    local languages = {
+      "bash", "zsh",
+      "css",
+      "dockerfile",
+      "go",
+      "html",
+      "javascript",
+      "typescript",
+      "json",
+      "lua",
+      "php",
+      "python",
+      "scss",
+      "sql",
+      "vim",
+      "yaml",
+      "markdown",
+      "markdown_inline",
+      "regex"
+    }
 
-      configs.setup({
-        -- A list of parser names, or "all" to install everything
-        ensure_installed = { "lua",
-        "vim",
-        "vimdoc",
-        "query",
-        "javascript",
-        "typescript",
-        "c",
-        "rust",
-        "markdown",
-        "markdown_inline",
-        "python",
-        "regex"
-      },
+    ts.setup({})
 
+    -- NOTE: If languages fail to install or compilation hangs,
+    -- ensure 'tree-sitter-cli' is installed (e.g., :MasonInstall tree-sitter-cli).
+    -- If the issue persists, run :checkhealth nvim-treesitter to diagnose.
 
-        -- Install parsers synchronously (only applied to `ensure_installed`)
-        sync_install = false,
+    -- Use :TSInstall for manuall install languages
+    ts.install(languages)
 
-        -- Automatically install missing parsers when entering a buffer
-        auto_install = true,
+    -- Treesitter features for installed languages must be enabled manually
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = languages,
+      callback = function()
+        -- Enable native Neovim treesitter highlighting
+        vim.treesitter.start()
 
-        -- Syntax highlighting configuration
-        highlight = {
-          enable = true, -- false will disable the whole extension
+        -- Configure code folding
+        vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        vim.wo.foldmethod = "expr"
+        vim.wo.foldlevel = 99
 
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set to `true` if you depend on 'syntax' being enabled (like for folds).
-          additional_vim_regex_highlighting = false,
-        },
-
-        -- Indentation configuration (experimental but highly recommended)
-        indent = {
-          enable = true
-        },
-      })
-    end,
-  }
+        -- Enable treesitter-based indentation
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end,
+    })
+  end,
 }
