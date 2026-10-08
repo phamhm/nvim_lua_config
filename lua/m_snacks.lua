@@ -56,15 +56,12 @@
           }
         },
         win = {
-
           preview = {
             wo = {
               number = false,          -- Disables absolute line numbers
               relativenumber = false,  -- Disables relative line numbers
             },
           },
-
-
           input = {
             keys = {
               ["<D-p>"] = { "toggle_preview", mode = { "i", "n" } },
