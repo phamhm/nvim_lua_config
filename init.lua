@@ -84,7 +84,7 @@ vim.opt.termguicolors = true
 
 -- setup must be called before loading
 vim.opt.background = "dark" -- set this to dark or light
-vim.cmd.colorscheme("catppuccin-frappe")
+vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
     virtual_text = false,
@@ -96,12 +96,3 @@ vim.diagnostic.config({
 require('m_keys')
 -- require('m_vimpencil')
 require('m_options')
-
-vim.api.nvim_create_autocmd('BufWritePre', {
-  desc = 'Removes trailing whitespace on save',
-  callback = function()
-    local save_cursor = vim.fn.getpos('.')
-    vim.cmd([[%s/\s\+$//e]])
-    vim.fn.setpos('.', save_cursor)
-  end,
-})

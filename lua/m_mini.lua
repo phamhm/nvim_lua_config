@@ -7,11 +7,11 @@ return {
     {'<leader>ss', function() MiniSessions.select() end, desc = 'Save current session'},
     {'<leader>sw', function() MiniSessions.write() end,  desc = 'Save current session' },
     {'<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end,  desc = 'Show current session' },
-    {'<leader>sr', function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, { desc = 'Open mini.files Workspace' } },
+    {'<leader>se', function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, { desc = 'Open mini.files Workspace' } },
     {'<leader>sN', function()
       vim.ui.input({ prompt = 'Session Name: ' }, function(name)
         if name ~= '' then
-          mSessions.write(name)
+          MiniSessions.write(name)
           require('snacks').bufdelete.all()
         end
       end)
@@ -81,12 +81,10 @@ return {
     require('mini.pairs').setup()
     require('mini.bracketed').setup()
 
-    -- Initialize mini.diff
     require('mini.diff').setup()
 
     require('mini.files').setup()
     local mfiles = require('mini.files')
-    -- Open mini.files at the current working directory (CWD)
 
     require('mini.statusline').setup({
       content = {
@@ -96,13 +94,14 @@ return {
           local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
           local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
           local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+          local session       = vim.fs.basename( vim.v.this_session )
 
           return MiniStatusline.combine_groups({
             { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
             '%<', -- Mark general truncate point
             { hl = 'MiniStatuslineFilename', strings = { "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
             '%=', -- End left alignment
-            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics,"|", fileinfo } },
+            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo, 'S:'..session  } },
           })
         end
       }
@@ -134,7 +133,14 @@ return {
     })
 
     require('mini.sessions').setup()
-    local mSessions = require("mini.sessions")
-    -- Save the current session
+
+
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      desc = 'Removes trailing whitespace on save',
+      callback = function()
+        require('mini.trailspace').trim()
+        require('mini.trailspace').trim_last_lines()
+      end,
+    })
   end,
 }

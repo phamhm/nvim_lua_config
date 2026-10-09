@@ -11,7 +11,7 @@ local options = {
   ignorecase = true,                       -- ignore case in search patterns
   mouse = "a",                             -- allow the mouse to be used in neovim
   pumheight = 10,                          -- pop up menu height
-  showmode = true,                        -- we don't need to see things like -- INSERT -- anymore
+  showmode = true,                         -- we don't need to see things like -- INSERT -- anymore
   smartcase = true,                        -- smart case
   smartindent = true,                      -- make indenting smarter again
   splitbelow = true,                       -- force all horizontal splits to go below current window
@@ -31,7 +31,7 @@ local options = {
   relativenumber = true,                  -- set relative numbered lines
   numberwidth = 2,                         -- set number column width to 2 {default 4}
   signcolumn = "yes",                      -- always show the sign column, otherwise it would shift the text each time
-  colorcolumn = "80",
+  colorcolumn = "132",
   wrap = false,                            -- display lines as one long line
   wrapscan = false,
   scrolloff = 8,                           -- is one of my fav
@@ -59,7 +59,7 @@ local options = {
 for k, v in pairs(options) do
   vim.opt[k] = v
 end
-vim.cmd "set whichwrap+=<,>,[,],h,l"
 
 vim.opt.shortmess:append("c")
 vim.opt.formatoptions:append('r')
+vim.opt.whichwrap:append('<,>,[,],h,l')
