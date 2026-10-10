@@ -134,8 +134,8 @@ dofile(vim.fn.expand("~/Workspace/poweroninstall/nvim/poweron_upload.lua"))
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-local function prompt_and_run_lua()
-  vim.ui.input({ prompt = "Execute lua" }, function(input)
+local function prompt_and_run_lua(prompt, cmp_type)
+  vim.ui.input({ prompt = prompt, completion = cmp_type  }, function(input)
     if not input or input == "" then return end
 
     local chunk, err = load(input)
@@ -150,8 +150,7 @@ local function prompt_and_run_lua()
   end)
 end
 
-vim.keymap.set("n", "<leader>lu", prompt_and_run_lua, {remap = true, silent=true, desc = "Prompt and execute lua code"})
-
+vim.keymap.set("n", "<leader>lu", function() prompt_and_run_lua('Lua Command','lua') end, {remap = true, silent=true, desc = "Prompt and execute lua code"})
 
 vim.keymap.set('n', 'K', function() vim.lsp.buf.hover({border="rounded"})end, {desc ="LSP Hover Documentation", silent = true} )
 
