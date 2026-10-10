@@ -133,6 +133,7 @@ return {
     })
 
     require('mini.sessions').setup()
+    -- require('mini.operators').setup()
 
 
     vim.api.nvim_create_autocmd('BufWritePre', {

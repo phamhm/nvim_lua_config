@@ -8,9 +8,10 @@ local m_layout = {
 
 local function commands_menu(items, title)
   Snacks.picker.pick({
+    pattern="^",
     items = items,
     title = title,
-    format = "text", -- Display only the title in the list
+    format = "text",
     layout = m_layout,
     confirm = function(picker, item)
       picker:close()
@@ -261,32 +262,32 @@ return {
     {"<leader>fm",
       function()
         commands_menu({
-          { fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end, text = "Workspace dir" },
-          { fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, text = "Config Files" },
-          { fn = function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end, text = "Vimwiki" },
-          { fn = function() Snacks.picker.files() end, text = "Files" },
-          { fn = function() Snacks.picker.smart() end, text = "Smart Files" },
-          { fn = function() Snacks.picker.git_files() end, text = "Git Files" },
-          { fn = function() Snacks.picker.projects() end, text = "Projects" },
-          { fn = function() Snacks.picker.recent() end, text = "Recent" },
-          { fn = function() Snacks.rename.rename_file() end, text = "Rename File" },
+          { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
+          { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
+          { text = "Vimwiki", fn = function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end },
+          { text = "Files", fn = function() Snacks.picker.files() end },
+          { text = "Smart Files", fn = function() Snacks.picker.smart() end },
+          { text = "Git Files", fn = function() Snacks.picker.git_files() end },
+          { text = "Projects", fn = function() Snacks.picker.projects() end },
+          { text = "Recent", fn = function() Snacks.picker.recent() end },
+          { text = "Rename File", fn = function() Snacks.rename.rename_file() end },
         }, "Files menu"  )
       end},
     {"<leader>gm",
       function()
         commands_menu({
-          { fn = function() Snacks.picker.git_branches() end, text = "Git Branches" },
-          { fn = function() Snacks.picker.git_log() end, text = "Git Log" },
-          { fn = function() Snacks.picker.git_log_line() end, text = "Git Log Line" },
-          { fn = function() Snacks.picker.git_status() end, text = "Git Status" },
-          { fn = function() Snacks.picker.git_stash() end, text = "Git Stash" },
-          { fn = function() Snacks.picker.git_diff() end, text = "Git Diff (Hunks)" },
-          { fn = function() Snacks.picker.git_log_file() end, text = "Git Log File" },
-          { fn = function() Snacks.picker.gh_issue() end, text = "GitHub Issues (open)" },
-          { fn = function() Snacks.picker.gh_issue({ state = "all" }) end, text = "GitHub Issues (all)" },
-          { fn = function() Snacks.picker.gh_pr() end, text = "GitHub Pull Requests (open)" },
-          { fn = function() Snacks.picker.gh_pr({ state = "all" }) end, text = "GitHub Pull Requests (all)" },
-          { fn = function() Snacks.gitbrowse() end, text = "Git Browse"  },
+          { text = "Branches", fn = function() Snacks.picker.git_branches() end },
+          { text = "Log", fn = function() Snacks.picker.git_log() end },
+          { text = "Log Line", fn = function() Snacks.picker.git_log_line() end },
+          { text = "Status", fn = function() Snacks.picker.git_status() end },
+          { text = "Stash", fn = function() Snacks.picker.git_stash() end },
+          { text = "Diff (Hunks)", fn = function() Snacks.picker.git_diff() end },
+          { text = "Log File", fn = function() Snacks.picker.git_log_file() end },
+          { text = "Issues (open)", fn = function() Snacks.picker.gh_issue() end },
+          { text = "Issues (all)", fn = function() Snacks.picker.gh_issue({ state = "all" }) end },
+          { text = "Pull Requests (open)", fn = function() Snacks.picker.gh_pr() end },
+          { text = "Pull Requests (all)", fn = function() Snacks.picker.gh_pr({ state = "all" }) end },
+          { text = "Browse", fn = function() Snacks.gitbrowse() end  },
         },"Git menu" )
       end
     },
