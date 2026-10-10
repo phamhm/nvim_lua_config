@@ -1,4 +1,3 @@
-
 local function truncate(str, max_len)
   if #str > max_len then
     return str:sub(1, max_len - 3) .. ".."
@@ -128,8 +127,8 @@ vim.keymap.set('n', "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, 
 vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-local function prompt_and_run_lua()
-  vim.ui.input({ prompt = 'Lua cmdLine' }, function(input)
+local function prompt_and_run_lua(prompt, cmp_type)
+  vim.ui.input({ prompt = prompt, completion = cmp_type }, function(input)
     -- If the user hits Esc or Cancels, input is nil
     if not input or input == "" then return end
 
@@ -149,7 +148,7 @@ local function prompt_and_run_lua()
 end
 
 -- Map it to a key (e.g., <leader>le for "Lua Execute")
-vim.keymap.set('n', '<leader>lu', prompt_and_run_lua, { desc = 'Prompt and execute Lua code' })
+vim.keymap.set('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
 
 
 vim.keymap.set('n', 'K', function()
