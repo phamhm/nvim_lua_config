@@ -6,6 +6,41 @@ local m_layout = {
   }
 }
 
+local function copy_dated_lines(filepath, pattern)
+  -- Expand the file path (handles ~ for home directory, etc.)
+  local expanded_path = vim.fn.expand(filepath)
+
+  -- Open the file in read mode
+  local file = io.open(expanded_path, "r")
+  if not file then
+    vim.notify("Could not open file: " .. expanded_path, vim.log.levels.ERROR)
+    return
+  end
+
+  local matched_lines = {}
+  -- Lua pattern matching line start '^', literal bracket '%[',
+  -- 4 digits '%d%d%d%d', dash '%-', 2 digits, dash, 2 digits, literal bracket '%]'
+  -- Read file line by line
+  for line in file:lines() do
+    if vim.startswith(line, pattern) then
+      table.insert(matched_lines, line)
+    end
+  end
+  file:close()
+
+  -- Check if any lines matched
+  if #matched_lines == 0 then
+    vim.notify("No matching lines found starting with [yyyy-mm-dd]", vim.log.levels.WARN)
+    return
+  end
+
+  -- Join lines with newlines and set the '*' register (system clipboard)
+  local content = table.concat(matched_lines, "\n")
+  vim.fn.setreg('*', content)
+
+  vim.notify(string.format("Copied %d lines to the * register!", #matched_lines), vim.log.levels.INFO)
+end
+
 local function commands_menu(items, title)
   Snacks.picker.pick({
     pattern="^",
@@ -250,6 +285,11 @@ return {
       desc = "Spelling Suggestions",
     },
     -- Top Pickers & Explorer
+    { "<leader>cn", function()
+      local today_date = os.date('%Y-%m-%d')
+      local date_pattern = "[" .. today_date .."]"
+      copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
+    end, {desc = 'copy dated line into @* register'} },
     { "<leader>,", function() Snacks.picker.buffers({hidden=true, nofile=true}) end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
@@ -362,7 +402,13 @@ return {
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-    { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
+    { "<leader>lg",
+      function()
+        local today_date = os.date('%Y-%m-%d')
+        local date_pattern = "[" .. today_date .."]"
+        copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
+        Snacks.lazygit()
+      end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },

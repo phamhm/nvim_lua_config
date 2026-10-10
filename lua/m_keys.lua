@@ -1,3 +1,4 @@
+
 local function truncate(str, max_len)
   if #str > max_len then
     return str:sub(1, max_len - 3) .. ".."
@@ -89,7 +90,8 @@ end, opt)
 vim.keymap.set('n', '<leader>gc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
-      vim.fn.writefile({ "- " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
+      local today_date = os.date('%Y-%m-%d')
+      vim.fn.writefile({ "[".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
@@ -105,19 +107,19 @@ end, {silent = true, desc = 'Ask for text and append to end of file' })
 
 vim.keymap.set('n', '<leader>vd',
 function()
-  local today_date = os.date('%Y-%m-%d')
-  local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
-  file_path = vim.fn.expand(file_path)
-  vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
-    local file = io.open(file_path, "a")
-    if file then
-      file:write("- " .. content .. '\n')
-      file:close()
-      print("Saved to " .. file_path)
-    else
-      vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
-    end
-  end)
+    local today_date = os.date('%Y-%m-%d')
+    local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
+    file_path = vim.fn.expand(file_path)
+    vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
+      local file = io.open(file_path, "a")
+      if file then
+        file:write("- " .. content .. '\n')
+        file:close()
+        print("Saved to " .. file_path)
+      else
+        vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
+      end
+    end)
 end, { desc = 'Ask for text and append to end of file' })
 
 vim.keymap.set('n', "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, { desc = "get help for current file type" } )
