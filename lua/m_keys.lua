@@ -127,7 +127,7 @@ vim.keymap.set("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc 
 vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
 local function prompt_and_run_lua()
-  vim.ui.input({ prompt = 'Execute Lua: ' }, function(input)
+  vim.ui.input({ prompt = 'Lua cmdLine' }, function(input)
     -- If the user hits Esc or Cancels, input is nil
     if not input or input == "" then return end
 
