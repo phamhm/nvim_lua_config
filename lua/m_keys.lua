@@ -32,8 +32,10 @@ vim.keymap.set("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gz
 vim.keymap.set({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
 vim.keymap.set({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
--- vim.keymap.set('i', '<C-j>', '<CR>', { remap = true })
--- vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
+-- c-h delete before cursor.
+-- c-l delete after cursor.
+-- balancing out the universe
+vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
@@ -45,11 +47,12 @@ vim.keymap.set('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent =
 vim.keymap.set('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
 vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
-vim.keymap.set("v", "<leader>td", ":'<,'>m ?^# Capture$?-2 <CR>")
-vim.keymap.set("n", "<leader>td", ":m ?^# Capture$?-2 <CR>")
-
-vim.keymap.set("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
-vim.keymap.set("n", "<leader>tc", ":m /^# Capture$/ <CR>")
+-- simplify the capture. Don't need to move around.
+-- keeps these here as example of moving with vim command
+-- vim.keymap.set("v", "<leader>td", ":'<,'>m ?^# Capture$?-2 <CR>")
+-- vim.keymap.set("n", "<leader>td", ":m ?^# Capture$?-2 <CR>")
+-- vim.keymap.set("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
+-- vim.keymap.set("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
