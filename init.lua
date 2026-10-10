@@ -3,6 +3,7 @@
 vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.g.m_vimwiki_path = "~/Documents/vimwiki"
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 local uv = vim.uv or vim.loop
@@ -89,11 +90,3 @@ vim.diagnostic.config({
 require('m_keys')
 require('m_options')
 
-vim.api.nvim_create_autocmd('BufWritePre', {
-  desc = 'Removes trailing whitespace on save',
-  callback = function()
-    local save_cursor = vim.fn.getpos('.')
-    vim.cmd([[%s/\s\+$//e]])
-    vim.fn.setpos('.', save_cursor)
-  end,
-})

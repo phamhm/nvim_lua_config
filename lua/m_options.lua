@@ -1,6 +1,10 @@
 local options = {
   backup = false,                          -- creates a backup file
-  clipboard = "unnamed,unnamedplus",               -- allows neovim to access the system clipboard
+  -- allows neovim to access the system clipboard
+  -- on OSX, there is only one system clipboard, so unnamed and unnamedplus are always the same
+  -- keepping this blank so i wouldn't yank/delete into the system clip board.
+  -- use <leader>cc to copy the yanked register @" into the unnamed/plus
+  clipboard = "",
   cmdheight = 1,                           -- more space in the neovim command line for displaying messages
   completeopt = { "menuone", "noselect" }, -- mostly just for cmp
   conceallevel = 0,                        -- so that `` is visible in markdown files
@@ -51,13 +55,13 @@ local options = {
   foldlevel = 9,
   foldlevelstart = 9,
   foldenable = true,
-  -- timeoutlen = 300
+  timeoutlen = 600,
   statuscolumn = "",
 }
-
-vim.opt.shortmess:append "c"
 
 for k, v in pairs(options) do
   vim.opt[k] = v
 end
-vim.cmd "set whichwrap+=<,>,[,],h,l"
+
+vim.opt.shortmess:append( "c" )
+vim.opt.whichwrap:append('<,>,[,],h,l')

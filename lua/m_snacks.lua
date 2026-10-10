@@ -51,7 +51,9 @@
               ".env",
               "target",
               "build",
-              "archive"
+              "archive",
+              "backup",
+              "backups",
             }
           }
         },
@@ -156,8 +158,17 @@
     }
   },
   keys = {
+      {
+        "z=", function()
+          if vim.v.count == 0 then
+            Snacks.picker.spelling()
+          else
+            vim.cmd("normal! " .. vim.v.count .. " z=")
+          end
+        end, desc = "Spelling suggestions"
+      },
     -- Top Pickers & Explorer
-    { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+    { "<leader>,", function() Snacks.picker.buffers( { hidden=true, nofile=true}) end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
     { "<leader>fw", function() Snacks.explorer({ cwd = "~/Workspace/"}) end, desc = "File Explorer" },
@@ -167,12 +178,13 @@
     -- find
     -- { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
-    { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/vimwiki")}) end, desc = "Find Config File" },
+    { "<leader>fv", function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end, desc = "Find Config File" },
     { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Config File" },
     { "<leader>fs", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
     { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
     { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent" },
+    { "<leader>fr", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     -- git
     { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
     { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
@@ -194,7 +206,7 @@
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd() }) end, desc = "Grep in current file's directory" },
     -- search
     { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
-    { '<leader>fr', function() Snacks.picker.registers({ confirm = { "paste", "close"} }) end, desc = "Registers" },
+    { '<leader>r', function() Snacks.picker.registers({ confirm = { "paste", "close"} }) end, desc = "Registers" },
     { '<leader>s/', function() Snacks.picker.search_history() end, desc = "Search History" },
     { "<leader>sa", function() Snacks.picker.autocmds() end, desc = "Autocmds" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
@@ -240,15 +252,17 @@
     {
       "<C-`>", function()
         Snacks.scratch({
-          file = vim.fn.expand("~/Documents/vimwiki/daily_reminder.md"),
+          file = vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"),
           enter = true,
         })
       end,
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-    { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File" },
+    { "<leader>q",  function()
+        Snacks.bufdelete()
+        vim.cmd.close()
+      end, desc = "Delete Buffer" },
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
@@ -374,7 +388,7 @@
 
     -- Example Keymap (Adjust the path to your actual file)
     vim.keymap.set("n", "<leader>`", function()
-      open_link_picker("~/Documents/vimwiki/bookmarks.md")
+      open_link_picker(vim.g.m_vimwiki_path .. "/bookmarks.md")
     end, { desc = "Search Bookmarks File" })
   end,
 }

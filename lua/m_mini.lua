@@ -1,52 +1,65 @@
 return {
   'echasnovski/mini.nvim',
+  dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", },
   version = false,
+  lazy = false,
+  keys = {
+    {"<leader>ss", function() MiniSessions.select() end, desc = "select and load session" },
+    {"<leader>sw", function() MiniSessions.write() end, desc = "wrirte to session" },
+    {"<C-e>", function() MiniFiles.open() end, desc = "Openi mini.files" },
+    {"<leader>s?", function() vim.notify("Current Session:" .. vim.fs.basename(vim.v.this_session)) end, desc = "Current session"},
+    {"<leader>se", function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, desc = "Current session"},
+    {"<leader>sN", function()
+      vim.ui.input({ prompt = "New session name:" }, function(session_name)
+        if session_name ~= "" then
+          MiniSessions.write(session_name)
+          require("snacks").bufdelete.all()
+        end
+      end)
+    end, desc = "new session" },
+  },
   config = function()
     -- Initialize mini.ai
-
-    local ai = require('mini.ai')
+    --
+    local spec_treesitter = require('mini.ai').gen_spec.treesitter
     require('mini.ai').setup({
       n_lines = 500, -- Number of lines to search for textobjects
       custom_textobjects = {
         -- Function definition
-        f = ai.gen_spec.treesitter({
+        f = spec_treesitter({
           a = '@function.outer',
           i = '@function.inner',
         }),
 
-        F = ai.gen_spec.treesitter({
+        F = spec_treesitter({
           a = '@call.outer',
           i = '@call.inner'
         }),
 
         -- Class/Struct definition
-        c = ai.gen_spec.treesitter({
+        c = spec_treesitter({
           a = '@class.outer',
           i = '@class.inner',
         }),
 
         -- Code block, loop, or conditional statement
-        o = ai.gen_spec.treesitter({
+        o = spec_treesitter({
           a = { '@block.outer', '@conditional.outer', '@loop.outer' },
           i = { '@block.inner', '@conditional.inner', '@loop.inner' },
         }),
 
-        -- Function/Method call
-        C = ai.gen_spec.treesitter({
-          a = '@call.outer',
-          i = '@call.inner',
-        }),
-
         -- Function parameters / arguments
         -- Note: 'a' overrides mini.ai's builtin argument finder with Tree-sitter's
-        a = ai.gen_spec.treesitter({
+        a = spec_treesitter({
           a = '@parameter.outer',
           i = '@parameter.inner',
         }),
-      },
+    }
     })
 
+    local ts_input = require('mini.surround').gen_spec.treesitter
     require('mini.surround').setup({
+      search_method = "cover_or_next",
       mappings = {
         add = 'Sa',
         delete = 'Sd',
@@ -64,11 +77,10 @@ return {
     require('mini.bracketed').setup()
 
     -- Initialize mini.diff
-    require('mini.diff').setup()
+    -- require('mini.diff').setup()
 
     require('mini.files').setup()
     -- Open mini.files at the current working directory (CWD)
-    vim.keymap.set('n', '<C-e>', function() MiniFiles.open() end, { desc = 'Open mini.files (Root)' })
 
     require('mini.statusline').setup({
       content = {
@@ -78,13 +90,14 @@ return {
           local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
           local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
           local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+          local session       = vim.fs.basename(vim.v.this_session)
 
           return MiniStatusline.combine_groups({
             { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
             '%<', -- Mark general truncate point
-            { hl = 'MiniStatuslineFilename', strings = { "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
+            { hl = 'MiniStatuslineFilename', strings = {"{" .. session .. "}", "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
             '%=', -- End left alignment
-            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics," ", fileinfo } },
+            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
           })
         end
       }
@@ -92,8 +105,8 @@ return {
 
     -- 1. Configure mini.completion (Asynchronous completion and signature help)
     require('mini.completion').setup({
-      lsp_completion = { auto_setup = true, },
-      delay = { completion = 500, info = 500, signature = 300 }
+      lsp_completion = { auto_setup = true, source_func = 'omnifunc',},
+      delay = { completion = 300, info = 300, signature = 100 }
     })
 
     -- 2. Configure mini.snippets (Handles your snippets cleanly)
@@ -114,20 +127,13 @@ return {
     })
 
     require("mini.sessions").setup()
-    vim.keymap.set('n', "<leader>ss", function() MiniSessions.select() end, {desc = "select and load sessino"})
-    vim.keymap.set('n', "<leader>sw", function() MiniSessions.write() end, {desc = "write to session"})
-    vim.keymap.set('n', "<leader>s?", function() vim.notify("Current Session:" .. vim.fs.basename(vim.v.this_session)) end, {desc = "Current session"})
-    vim.keymap.set('n', "<leader>sr", function()
-      MiniFiles.open(vim.fn.stdpath('data') .. '/session/')
-    end, {desc = "Current session"})
-    vim.keymap.set("n", "<leader>sN", function()
-      vim.ui.input({ prompt = "New session name:" }, function(session_name)
-        if session_name ~= "" then
-          MiniSessions.write(session_name)
-          require("snacks").bufdelete.all()
-        end
-      end)
-    end, { desc = "new session"})
 
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      desc = 'Removes trailing whitespace on save',
+      callback = function()
+        require('mini.trailspace').trim()
+        require('mini.trailspace').trim_last_lines()
+      end,
+    })
   end,
 }
