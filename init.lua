@@ -96,3 +96,12 @@ vim.diagnostic.config({
 require('m_keys')
 -- require('m_vimpencil')
 require('m_options')
+
+-- prevent snacks from create history
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = vim.api.nvim_create_augroup("no_picker_hist", { clear = true }),
+  callback = function()
+    require("snacks.picker.util.history") -- Preload file
+    vim.api.nvim_clear_autocmds({ group = "snacks_history" })
+  end,
+})

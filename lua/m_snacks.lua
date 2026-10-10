@@ -8,7 +8,6 @@ local m_layout = {
 
 local function commands_menu(items, title)
   Snacks.picker.pick({
-    source = "markdown_links",
     items = items,
     title = title,
     format = "text", -- Display only the title in the list
@@ -16,10 +15,21 @@ local function commands_menu(items, title)
     confirm = function(picker, item)
       picker:close()
       if item and item.fn then
-        -- 5. Open the link using your system's default handler
         item.fn()
       end
     end,
+    matcher = {
+      fuzzy = false, -- use fuzzy matching
+      smartcase = true, -- use smartcase
+      ignorecase = true, -- use ignorecase
+      sort_empty = false, -- sort results when the search string is empty
+      filename_bonus = true, -- give bonus for matching file names (last part of the path)
+      file_pos = true, -- support patterns like `file:line:col` and `file:line`
+      -- the bonusses below, possibly require string concatenation and path normalization,
+      -- so this can have a performance impact for large lists and increase memory usage
+      cwd_bonus = false, -- give bonus for matching files in the cwd
+      frecency = false, -- frecency bonus
+    },
   })
 end
 
@@ -350,11 +360,10 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  function() Snacks.bufdelete() vim.cmd.close() end, desc = "Delete Buffer" },
+    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
-    { "<c-_>",      function() Snacks.terminal() end, desc = "which_key_ignore" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   },
