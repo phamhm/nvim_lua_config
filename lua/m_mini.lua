@@ -94,7 +94,7 @@ return {
           return MiniStatusline.combine_groups({
             { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
             '%<', -- Mark general truncate point
-            { hl = 'MiniStatuslineFilename', strings = {'(:'..session ..':)' , "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 3)}" .. "%m%r" } },
+            { hl = 'MiniStatuslineFilename', strings = {'('..session ..')' , "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 3)}" .. "%m%r" } },
             '%=', -- End left alignment
             { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
           })
