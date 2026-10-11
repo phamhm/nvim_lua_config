@@ -192,15 +192,7 @@ return {
       win = {
         input = {
           keys = {
-            -- customize here so I can have the same keys as my personal machine
-            ["<D-d>"] = { "inspect", mode = { "n", "i" } },
-            ["<D-f>"] = { "toggle_follow", mode = { "i", "n" } },
-            ["<D-h>"] = { "toggle_hidden", mode = { "i", "n" } },
-            ["<D-i>"] = { "toggle_ignored", mode = { "i", "n" } },
-            ["<D-r>"] = { "toggle_regex", mode = { "i", "n" } },
-            ["<D-m>"] = { "toggle_maximize", mode = { "i", "n" } },
-            ["<D-p>"] = { "toggle_preview", mode = { "i", "n" } },
-            ["<D-w>"] = { "cycle_win", mode = { "i", "n" } },
+            ["<M-p>"] = { "toggle_preview", mode = { "i", "n" } },
           }
         }
       },
@@ -305,8 +297,43 @@ return {
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
+    {
+      "<M-z>",
+      function()
+        local fold_shortcuts = table.concat({
+          "  Neovim Folding Shortcuts",
+          "==========================",
+          "za  - Toggle fold under cursor",
+          "zA  - Toggle fold under cursor recursively",
+          "",
+          "zc  - Close fold under cursor",
+          "zC  - Close folds recursively under cursor",
+          "",
+          "zo  - Open fold under cursor",
+          "zO  - Open folds recursively under cursor",
+          "",
+          "zd  - Delete fold under cursor",
+          "zD  - Delete folds recursively under cursor",
+          "",
+          "zm  - More folding (increase foldlevel by 1)",
+          "zM  - Close ALL folds (set foldlevel to 0)",
+          "zr  - Reduce folding (decrease foldlevel by 1)",
+          "zR  - Open ALL folds (set foldlevel to max)",
+          "",
+          "zk  - Move cursor to previous fold start",
+          "zj  - Move cursor to next fold end",
+          "zn  - Fold none (disable folding temporarily)",
+          "zN  - Fold normal (re-enable folding)",
+        }, "\n")
 
-    {"<D-s>",
+        vim.notify(fold_shortcuts, vim.log.levels.INFO, {
+          title = "Folding Cheat Sheet",
+          timeout = 10000, -- Closes after 5 seconds if using nvim-notify
+        })
+      end, desc="vim folding"
+    },
+
+    {"<M-s>",
       function()
         commands_menu({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },
@@ -374,7 +401,7 @@ return {
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader>gs", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>gS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
-    { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
+    { "<leader><leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
       "<C-`>", function()

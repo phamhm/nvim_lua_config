@@ -3,7 +3,7 @@ local options = {
   -- prevent yank/delete into "+ and "* registers. use <leader>cc to copy yanked @" into @+
   clipboard = "",
   cmdheight = 1,                           -- more space in the neovim command line for displaying messages
-  completeopt = { "menuone", "noselect" }, -- mostly just for cmp
+  completeopt = { "menuone", "noselect"}, -- mostly just for cmp
   conceallevel = 0,                        -- so that `` is visible in markdown files
   fileencoding = "utf-8",                  -- the encoding written to a file
   hidden = true,                           -- required to keep multiple buffers and open multiple buffers
@@ -23,13 +23,13 @@ local options = {
   writebackup = false,                     -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
   expandtab = true,                        -- convert tabs to spaces
   smarttab = true,
-  shiftwidth = 2,                          -- the number of spaces inserted for each indentation
+  shiftwidth = 4,                          -- the number of spaces inserted for each indentation
   tabstop = 4,                             -- insert 2 spaces for a tab
   softtabstop = 4,
   cursorline = true,                       -- highlight the current line
   number = true,                           -- set numbered lines
-  relativenumber = true,                  -- set relative numbered lines
-  numberwidth = 2,                         -- set number column width to 2 {default 4}
+  relativenumber = true,                   -- set relative numbered lines
+  numberwidth = 4,                         -- set number column width to 2 {default 4}
   signcolumn = "yes",                      -- always show the sign column, otherwise it would shift the text each time
   colorcolumn = "132",
   wrap = false,                            -- display lines as one long line
@@ -43,6 +43,7 @@ local options = {
   autochdir = true,
   --laststatus = 3,
   spell = false,
+  spelllang = 'en_us',
   autoread=true,
   title=true,
   titlestring="v:%t",
@@ -54,6 +55,8 @@ local options = {
   foldenable = true,
   timeoutlen = 500,
   statuscolumn = "",
+  background = "dark",
+  spellfile = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
 }
 
 for k, v in pairs(options) do
@@ -64,10 +67,10 @@ vim.opt.shortmess:append("c")
 vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
-
 -- JavaScript: 2 spaces
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+
 autocmd("FileType", {
   group = indent_group,
   pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua" },
@@ -76,5 +79,14 @@ autocmd("FileType", {
     vim.bo.shiftwidth = 2
     vim.bo.softtabstop = 2
     vim.bo.expandtab = true
+  end,
+})
+
+autocmd("FileType", {
+  pattern = "vimwiki",
+  callback = function()
+    vim.opt_local.spell = true
+    vim.opt_local.spelllang = "en_us"
+    vim.opt_local.wrap = true
   end,
 })

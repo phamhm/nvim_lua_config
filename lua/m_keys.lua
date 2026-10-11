@@ -109,7 +109,7 @@ vim.keymap.set('n', '<leader>gw', function()
 end, {silent = true, desc = 'Ask for text and append to end of file' })
 
 vim.keymap.set('n', '<leader>vd',
-  function()
+function()
     local today_date = os.date('%Y-%m-%d')
     local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
     file_path = vim.fn.expand(file_path)
@@ -123,8 +123,7 @@ vim.keymap.set('n', '<leader>vd',
         vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
       end
     end)
-
-  end, { desc = 'Ask for text and append to end of file' })
+end, { desc = 'Ask for text and append to end of file' })
 
 vim.keymap.set("n", "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, {desc="get help for current file type"})
 
@@ -137,10 +136,14 @@ vim.keymap.set("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc =
 
 local function prompt_and_run_lua(prompt, cmp_type)
   vim.ui.input({ prompt = prompt, completion = cmp_type  }, function(input)
+    -- If the user hits Esc or Cancels, input is nil
     if not input or input == "" then return end
 
+    -- Compile the string into an executable Lua chunk
     local chunk, err = load(input)
+
     if chunk then
+      -- Safely execute the compiled chunk
       local success, result = pcall(chunk)
       if not success then
         vim.notify("Runtime error: " .. tostring(result), vim.log.levels.ERROR)
@@ -159,4 +162,4 @@ vim.keymap.set('n', 'K', function()
   vim.lsp.buf.hover({ border = 'rounded' })
 end, { desc = 'LSP Hover Documentation', silent = true })
 
-vim.keymap.set('n', '<leader>cc', function() vim.fn.setreg('+', vim.fn.getreg('"')) end, {desc ='move register @" into register @*', silent = true} )
+vim.keymap.set('n', "<leader>cc", function() vim.fn.setreg("+", vim.fn.getreg('"')) end, {desc = 'copy yanked @" into system clipboard @+'})

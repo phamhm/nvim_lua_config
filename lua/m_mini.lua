@@ -13,7 +13,7 @@ return {
     {'<leader>sN', function()
       vim.ui.input({ prompt = 'Session Name: ' }, function(name)
         if name ~= '' then
-          vim.cmd('silent %bdelete!')
+          require('snacks').bufdelete.all()
           MiniSessions.write(name)
         end
       end)
@@ -31,6 +31,7 @@ return {
           i = '@function.inner',
         }),
 
+        -- Function calls (e.g., `func(val)`)
         F = ai.gen_spec.treesitter({
           a = '@call.outer',
           i = '@call.inner',
@@ -48,7 +49,7 @@ return {
           i = { '@block.inner', '@conditional.inner', '@loop.inner' },
         }),
 
-        -- Function parameters / arguments
+        -- Function/Method parameters or arguments
         a = ai.gen_spec.treesitter({
           a = '@parameter.outer',
           i = '@parameter.inner',
@@ -94,7 +95,7 @@ return {
           return MiniStatusline.combine_groups({
             { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
             '%<', -- Mark general truncate point
-            { hl = 'MiniStatuslineFilename', strings = {"{" .. session .. "}", "%{pathshorten(fnamemodify(expand('%:p'), ':~'))}" .. "%m%r" } },
+            { hl = 'MiniStatuslineFilename', strings = {"{" .. session .. "}", "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 3)}" .. "%m%r" } },
             '%=', -- End left alignment
             { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
           })
@@ -119,6 +120,8 @@ return {
       mappings = {
         -- Expand snippet at cursor position. Created globally in Insert mode.
         expand = '<C-.>',
+        -- Interact with default `expand.insert` session.
+        -- Created for the duration of active session(s)
         jump_next = '<C-n>',
         jump_prev = '<C-p>',
         stop = '<C-c>',
@@ -126,6 +129,7 @@ return {
     })
 
     require("mini.sessions").setup()
+    -- require('mini.operators').setup()
 
     vim.api.nvim_create_autocmd('BufWritePre', {
       desc = 'Removes trailing whitespace on save',

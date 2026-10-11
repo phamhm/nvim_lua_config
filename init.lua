@@ -75,10 +75,21 @@ require('lazy').setup({
     ft = { "markdown" },
     build = function() vim.fn["mkdp#util#install"]() end,
   },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim', 'nvim-mini/mini.icons', 'nvim-tree/nvim-web-devicons' },            -- if you use the mini.nvim suite
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+    config = function()
+      require('render-markdown').setup({
+        file_types = { 'markdown', 'vimwiki' },
+        render_modes = { 'n', 'c', 't' },
+      })
+      vim.treesitter.language.register('markdown', 'vimwiki')
+    end,
+  }
 })
-
-vim.opt.termguicolors = true
--- Default options:
 
 -- setup must be called before loading
 vim.opt.background = "dark" -- set this to dark or light
