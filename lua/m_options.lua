@@ -43,6 +43,7 @@ local options = {
   autochdir = true,
   --laststatus = 3,
   spell = false,
+  spelllang = 'en_us',
   autoread=true,
   title=true,
   titlestring="v:%t",
@@ -55,6 +56,7 @@ local options = {
   timeoutlen = 500,
   statuscolumn = "",
   background = "dark",
+  spellfile = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
 }
 
 for k, v in pairs(options) do
@@ -65,10 +67,10 @@ vim.opt.shortmess:append("c")
 vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
-
 -- JavaScript: 2 spaces
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+
 autocmd("FileType", {
   group = indent_group,
   pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua" },
@@ -77,5 +79,14 @@ autocmd("FileType", {
     vim.bo.shiftwidth = 2
     vim.bo.softtabstop = 2
     vim.bo.expandtab = true
+  end,
+})
+
+autocmd("FileType", {
+  pattern = "vimwiki",
+  callback = function()
+    vim.opt_local.spell = true
+    vim.opt_local.spelllang = "en_us"
+    vim.opt_local.wrap = true
   end,
 })

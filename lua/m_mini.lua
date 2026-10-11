@@ -130,7 +130,6 @@ return {
     require('mini.sessions').setup()
     -- require('mini.operators').setup()
 
-
     vim.api.nvim_create_autocmd('BufWritePre', {
       desc = 'Removes trailing whitespace on save',
       callback = function()
