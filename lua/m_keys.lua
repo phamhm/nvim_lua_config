@@ -21,13 +21,7 @@ vim.keymap.set('i', '<C-a>', "<Esc>A",{silent = true})
 vim.keymap.set('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 vim.keymap.set('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
-vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
---
-
--- vim.keymap.set('n', '<C-h>', "<C-w>h",{})
--- vim.keymap.set('n', '<C-j>', "<C-w>j",{})
--- vim.keymap.set('n', '<C-k>', "<C-w>k",{})
--- vim.keymap.set('n', '<C-l>', "<C-w>l",{})
+-- vim.keymap.set('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 
 vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
 
@@ -36,8 +30,8 @@ vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = tr
 
 --vim.keymap.set("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --vim.keymap.set("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
-vim.keymap.set('n', '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
-vim.keymap.set('n', '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
+vim.keymap.set({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
+vim.keymap.set({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
 vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
@@ -56,7 +50,6 @@ vim.keymap.set("n", "<leader>td", ":m ?# Capture?-2 <CR>")
 
 vim.keymap.set("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 vim.keymap.set("n", "<leader>tc", ":m /^# Capture$/ <CR>")
-
 
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
@@ -92,7 +85,7 @@ end, opt)
 -- end googling, }
 
 vim.keymap.set('n', '<leader>gc', function()
-  vim.ui.input({ prompt = 'Todo:' }, function(input)
+  vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
       vim.fn.writefile({ "- " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
     end

@@ -4,16 +4,16 @@ return {
   version = false,
   lazy = false,
   keys = {
-    {"<leader>ss", function() MiniSessions.select() end, desc = "select and load session" },
-    {"<leader>sw", function() MiniSessions.write() end, desc = "wrirte to session" },
-    {"<C-e>", function() MiniFiles.open() end, desc = "Openi mini.files" },
-    {"<leader>s?", function() vim.notify("Current Session:" .. vim.fs.basename(vim.v.this_session)) end, desc = "Current session"},
-    {"<leader>se", function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, desc = "Current session"},
-    {"<leader>sN", function()
-      vim.ui.input({ prompt = "New session name:" }, function(session_name)
-        if session_name ~= "" then
-          MiniSessions.write(session_name)
-          require("snacks").bufdelete.all()
+    {'<C-e>', function() MiniFiles.open() end, desc = 'Open mini.files' },
+    {'<leader>ss', function() MiniSessions.select() end, desc = 'Save current session'},
+    {'<leader>sw', function() MiniSessions.write() end,  desc = 'Save current session' },
+    {'<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end,  desc = 'Show current session' },
+    {'<leader>se', function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, { desc = 'Open mini.files Workspace' } },
+    {'<leader>sN', function()
+      vim.ui.input({ prompt = 'Session Name: ' }, function(name)
+        if name ~= '' then
+          MiniSessions.write(name)
+          require('snacks').bufdelete.all()
         end
       end)
     end, desc = "new session" },
@@ -21,55 +21,55 @@ return {
   config = function()
     -- Initialize mini.ai
     --
-    local spec_treesitter = require('mini.ai').gen_spec.treesitter
-    require('mini.ai').setup({
-      n_lines = 500, -- Number of lines to search for textobjects
+    local ai = require('mini.ai')
+    ai.setup({
+      n_lines = 500, -- Extend search scope for larger textobjects
       custom_textobjects = {
-        -- Function definition
-        f = spec_treesitter({
+        -- Function definitions
+        f = ai.gen_spec.treesitter({
           a = '@function.outer',
           i = '@function.inner',
         }),
 
-        F = spec_treesitter({
+        F = ai.gen_spec.treesitter({
           a = '@call.outer',
-          i = '@call.inner'
+          i = '@call.inner',
         }),
 
-        -- Class/Struct definition
-        c = spec_treesitter({
+        -- Class definitions
+        c = ai.gen_spec.treesitter({
           a = '@class.outer',
           i = '@class.inner',
         }),
 
-        -- Code block, loop, or conditional statement
-        o = spec_treesitter({
+        -- Code blocks, loops, or conditionals
+        o = ai.gen_spec.treesitter({
           a = { '@block.outer', '@conditional.outer', '@loop.outer' },
           i = { '@block.inner', '@conditional.inner', '@loop.inner' },
         }),
 
         -- Function parameters / arguments
-        -- Note: 'a' overrides mini.ai's builtin argument finder with Tree-sitter's
-        a = spec_treesitter({
+        a = ai.gen_spec.treesitter({
           a = '@parameter.outer',
           i = '@parameter.inner',
         }),
     }
     })
 
-    local ts_input = require('mini.surround').gen_spec.treesitter
-    require('mini.surround').setup({
-      search_method = "cover_or_next",
-      mappings = {
-        add = 'Sa',
-        delete = 'Sd',
-        find = 'Sf',
-        find_left = 'SF',
-        highlight = 'Sh',
-        replace = 'Sr',
-        update_n_lines = 'Sn',
-      },
-    })
+    require('mini.surround').setup(
+      {
+        n_lines = 500, -- Extend search scope for larger textobjects
+        search_method = "cover_or_next",
+        mappings = {
+          add = 'Sa', -- Add surrounding in Normal and Visual modes
+          delete = 'Sd', -- Delete surrounding
+          find = 'Sf', -- Find surrounding (to the right)
+          find_left = 'SF', -- Find surrounding (to the left)
+          highlight = 'Sh', -- Highlight surrounding
+          replace = 'Sr', -- Replace surrounding
+        }
+      }
+    )
 
     -- require('mini.align').setup()
 

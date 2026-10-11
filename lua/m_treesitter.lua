@@ -15,6 +15,7 @@ return {
       "typescript",
       "json",
       "lua",
+      "php",
       "python",
       "scss",
       "sql",
