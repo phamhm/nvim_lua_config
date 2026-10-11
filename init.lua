@@ -25,14 +25,14 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-    require('m_snacks'),
-    require('m_mini'),
-    require('m_lsp'),
-    require('m_treesitter'),
-    require('m_vimwiki'),
+  require('m_snacks'),
+  require('m_mini'),
+  require('m_lsp'),
+  require('m_treesitter'),
+  require('m_vimwiki'),
 
-    { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-    {"HakonHarnes/img-clip.nvim",
+  {"catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
     opts = {
       default = {
@@ -50,27 +50,31 @@ require('lazy').setup({
 },
 
 --{'preservim/nerdtree'},
-{'williamboman/mason.nvim'},
-{'easymotion/vim-easymotion'},
-{'nvim-tree/nvim-web-devicons'},
-{ 'preservim/vim-markdown',
-config = function()
-    vim.g.vim_markdown_conceal_code_blocks = 0
-    vim.g.vim_markdown_folding_style_pythonic = 1
-    vim.g.vim_markdown_no_default_key_mappings = 1
-    vim.g.vim_markdown_new_list_item_indent = 0
-end,
-},
-{ "iamcco/markdown-preview.nvim",
---https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
-cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-build = "cd app && yarn install",
-init = function()
-    vim.g.mkdp_filetypes = { "markdown" }
-end,
-ft = { "markdown" },
-},
 
+  {'williamboman/mason.nvim'},
+
+  {'easymotion/vim-easymotion'},
+  {'nvim-tree/nvim-web-devicons'},
+  -- { "preservim/vim-lexical" },
+  -- { "preservim/vim-pencil"},
+  -- { "preservim/vim-litecorrect"},
+  -- { "preservim/vim-textobj-sentence"},
+  -- { "kana/vim-textobj-user"},
+  { 'preservim/vim-markdown',
+    config = function()
+      vim.g.vim_markdown_conceal_code_blocks = 0
+      vim.g.vim_markdown_folding_style_pythonic = 1
+      vim.g.vim_markdown_no_default_key_mappings = 1
+      vim.g.vim_markdown_new_list_item_indent = 0
+    end,
+  },
+  {
+    -- https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
 })
 
 vim.opt.termguicolors = true
@@ -88,5 +92,14 @@ vim.diagnostic.config({
 })
 
 require('m_keys')
+-- require('m_vimpencil')
 require('m_options')
 
+-- prevent snacks from create history
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = vim.api.nvim_create_augroup("no_picker_hist", { clear = true }),
+  callback = function()
+    require("snacks.picker.util.history") -- Preload file
+    vim.api.nvim_clear_autocmds({ group = "snacks_history" })
+  end,
+})

@@ -33,6 +33,9 @@ vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = tr
 vim.keymap.set({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
 vim.keymap.set({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
+-- c-h delete before cursor.
+-- c-l delete after cursor.
+-- balancing out the universe
 vim.keymap.set('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
@@ -45,9 +48,10 @@ vim.keymap.set('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent =
 vim.keymap.set('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
 vim.keymap.set('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
 
-vim.keymap.set("v", "<leader>td", ":'<,'>m ?# Capture?-2 <CR>")
-vim.keymap.set("n", "<leader>td", ":m ?# Capture?-2 <CR>")
-
+-- simplify the capture. Don't need to move around.
+-- keeps these here as example of moving with vim command
+-- vim.keymap.set("v", "<leader>td", ":'<,'>m ?^# Capture$?-2 <CR>")
+-- vim.keymap.set("n", "<leader>td", ":m ?^# Capture$?-2 <CR>")
 vim.keymap.set("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 vim.keymap.set("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
@@ -84,10 +88,13 @@ vim.keymap.set("v", google_shortcut, function()
 end, opt)
 -- end googling, }
 
+-- capture
+
 vim.keymap.set('n', '<leader>gc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
-      vim.fn.writefile({ "- " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
+      local today_date = os.date('%Y-%m-%d')
+      vim.fn.writefile({ "[".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
@@ -101,22 +108,23 @@ vim.keymap.set('n', '<leader>gw', function()
   end)
 end, {silent = true, desc = 'Ask for text and append to end of file' })
 
-vim.keymap.set('n', '<leader>vd', function()
-  local today_date = os.date("%Y-%m-%d")
-  local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
-  file_path = vim.fn.expand(file_path)
-  vim.ui.input({ prompt = "Today Diary Entry:" }, function(content)
-    local file = io.open(file_path, "a")
-    if file then
-      file:write("- " .. content .. "\n")
-      file:close()
-      print("Saved to " .. file_path)
-    else
-      vim.notify("Error: Could not write diary entry", vim.log.levels.ERROR)
-    end
-  end)
+vim.keymap.set('n', '<leader>vd',
+  function()
+    local today_date = os.date('%Y-%m-%d')
+    local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
+    file_path = vim.fn.expand(file_path)
+    vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
+      local file = io.open(file_path, "a")
+      if file then
+        file:write("- " .. content .. '\n')
+        file:close()
+        print("Saved to " .. file_path)
+      else
+        vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
+      end
+    end)
 
-end, { desc = 'Ask for text and append to end of file' })
+  end, { desc = 'Ask for text and append to end of file' })
 
 vim.keymap.set("n", "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, {desc="get help for current file type"})
 
@@ -143,8 +151,12 @@ local function prompt_and_run_lua(prompt, cmp_type)
   end)
 end
 
-vim.keymap.set("n", "<leader>lu", function() prompt_and_run_lua('Lua Command','lua') end, {remap = true, silent=true, desc = "Prompt and execute lua code"})
+-- Map it to a key (e.g., <leader>le for "Lua Execute")
+vim.keymap.set('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
 
-vim.keymap.set('n', 'K', function() vim.lsp.buf.hover({border="rounded"})end, {desc ="LSP Hover Documentation", silent = true} )
+
+vim.keymap.set('n', 'K', function()
+  vim.lsp.buf.hover({ border = 'rounded' })
+end, { desc = 'LSP Hover Documentation', silent = true })
 
 vim.keymap.set('n', '<leader>cc', function() vim.fn.setreg('+', vim.fn.getreg('"')) end, {desc ='move register @" into register @*', silent = true} )

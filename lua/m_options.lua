@@ -63,3 +63,18 @@ end
 vim.opt.shortmess:append("c")
 vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
+
+
+-- JavaScript: 2 spaces
+local augroup = vim.api.nvim_create_augroup
+local autocmd = vim.api.nvim_create_autocmd
+autocmd("FileType", {
+  group = indent_group,
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua" },
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.softtabstop = 2
+    vim.bo.expandtab = true
+  end,
+})

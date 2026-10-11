@@ -20,7 +20,6 @@ return {
   },
   config = function()
     -- Initialize mini.ai
-    --
     local ai = require('mini.ai')
     ai.setup({
       n_lines = 500, -- Extend search scope for larger textobjects
@@ -71,16 +70,15 @@ return {
       }
     )
 
-    -- require('mini.align').setup()
+    require('mini.align').setup()
 
     require('mini.pairs').setup()
     require('mini.bracketed').setup()
 
-    -- Initialize mini.diff
-    -- require('mini.diff').setup()
+    require('mini.diff').setup()
 
     require('mini.files').setup()
-    -- Open mini.files at the current working directory (CWD)
+    local mfiles = require('mini.files')
 
     require('mini.statusline').setup({
       content = {
@@ -105,7 +103,7 @@ return {
 
     -- 1. Configure mini.completion (Asynchronous completion and signature help)
     require('mini.completion').setup({
-      lsp_completion = { auto_setup = true, source_func = 'omnifunc',},
+      lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
       delay = { completion = 300, info = 300, signature = 100 }
     })
 
