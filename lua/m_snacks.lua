@@ -106,7 +106,7 @@ local function open_markdown_links_picker()
         -- 5. Open the link using your system's default handler
         local cmd
         if item.link:match("http://") or item.link:match("https://") then
-          cmd = {"google-chrome", item.link}
+          cmd = {"open", item.link}
         elseif  item.link:match(".zsh") then
           cmd = {"$(which zsh)", item.link}
         elseif item.link == "edit" then
@@ -192,7 +192,15 @@ return {
       win = {
         input = {
           keys = {
-            ["<M-p>"] = { "toggle_preview", mode = { "i", "n" } },
+            -- customize here so I can have the same keys as my personal machine
+            ["<D-d>"] = { "inspect", mode = { "n", "i" } },
+            ["<D-f>"] = { "toggle_follow", mode = { "i", "n" } },
+            ["<D-h>"] = { "toggle_hidden", mode = { "i", "n" } },
+            ["<D-i>"] = { "toggle_ignored", mode = { "i", "n" } },
+            ["<D-r>"] = { "toggle_regex", mode = { "i", "n" } },
+            ["<D-m>"] = { "toggle_maximize", mode = { "i", "n" } },
+            ["<D-p>"] = { "toggle_preview", mode = { "i", "n" } },
+            ["<D-w>"] = { "cycle_win", mode = { "i", "n" } },
           }
         }
       },
@@ -290,15 +298,15 @@ return {
       local date_pattern = "[" .. today_date .."]"
       copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
     end, {desc = 'copy dated line into @* register'} },
-    { "<leader>,", function() Snacks.picker.buffers({hidden=true, nofile=true}) end, desc = "Buffers" },
+    { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-D-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
 
-    {"<M-s>",
+    {"<D-s>",
       function()
         commands_menu({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },

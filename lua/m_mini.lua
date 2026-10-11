@@ -9,11 +9,12 @@ return {
     {'<leader>sw', function() MiniSessions.write() end,  desc = 'Save current session' },
     {'<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end,  desc = 'Show current session' },
     {'<leader>se', function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, { desc = 'Open mini.files Workspace' } },
+    {'<leader>sd', function() MiniSessions.select('delete') end, { desc = 'Delete mini.sessions Workspace' } },
     {'<leader>sN', function()
       vim.ui.input({ prompt = 'Session Name: ' }, function(name)
         if name ~= '' then
+          vim.cmd('silent %bdelete!')
           MiniSessions.write(name)
-          require('snacks').bufdelete.all()
         end
       end)
     end, desc = "new session" },
