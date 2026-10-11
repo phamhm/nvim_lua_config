@@ -54,6 +54,7 @@ local options = {
   foldenable = true,
   timeoutlen = 500,
   statuscolumn = "",
+  background = "dark",
 }
 
 for k, v in pairs(options) do
