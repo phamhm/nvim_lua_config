@@ -290,7 +290,7 @@ return {
       local date_pattern = "[" .. today_date .."]"
       copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
     end, {desc = 'copy dated line into @* register'} },
-    { "<leader>,", function() Snacks.picker.buffers({hidden=true, nofile=true}) end, desc = "Buffers" },
+    { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
     { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },

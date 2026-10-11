@@ -3,7 +3,7 @@ local options = {
   -- prevent yank/delete into "+ and "* registers. use <leader>cc to copy yanked @" into @+
   clipboard = "",
   cmdheight = 1,                           -- more space in the neovim command line for displaying messages
-  completeopt = { "menuone", "noselect" }, -- mostly just for cmp
+  completeopt = { "menuone", "noselect"}, -- mostly just for cmp
   conceallevel = 0,                        -- so that `` is visible in markdown files
   fileencoding = "utf-8",                  -- the encoding written to a file
   hidden = true,                           -- required to keep multiple buffers and open multiple buffers
@@ -18,7 +18,6 @@ local options = {
   splitright = true,                       -- force all vertical splits to go to the right of current window
   swapfile = false,                        -- creates a swapfile
   termguicolors = true,                    -- set term gui colors (most terminals support this)
-  guicursor = "a:Cursor/lCursor",          -- use cursor highlight group across all modes
   undofile = true,                         -- enable persistent undo
   updatetime = 300,                        -- faster completion (4000ms default)
   writebackup = false,                     -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
