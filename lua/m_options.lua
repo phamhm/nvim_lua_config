@@ -81,12 +81,3 @@ autocmd("FileType", {
     vim.bo.expandtab = true
   end,
 })
-
-autocmd("FileType", {
-  pattern = "vimwiki",
-  callback = function()
-    vim.opt_local.spell = true
-    vim.opt_local.spelllang = "en_us"
-    vim.opt_local.wrap = true
-  end,
-})

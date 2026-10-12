@@ -30,7 +30,10 @@ require('lazy').setup({
   require('m_lsp'),
   require('m_treesitter'),
   require('m_vimwiki'),
+  -- require('m_gitsign'),
 
+  -- {'rktjmp/lush.nvim'},
+  -- {'metalelf0/jellybeans-nvim'},
   {"catppuccin/nvim", name = "catppuccin", priority = 1000 },
   {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
@@ -47,9 +50,9 @@ require('lazy').setup({
       -- suggested keymap
       { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
     },
-},
+  },
 
---{'preservim/nerdtree'},
+  --{'preservim/nerdtree'},
 
   {'williamboman/mason.nvim'},
 
@@ -83,23 +86,35 @@ require('lazy').setup({
     opts = {},
     config = function()
       require('render-markdown').setup({
+        enabled = false,
         file_types = { 'markdown', 'vimwiki' },
         render_modes = { 'n', 'c', 't' },
       })
       vim.treesitter.language.register('markdown', 'vimwiki')
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {"vimwiki", "markdown"}, -- Target file type
+        callback = function(ev)
+          -- Map 'K' to show LSP hover documentation, only in Lua files
+          vim.keymap.set('n', '<leader>mt', function()
+            require('render-markdown').toggle()
+          end, { desc = 'Toggle Markdown Rendering (Global)' })
+        end,
+      })
+
     end,
   }
 })
 
 -- setup must be called before loading
-vim.opt.background = "dark" -- set this to dark or light
+-- vim.opt.background = "dark" -- set this to dark or light
 vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
-  virtual_text = false,
-  signs = true,
-  update_in_insert = false,
-  underline = false,
+    virtual_text = false,
+    signs = true,
+    update_in_insert = false,
+    underline = false,
 })
 
 require('m_keys')

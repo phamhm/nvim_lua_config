@@ -17,7 +17,7 @@ return {
           MiniSessions.write(name)
         end
       end)
-    end, desc = "new session" },
+    end, desc = 'Save named session'}
   },
   config = function()
     -- Initialize mini.ai
@@ -37,14 +37,8 @@ return {
           i = '@call.inner',
         }),
 
-        -- comment definitions
-        c = ai.gen_spec.treesitter({
-          a = '@comment.outer',
-          i = '@comment.inner',
-        }),
-
         -- Class definitions
-        C = ai.gen_spec.treesitter({
+        c = ai.gen_spec.treesitter({
           a = '@class.outer',
           i = '@class.inner',
         }),
@@ -60,7 +54,7 @@ return {
           a = '@parameter.outer',
           i = '@parameter.inner',
         }),
-    }
+      },
     })
 
     require('mini.surround').setup(
@@ -68,25 +62,32 @@ return {
         n_lines = 500, -- Extend search scope for larger textobjects
         search_method = "cover_or_next",
         mappings = {
-          add = 'Sa', -- Add surrounding in Normal and Visual modes
-          delete = 'Sd', -- Delete surrounding
+          add = 'ys', -- Add surrounding in Normal and Visual modes
+          delete = 'ds', -- Delete surrounding
+          replace = 'cs', -- Replace surrounding
           find = 'Sf', -- Find surrounding (to the right)
           find_left = 'SF', -- Find surrounding (to the left)
           highlight = 'Sh', -- Highlight surrounding
-          replace = 'Sr', -- Replace surrounding
         }
       }
     )
+    -- Map 'S' in Visual mode to add surroundings, mimicking vim-surround
+    vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
 
     require('mini.align').setup()
 
     require('mini.pairs').setup()
     require('mini.bracketed').setup()
 
-    require('mini.diff').setup()
+    -- this modules will overwrite gitsign
+    require('mini.diff').setup( {
+      view = {
+        -- Signs used for hunks with 'sign' view
+        signs = { add = '+', change = '|', delete = '--' },
+      },
+    })
 
     require('mini.files').setup()
-    local mfiles = require('mini.files')
 
     require('mini.statusline').setup({
       content = {
@@ -96,12 +97,15 @@ return {
           local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
           local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
           local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-          local session       = vim.fs.basename(vim.v.this_session)
+          local session = ''
+          if vim.v.this_session ~= "" then
+            session       =  '(' .. vim.fs.basename( vim.v.this_session ) .. ')'
+          end
 
           return MiniStatusline.combine_groups({
-            { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-            '%<', -- Mark general truncate point
-            { hl = 'MiniStatuslineFilename', strings = {"{" .. session .. "}", "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 3)}" .. "%m%r" } },
+            -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
+            -- '%<', -- Mark general truncate point
+            { hl = 'MiniStatuslineFilename', strings = {session, "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 2)}" .. "%m%r" } },
             '%=', -- End left alignment
             { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
           })
@@ -134,7 +138,9 @@ return {
       },
     })
 
-    require("mini.sessions").setup()
+    require('mini.sessions').setup({
+      directory = vim.fn.stdpath('config') .. '/sessions/'
+    })
     -- require('mini.operators').setup()
 
     vim.api.nvim_create_autocmd('BufWritePre', {

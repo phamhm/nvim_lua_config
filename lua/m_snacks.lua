@@ -293,52 +293,12 @@ return {
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<C-D-e>", function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
-    {
-      "<D-z>",
-      function()
-        local fold_shortcuts = table.concat({
-          "Creating Folds",
-          "• zf{motion} – Create a fold using a motion ",
-          "               (e.g., zf3j folds the current ",
-          "               line and 3 lines down; zfa} folds ",
-          "               a code block).",
-          "• zf (in Visual mode) – Create a fold around the selected lines.",
-          "• zF – Create a fold for a count of lines.",
-          "• :fold – Ex command to create a fold on a selected range.",
-          "",
-          "Opening and Closing Folds",
-          "• zo – Open the fold under the cursor.",
-          "• zO – Open all folds under the cursor recursively.",
-          "• zc – Close the fold under the cursor.",
-          "• zC – Close all folds under the cursor recursively.",
-          "• za – Toggle the fold under the cursor ",
-          "• zA – Toggle all folds under the cursor recursively.",
-          "• zv – Open just enough folds to make the cursor line visible.",
-          "• zx – Re-apply 'foldlevel' and 'foldenable' ",
-          "• zX – Re-apply 'foldlevel' ",
-          "",
-          "All-or-Nothing / Global Level Commands",
-          "• zr – Reduce folding ",
-          "• zR – Open all folds ",
-          "• zm – Fold more ",
-          "• zM – Close all folds",
-          "• zn – Disable folding temporarily ",
-          "• zN – Restore folding state ",
-          "• zi – Toggle 'foldenable'.",
-        }, "\n")
-
-        vim.notify(fold_shortcuts, vim.log.levels.INFO, {
-          title = "Folding Cheat Sheet",
-          timeout = 10000, -- Closes after 5 seconds if using nvim-notify
-        })
-      end, desc="vim folding"
-    },
-
-    {"<D-s>",
+    { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
+    {"<M-s>",
       function()
         commands_menu({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },
@@ -368,7 +328,7 @@ return {
           { text = "Commands" , fn = function() Snacks.picker.commands() end},
           { text = "Diagnostics" , fn = function() Snacks.picker.diagnostics() end},
           { text = "Buffer Diagnostics" , fn = function() Snacks.picker.diagnostics_buffer() end},
-          { text = "Help Pages" , fn = function() Snacks.picker.help() end},
+          -- { text = "Help Pages" , fn = function() Snacks.picker.help() end},
           { text = "Highlights" , fn = function() Snacks.picker.highlights() end},
           { text = "Icons" , fn = function() Snacks.picker.icons() end},
           { text = "Jumps" , fn = function() Snacks.picker.jumps() end},
@@ -421,7 +381,7 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    { "<leader>q",  "<Esc>:clo<CR>", desc = "Delete Buffer" },
     { "<leader>lg",
       function()
         local today_date = os.date('%Y-%m-%d')
