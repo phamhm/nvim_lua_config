@@ -96,10 +96,10 @@ vim.opt.background = "dark" -- set this to dark or light
 vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
-    virtual_text = false,
-    signs = true,
-    update_in_insert = false,
-    underline = false,
+  virtual_text = false,
+  signs = true,
+  update_in_insert = false,
+  underline = false,
 })
 
 require('m_keys')

@@ -37,8 +37,14 @@ return {
           i = '@call.inner',
         }),
 
-        -- Class definitions
+        -- comment definitions
         c = ai.gen_spec.treesitter({
+          a = '@comment.outer',
+          i = '@comment.inner',
+        }),
+
+        -- Class definitions
+        C = ai.gen_spec.treesitter({
           a = '@class.outer',
           i = '@class.inner',
         }),
