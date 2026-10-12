@@ -239,16 +239,7 @@ return {
     dashboard = {
       preset = {
         header = [[
-                          boooooo
-                          __J"L__
-                      ,-"`--...--'"-.
-                     /  /\       /\   \
-                    J  /__\  _  /__\   L
-                    |       / \        |
-                    J    _  """  _     F
-                     \   \\/\_/\//    /
-                      "-._\/\_/\/_,-"
-                         """""""
+          <(• •<) ^ (•o•)^ (>• •)>
         ]],
         keys = {
           { icon = "󰬱 ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
@@ -301,29 +292,41 @@ return {
       "<M-z>",
       function()
         local fold_shortcuts = table.concat({
-          "  Neovim Folding Shortcuts",
-          "==========================",
-          "za  - Toggle fold under cursor",
-          "zA  - Toggle fold under cursor recursively",
+          "Creating and Deleting Folds",
+          "---------------------------",
+          "zf{motion}  : Create a fold using a movement command ",
+          "            (e.g., zf2j folds down 3 lines, zfip folds an inner paragraph).",
+          "zf#j        : Create a fold from the cursor down a specific number of lines (#).",
+          "zf/string   : Create a fold from the cursor down to a search string.",
+          "zF          : Create a fold for a count of lines.",
+          "zd          : Delete the fold at the cursor.",
+          "zD          : Delete all folds recursively under the cursor.",
+          "zE          : Delete all folds in the buffer.",
           "",
-          "zc  - Close fold under cursor",
-          "zC  - Close folds recursively under cursor",
+          "Opening and Closing Folds (Single / Local)",
+          "------------------------------------------",
+          "zc          : Close the fold at the cursor.",
+          "zC          : Close all folds under the cursor recursively.",
+          "zo          : Open the fold at the cursor.",
+          "zO          : Open all folds at the cursor recursively.",
+          "za          : Toggle the fold at the cursor (open if closed, close if open).",
+          "zA          : Toggle all folds at the cursor recursively.",
+          "zv          : Open just enough folds to make the cursor line visible.",
           "",
-          "zo  - Open fold under cursor",
-          "zO  - Open folds recursively under cursor",
+          "Global Fold Level Commands",
+          "--------------------------",
+          "zm          : Increase foldlevel by one (closes more folds).",
+          "zM          : Close all folds (sets foldlevel to 0).",
+          "zr          : Decrease foldlevel by one (opens more folds).",
+          "zR          : Open all folds (sets foldlevel to maximum).",
+          "zi          : Toggle folding enable/disable (foldenable / nofoldenable).",
           "",
-          "zd  - Delete fold under cursor",
-          "zD  - Delete folds recursively under cursor",
-          "",
-          "zm  - More folding (increase foldlevel by 1)",
-          "zM  - Close ALL folds (set foldlevel to 0)",
-          "zr  - Reduce folding (decrease foldlevel by 1)",
-          "zR  - Open ALL folds (set foldlevel to max)",
-          "",
-          "zk  - Move cursor to previous fold start",
-          "zj  - Move cursor to next fold end",
-          "zn  - Fold none (disable folding temporarily)",
-          "zN  - Fold normal (re-enable folding)",
+          "Navigation (Moving Between Folds)",
+          "---------------------------------",
+          "zj          : Move cursor to the start of the next fold.",
+          "zk          : Move cursor to the end of the previous fold.",
+          "[z          : Move to the start of the current open fold.",
+          "]z          : Move to the end of the current open fold.",
         }, "\n")
 
         vim.notify(fold_shortcuts, vim.log.levels.INFO, {
@@ -416,7 +419,7 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    { "<leader>q",  "<Esc>:clo<CR>", desc = "Delete Buffer" },
     { "<leader>lg",
       function()
         local today_date = os.date('%Y-%m-%d')

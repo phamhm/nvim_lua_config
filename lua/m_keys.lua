@@ -159,3 +159,4 @@ vim.keymap.set('n', 'K', function()
 end, { desc = 'LSP Hover Documentation', silent = true })
 
 vim.keymap.set('n', "<leader>cc", function() vim.fn.setreg("+", vim.fn.getreg('"')) end, {desc = 'copy yanked @" into system clipboard @+'})
+vim.keymap.set('i', "<M-v>", '<Esc>"*pa', {desc = 'paste from @* register '})

@@ -85,10 +85,22 @@ require('lazy').setup({
     opts = {},
     config = function()
       require('render-markdown').setup({
+        enabled = false,
         file_types = { 'markdown', 'vimwiki' },
         render_modes = { 'n', 'c', 't' },
       })
       vim.treesitter.language.register('markdown', 'vimwiki')
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {"vimwiki", "markdown"}, -- Target file type
+        callback = function(ev)
+          -- Map 'K' to show LSP hover documentation, only in Lua files
+          vim.keymap.set('n', '<leader>mt', function()
+            require('render-markdown').toggle()
+          end, { desc = 'Toggle Markdown Rendering (Global)' })
+        end,
+      })
+
     end,
   }
 })

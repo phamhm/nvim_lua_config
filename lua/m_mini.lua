@@ -127,7 +127,9 @@ return {
       },
     })
 
-    require('mini.sessions').setup()
+    require('mini.sessions').setup({
+      directory = vim.fn.stdpath('config') .. '/sessions/'
+    })
     -- require('mini.operators').setup()
 
     vim.api.nvim_create_autocmd('BufWritePre', {
