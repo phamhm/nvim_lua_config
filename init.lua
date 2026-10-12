@@ -30,6 +30,7 @@ require('lazy').setup({
   require('m_lsp'),
   require('m_treesitter'),
   require('m_vimwiki'),
+  -- require('m_gitsign'),
 
   -- {'rktjmp/lush.nvim'},
   -- {'metalelf0/jellybeans-nvim'},

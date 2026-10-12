@@ -18,8 +18,8 @@ return {
     vim.keymap.set('n', '<F1>', '<cmd>VimwikiIndex<CR>', { noremap = true, silent = true })
 
     -- Highlights
-    vim.api.nvim_set_hl(0, '@markup.link', { fg = 'cyan', italic = true })
-    vim.api.nvim_set_hl(0, 'mkdLink', { fg = 'white', italic = true })
+    -- vim.api.nvim_set_hl(0, '@markup.link', { fg = 'cyan', italic = true })
+    -- vim.api.nvim_set_hl(0, 'mkdLink', { fg = 'white', italic = true })
 
     -- Markdown Autocmds
     local mkd_group = vim.api.nvim_create_augroup('Mkd', { clear = true })
