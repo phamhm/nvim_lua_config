@@ -1,10 +1,3 @@
-local function truncate(str, max_len)
-  if #str > max_len then
-    return str:sub(1, max_len - 3) .. ".."
-  end
-  return str
-end
-
 local map = vim.keymap.set
 
 map('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
@@ -102,7 +95,8 @@ end, { desc = 'Ask for text and append to end of file' })
 
 map('n', '<leader>gw', function()
   local reg_p = vim.fn.getreg('+')
-  vim.ui.input({ prompt = "Bookmarking: " .. truncate(reg_p, 40) }, function(input)
+  vim.notify("Bookmarking:" .. reg_p)
+  vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
     if input and input ~= '' and reg_p and reg_p ~='' then
       vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md"), "a")
     end
