@@ -59,26 +59,26 @@ local google_prompt = "Google: "
 local opts = { noremap=true, silient=true}
 
 local function google_search(input)
-    if input and input ~="" then
-        local query = vim.uri_encode(input)
-        vim.ui.open("https://www.google.com/search?q=" .. query)
-    end
+  if input and input ~="" then
+    local query = vim.uri_encode(input)
+    vim.ui.open("https://www.google.com/search?q=" .. query)
+  end
 end
 
 map("n", google_shortcut, function()
-    vim.ui.input( { prompt = google_prompt}, google_search)
+  vim.ui.input( { prompt = google_prompt}, google_search)
 end, opt)
 
 map("v", google_shortcut, function()
-   vim.cmd('noautocmd normal! "vy') -- yank selected into register v
+  vim.cmd('noautocmd normal! "vy') -- yank selected into register v
 
-   local selected_text = vim.fn.getreg('v')
+  local selected_text = vim.fn.getreg('v')
 
-   vim.ui.input({
-       prompt = google_prompt,
-       default = selected_text,
-     },
-   google_search)
+  vim.ui.input({
+    prompt = google_prompt,
+    default = selected_text,
+  },
+    google_search)
 end, opt)
 -- end googling, }
 
@@ -104,7 +104,7 @@ map('n', '<leader>gw', function()
 end, {silent = true, desc = 'Ask for text and append to end of file' })
 
 map('n', '<leader>vd',
-function()
+  function()
     local today_date = os.date('%Y-%m-%d')
     local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
     file_path = vim.fn.expand(file_path)
@@ -118,7 +118,7 @@ function()
         vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
       end
     end)
-end, { desc = 'Ask for text and append to end of file' })
+  end, { desc = 'Ask for text and append to end of file' })
 
 map('n', "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, { desc = "get help for current file type" } )
 -- end capture
