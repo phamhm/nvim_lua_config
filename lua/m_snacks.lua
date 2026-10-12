@@ -288,6 +288,7 @@ return {
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
+    { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
     {
       "<M-z>",
       function()
@@ -366,7 +367,7 @@ return {
           { text = "Commands" , fn = function() Snacks.picker.commands() end},
           { text = "Diagnostics" , fn = function() Snacks.picker.diagnostics() end},
           { text = "Buffer Diagnostics" , fn = function() Snacks.picker.diagnostics_buffer() end},
-          { text = "Help Pages" , fn = function() Snacks.picker.help() end},
+          -- { text = "Help Pages" , fn = function() Snacks.picker.help() end},
           { text = "Highlights" , fn = function() Snacks.picker.highlights() end},
           { text = "Icons" , fn = function() Snacks.picker.icons() end},
           { text = "Jumps" , fn = function() Snacks.picker.jumps() end},

@@ -43,5 +43,16 @@ return {
         vim.opt_local.spell = true
       end,
     })
+
+
+    vim.keymap.set('n', '<leader>ww',
+      function()
+        if vim.v.this_session ~= "wiki" then
+          MiniSessions.read("wiki")
+        end
+        vim.cmd("VimwikiIndex")
+      end,
+      { noremap = true, silent = true })
+
   end,
 }

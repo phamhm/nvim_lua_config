@@ -81,35 +81,36 @@ return {
     -- this modules will overwrite gitsign
     require('mini.diff').setup( {
       view = {
-
         -- Signs used for hunks with 'sign' view
-        signs = { add = '+', change = '|', delete = '-' },
+        signs = { add = '+', change = '|', delete = '--' },
       },
     })
 
     require('mini.files').setup()
-    local mfiles = require('mini.files')
 
-    -- require('mini.statusline').setup({
-    --   content = {
-    --     active = function()
-    --       local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
-    --       local git           = MiniStatusline.section_git({ trunc_width = 40 })
-    --       local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
-    --       local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
-    --       local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-    --       local session       = vim.fs.basename( vim.v.this_session )
-    --
-    --       return MiniStatusline.combine_groups({
-    --         { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-    --         '%<', -- Mark general truncate point
-    --         { hl = 'MiniStatuslineFilename', strings = {'('..session ..')' , "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 3)}" .. "%m%r" } },
-    --         '%=', -- End left alignment
-    --         { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
-    --       })
-    --     end
-    --   }
-    -- })
+    require('mini.statusline').setup({
+      content = {
+        active = function()
+          -- local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+          local git           = MiniStatusline.section_git({ trunc_width = 40 })
+          local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+          local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
+          local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+          local session = ''
+          if vim.v.this_session ~= "" then
+            session       =  '(' .. vim.fs.basename( vim.v.this_session ) .. ')'
+          end
+
+          return MiniStatusline.combine_groups({
+            -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
+            -- '%<', -- Mark general truncate point
+            { hl = 'MiniStatuslineFilename', strings = {session, "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 2)}" .. "%m%r" } },
+            '%=', -- End left alignment
+            { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
+          })
+        end
+      }
+    })
 
     -- 1. Configure mini.completion (Asynchronous completion and signature help)
     require('mini.completion').setup({
