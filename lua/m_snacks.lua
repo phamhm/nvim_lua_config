@@ -289,54 +289,6 @@ return {
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
-    {
-      "<M-z>",
-      function()
-        local fold_shortcuts = table.concat({
-          "Creating and Deleting Folds",
-          "---------------------------",
-          "zf{motion}  : Create a fold using a movement command ",
-          "            (e.g., zf2j folds down 3 lines, zfip folds an inner paragraph).",
-          "zf#j        : Create a fold from the cursor down a specific number of lines (#).",
-          "zf/string   : Create a fold from the cursor down to a search string.",
-          "zF          : Create a fold for a count of lines.",
-          "zd          : Delete the fold at the cursor.",
-          "zD          : Delete all folds recursively under the cursor.",
-          "zE          : Delete all folds in the buffer.",
-          "",
-          "Opening and Closing Folds (Single / Local)",
-          "------------------------------------------",
-          "zc          : Close the fold at the cursor.",
-          "zC          : Close all folds under the cursor recursively.",
-          "zo          : Open the fold at the cursor.",
-          "zO          : Open all folds at the cursor recursively.",
-          "za          : Toggle the fold at the cursor (open if closed, close if open).",
-          "zA          : Toggle all folds at the cursor recursively.",
-          "zv          : Open just enough folds to make the cursor line visible.",
-          "",
-          "Global Fold Level Commands",
-          "--------------------------",
-          "zm          : Increase foldlevel by one (closes more folds).",
-          "zM          : Close all folds (sets foldlevel to 0).",
-          "zr          : Decrease foldlevel by one (opens more folds).",
-          "zR          : Open all folds (sets foldlevel to maximum).",
-          "zi          : Toggle folding enable/disable (foldenable / nofoldenable).",
-          "",
-          "Navigation (Moving Between Folds)",
-          "---------------------------------",
-          "zj          : Move cursor to the start of the next fold.",
-          "zk          : Move cursor to the end of the previous fold.",
-          "[z          : Move to the start of the current open fold.",
-          "]z          : Move to the end of the current open fold.",
-        }, "\n")
-
-        vim.notify(fold_shortcuts, vim.log.levels.INFO, {
-          title = "Folding Cheat Sheet",
-          timeout = 10000, -- Closes after 5 seconds if using nvim-notify
-        })
-      end, desc="vim folding"
-    },
-
     {"<M-s>",
       function()
         commands_menu({
