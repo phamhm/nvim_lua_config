@@ -26,7 +26,12 @@ return {
       "regex"
     }
 
-    ts.setup({})
+    ts.setup({
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
+    })
 
     -- NOTE: If languages fail to install or compilation hangs,
     -- ensure 'tree-sitter-cli' is installed (e.g., :MasonInstall tree-sitter-cli).
@@ -34,6 +39,8 @@ return {
 
     -- Use :TSInstall for manuall install languages
     ts.install(languages)
+
+    vim.treesitter.language.register('markdown', 'vimwiki')
 
     -- Treesitter features for installed languages must be enabled manually
     vim.api.nvim_create_autocmd("FileType", {

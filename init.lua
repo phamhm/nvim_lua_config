@@ -90,7 +90,6 @@ require('lazy').setup({
         file_types = { 'markdown', 'vimwiki' },
         render_modes = { 'n', 'c', 't' },
       })
-      vim.treesitter.language.register('markdown', 'vimwiki')
 
       vim.api.nvim_create_autocmd("FileType", {
         pattern = {"vimwiki", "markdown"}, -- Target file type

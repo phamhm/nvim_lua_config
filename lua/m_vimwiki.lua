@@ -22,8 +22,7 @@ return {
     -- vim.api.nvim_set_hl(0, 'mkdLink', { fg = 'white', italic = true })
 
     -- Markdown Autocmds
-    local mkd_group = vim.api.nvim_create_augroup('Mkd', { clear = true })
-
+    -- local mkd_group = vim.api.nvim_create_augroup('Mkd', { clear = true })
     -- vim.api.nvim_create_autocmd("FileType", {
     --   pattern = "vimwiki", -- Target file type
     --   callback = function(ev)
@@ -32,27 +31,16 @@ return {
     --   end,
     -- })
 
-    vim.api.nvim_create_autocmd({ 'BufRead', 'BufWinEnter', 'BufNewFile' }, {
-      group = mkd_group,
-      pattern = {
-        '*.md', '*.mdx', '*.mdown', '*.mkd', '*.mkdn', '*.markdown', '*.mdwn',
-        '*.md.*', '*.mdx.*', '*.mdown.*', '*.mkd.*', '*.mkdn.*', '*.markdown.*', '*.mdwn.*',
-      },
-      callback = function()
-        vim.opt_local.syntax = 'markdown'
-        vim.opt_local.spell = true
-      end,
-    })
-
-
-    vim.keymap.set('n', '<leader>ww',
-      function()
-        if vim.v.this_session ~= "wiki" then
-          MiniSessions.read("wiki")
-        end
-        vim.cmd("VimwikiIndex")
-      end,
-      { noremap = true, silent = true })
-
+    -- vim.api.nvim_create_autocmd({ 'BufRead', 'BufWinEnter', 'BufNewFile' }, {
+    --   group = mkd_group,
+    --   pattern = {
+    --     '*.md', '*.mdx', '*.mdown', '*.mkd', '*.mkdn', '*.markdown', '*.mdwn',
+    --     '*.md.*', '*.mdx.*', '*.mdown.*', '*.mkd.*', '*.mkdn.*', '*.markdown.*', '*.mdwn.*',
+    --   },
+    --   callback = function()
+    --     vim.opt_local.syntax = 'markdown'
+    --     vim.opt_local.spell = true
+    --   end,
+    -- })
   end,
 }

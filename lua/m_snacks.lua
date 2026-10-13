@@ -289,6 +289,7 @@ return {
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
+    { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end, desc="calling vimwiki"},
     {"<M-s>",
       function()
         commands_menu({
@@ -306,7 +307,6 @@ return {
           { text = "Browse", fn = function() Snacks.gitbrowse() end  },
           { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
           { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
-          { text = "Vimwiki", fn = function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end },
           { text = "Smart Files", fn = function() Snacks.picker.smart() end },
           { text = "Git Files", fn = function() Snacks.picker.git_files() end },
           { text = "Projects", fn = function() Snacks.picker.projects() end },

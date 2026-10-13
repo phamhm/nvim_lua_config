@@ -8,7 +8,7 @@ return {
     {'<leader>sw', function() MiniSessions.write() end,  desc = 'Save current session' },
     {'<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end,  desc = 'Show current session' },
     {'<leader>se', function() MiniFiles.open(vim.fn.stdpath('data') .. '/session/') end, { desc = 'Open mini.files Workspace' } },
-    {'<leader>sd', function() MiniSessions.select('delete') end, { desc = 'Open mini.files Workspace' } },
+    {'<leader>sD', function() MiniSessions.select('delete') end, { desc = 'Open mini.files Workspace' } },
     {'<leader>sN', function()
       vim.ui.input({ prompt = 'Session Name: ' }, function(name)
         if name ~= '' then
@@ -38,6 +38,12 @@ return {
 
         -- Class definitions
         c = ai.gen_spec.treesitter({
+          a = '@comment.outer',
+          i = '@comment.inner',
+        }),
+
+        -- Class definitions
+        C = ai.gen_spec.treesitter({
           a = '@class.outer',
           i = '@class.inner',
         }),
@@ -61,7 +67,7 @@ return {
         n_lines = 500, -- Extend search scope for larger textobjects
         search_method = "cover_or_next",
         mappings = {
-          add = 'ys', -- Add surrounding in Normal and Visual modes
+          add = 'Sa', -- Add surrounding in Normal and Visual modes
           delete = 'ds', -- Delete surrounding
           replace = 'cs', -- Replace surrounding
           find = 'Sf', -- Find surrounding (to the right)
