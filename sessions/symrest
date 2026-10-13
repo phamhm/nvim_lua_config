@@ -4,7 +4,7 @@ let v:this_session=expand("<sfile>:p")
 doautoall SessionLoadPre
 silent only
 silent tabonly
-cd ~/Documents/vimwiki
+cd ~/Workspace/symrest/lib
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -13,24 +13,26 @@ set shortmess+=aoO
 badd +4 ~/Workspace/symrest/api/routes/symxsoap/soap.js
 badd +27 ~/Workspace/symrest/lib/jxchange.lib.js
 badd +1 ~/Workspace/symrest/log/symrest.log.0
-badd +41 ~/Workspace/symrest/lib/date.lib.js
-badd +1 ~/Documents/vimwiki/index.md
+badd +1 ~/Workspace/symrest/lib/date.lib.js
 argglobal
 %argdel
-edit ~/Documents/vimwiki/index.md
+edit ~/Workspace/symrest/lib/date.lib.js
 argglobal
-balt ~/Workspace/symrest/lib/date.lib.js
-setlocal foldmethod=manual
+setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
 setlocal foldignore=#
-setlocal foldlevel=1
+setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-silent! normal! zE
-let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 25) / 50)
+6
+sil! normal! zo
+18
+sil! normal! zo
+34
+sil! normal! zo
+let s:l = 1 - ((0 * winheight(0) + 23) / 47)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -49,6 +51,7 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
+nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

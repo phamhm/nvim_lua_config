@@ -22,37 +22,13 @@ return {
     -- vim.api.nvim_set_hl(0, 'mkdLink', { fg = 'white', italic = true })
 
     -- Markdown Autocmds
-    local mkd_group = vim.api.nvim_create_augroup('Mkd', { clear = true })
 
-    -- vim.api.nvim_create_autocmd("FileType", {
-    --   pattern = "vimwiki", -- Target file type
-    --   callback = function(ev)
-    --     -- Map 'K' to show LSP hover documentation, only in Lua files
-    --     vim.notify("entering vimwiki")
-    --   end,
-    -- })
-
-    vim.api.nvim_create_autocmd({ 'BufRead', 'BufWinEnter', 'BufNewFile' }, {
-      group = mkd_group,
-      pattern = {
-        '*.md', '*.mdx', '*.mdown', '*.mkd', '*.mkdn', '*.markdown', '*.mdwn',
-        '*.md.*', '*.mdx.*', '*.mdown.*', '*.mkd.*', '*.mkdn.*', '*.markdown.*', '*.mdwn.*',
-      },
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "vimwiki", -- Target file type
       callback = function()
-        vim.opt_local.syntax = 'markdown'
-        vim.opt_local.spell = true
+        vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<CR>", { desc = "clipboard paste" })
       end,
     })
-
-
-    vim.keymap.set('n', '<leader>ww',
-      function()
-        if vim.v.this_session ~= "wiki" then
-          MiniSessions.read("wiki")
-        end
-        vim.cmd("VimwikiIndex")
-      end,
-      { noremap = true, silent = true })
 
   end,
 }

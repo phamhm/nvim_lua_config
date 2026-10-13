@@ -156,3 +156,5 @@ end, { desc = 'LSP Hover Documentation', silent = true })
 
 map('n', "<leader>cc", function() vim.fn.setreg("+", vim.fn.getreg('"')) end, {desc = 'copy yanked @" into system clipboard @+'})
 map('i', "<M-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
+
+map("v", "Y", '"*y', {desc = "yank to global @* clipboard register"})

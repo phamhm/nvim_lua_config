@@ -4,46 +4,51 @@ let v:this_session=expand("<sfile>:p")
 doautoall SessionLoadPre
 silent only
 silent tabonly
-cd ~/.local/share/nvim/lazy/nvim-treesitter-textobjects/doc
+cd ~/Documents/configs/nvim/lua
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
-badd +3 ~/Documents/configs/nvim/lua/m_keys.lua
-badd +52 ~/Documents/configs/nvim/lua/m_mini.lua
-badd +108 ~/Documents/configs/kitty/kitty.conf
-badd +3 ~/Documents/configs/nvim/lua/m_treesitter.lua
-badd +2 ~/Documents/configs/nvim/lua/m_vimwiki.lua
-badd +33 ~/.zshrc
+badd +1 ~/Documents/configs/nvim/lua/m_keys.lua
+badd +12 ~/Documents/configs/nvim/lua/m_mini.lua
+badd +101 ~/Documents/configs/kitty/kitty.conf
+badd +42 ~/Documents/configs/nvim/lua/m_treesitter.lua
+badd +32 ~/Documents/configs/nvim/lua/m_vimwiki.lua
+badd +23 ~/.zshrc
 badd +7 ~/Documents/configs/scripts/check_poweron_server.zsh
 badd +1 ~/Documents/configs/nvim/lua/my_vim_pencil.lua
-badd +1 ~/Documents/configs/nvim/lua/cmp_config.lua
-badd +2 ~/Documents/configs/nvim/lua/m_options.lua
-badd +78 ~/Documents/configs/nvim/init.lua
+badd +3 ~/Documents/configs/nvim/lua/cmp_config.lua
+badd +78 ~/Documents/configs/nvim/lua/m_options.lua
+badd +51 ~/Documents/configs/nvim/init.lua
 badd +1 ~/Workspace/poweroninstall/nvim/poweron_upload.lua
+badd +1 ~/Documents/configs/shell_info.txt
+badd +6 ~/Documents/configs/kitty/current-theme.conf
+badd +304 ~/Documents/configs/nvim/lua/m_snacks.lua
+badd +3 ~/Documents/vimwiki/bookmarks.md
 argglobal
 %argdel
+edit ~/Documents/configs/nvim/lua/m_vimwiki.lua
 argglobal
-enew | setl bt=help
-help nvim-treesitter-textobjects-modules@en
 balt ~/Documents/configs/nvim/lua/m_mini.lua
-setlocal foldmethod=manual
+setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
 setlocal foldignore=#
-setlocal foldlevel=9
+setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
-setlocal nofoldenable
-silent! normal! zE
-let &fdl = &fdl
-let s:l = 60 - ((29 * winheight(0) + 23) / 47)
+setlocal foldenable
+1
+sil! normal! zo
+3
+sil! normal! zo
+let s:l = 33 - ((16 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 60
-normal! 059|
+keepjumps 33
+normal! 05|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -57,7 +62,6 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

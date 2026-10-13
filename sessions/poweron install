@@ -4,13 +4,13 @@ let v:this_session=expand("<sfile>:p")
 doautoall SessionLoadPre
 silent only
 silent tabonly
-cd ~/tests
+cd ~/Workspace/poweroninstall
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
-badd +23 ~/Workspace/poweroninstall/app.py
+badd +393 ~/Workspace/poweroninstall/app.py
 badd +1 ~/Workspace/poweroninstall/repwriterspecs/SSE.CC.CASH.BACK.890
 badd +184 ~/Workspace/poweroninstall/repwriterspecs/backups/SYMPSC.BUSINESS.POSSIBLE
 badd +82 ~/Workspace/poweroninstall/repwriterspecs/backups/SYMPSC.BUSINESS.POSSIBLE.BATCH
@@ -22,16 +22,15 @@ badd +5 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACS.FILTER.BATCH
 badd +1145 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.PRO
 badd +94 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.BATCH
 badd +90 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.DEF
-badd +29 ~/Documents/vimwiki/index.md
 badd +97 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.PO.REVIEWS.CONFIG
 badd +1072 ~/Workspace/poweroninstall/repwriterspecs/hp.test
-badd +1 ~/tests/poweron.html
+badd +748 ~/tests/poweron.html
 argglobal
 %argdel
-$argadd ~/Workspace/poweroninstall/app.py
-edit ~/tests/poweron.html
+$argadd app.py
+edit ~/Workspace/poweroninstall/app.py
 argglobal
-balt ~/Workspace/poweroninstall/repwriterspecs/hp.test
+balt ~/tests/poweron.html
 setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
@@ -40,11 +39,11 @@ setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-let s:l = 1 - ((0 * winheight(0) + 23) / 46)
+let s:l = 393 - ((45 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
+keepjumps 393
 normal! 0
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
@@ -59,6 +58,7 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
+nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

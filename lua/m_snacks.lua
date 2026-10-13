@@ -107,8 +107,11 @@ local function open_markdown_links_picker()
         local cmd
         if item.link:match("http://") or item.link:match("https://") then
           cmd = {"open", item.link}
+        elseif  item.link:match(".rdp") then
+          cmd = {"open", item.link}
         elseif  item.link:match(".zsh") then
-          cmd = {"$(which zsh)", item.link}
+          vim.notify("testing "..item.link)
+          cmd = {"/bin/zsh", "-c", item.link}
         elseif item.link == "edit" then
           vim.cmd.edit(file_path)
           return
@@ -298,7 +301,8 @@ return {
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
-    {"<M-s>",
+    { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
+    {"<D-s>",
       function()
         commands_menu({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },
@@ -315,7 +319,6 @@ return {
           { text = "Browse", fn = function() Snacks.gitbrowse() end  },
           { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
           { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
-          { text = "Vimwiki", fn = function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end },
           { text = "Smart Files", fn = function() Snacks.picker.smart() end },
           { text = "Git Files", fn = function() Snacks.picker.git_files() end },
           { text = "Projects", fn = function() Snacks.picker.projects() end },
@@ -347,7 +350,7 @@ return {
     -- search
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
     -- search
-    { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
+    -- { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
     { '<leader>r', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
@@ -381,7 +384,7 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  "<Esc>:clo<CR>", desc = "Delete Buffer" },
+    { "<leader>q",  "<Esc>:bd!<CR>", desc = "Delete Buffer" },
     { "<leader>lg",
       function()
         local today_date = os.date('%Y-%m-%d')

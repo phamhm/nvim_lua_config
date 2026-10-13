@@ -48,7 +48,7 @@ require('lazy').setup({
     },
     keys = {
       -- suggested keymap
-      { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+      { "<leader>p", function() vim.notify("image paste only works in vimwiki", vim.log.levels.ERROR) end, desc = "clipboard paste" },
     },
   },
 
@@ -83,14 +83,20 @@ require('lazy').setup({
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim', 'nvim-mini/mini.icons', 'nvim-tree/nvim-web-devicons' },            -- if you use the mini.nvim suite
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    opts = {},
+    opts = {
+      code = {
+        sign = true,
+        width = "block", -- Renders background color across the code block width
+        right_pad = 1,
+        background = 'ColorColumn',
+      },
+    },
     config = function()
       require('render-markdown').setup({
         enabled = false,
         file_types = { 'markdown', 'vimwiki' },
         render_modes = { 'n', 'c', 't' },
       })
-      vim.treesitter.language.register('markdown', 'vimwiki')
 
       vim.api.nvim_create_autocmd("FileType", {
         pattern = {"vimwiki", "markdown"}, -- Target file type
