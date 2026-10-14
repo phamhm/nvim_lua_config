@@ -4,7 +4,7 @@ let v:this_session=expand("<sfile>:p")
 doautoall SessionLoadPre
 silent only
 silent tabonly
-cd ~/Documents/configs/kitty
+cd ~/Documents/configs/nvim/lua
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -19,32 +19,41 @@ badd +23 ~/.zshrc
 badd +7 ~/Documents/configs/scripts/check_poweron_server.zsh
 badd +1 ~/Documents/configs/nvim/lua/my_vim_pencil.lua
 badd +3 ~/Documents/configs/nvim/lua/cmp_config.lua
-badd +78 ~/Documents/configs/nvim/lua/m_options.lua
+badd +101 ~/Documents/configs/nvim/lua/m_options.lua
 badd +51 ~/Documents/configs/nvim/init.lua
 badd +1 ~/Workspace/poweroninstall/nvim/poweron_upload.lua
 badd +1 ~/Documents/configs/shell_info.txt
 badd +6 ~/Documents/configs/kitty/current-theme.conf
 badd +304 ~/Documents/configs/nvim/lua/m_snacks.lua
 badd +3 ~/Documents/vimwiki/bookmarks.md
+badd +289 ~/Documents/vimwiki/index.md
 argglobal
 %argdel
-edit ~/Documents/configs/kitty/kitty.conf
+edit ~/Documents/configs/nvim/lua/m_snacks.lua
 argglobal
-balt ~/Documents/configs/nvim/lua/m_vimwiki.lua
+balt ~/Documents/vimwiki/index.md
 setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
 setlocal foldignore=#
-setlocal foldlevel=9
+setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-let s:l = 2 - ((1 * winheight(0) + 23) / 46)
+134
+sil! normal! zo
+278
+sil! normal! zo
+306
+sil! normal! zo
+307
+sil! normal! zo
+let s:l = 323 - ((37 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 2
-normal! 022|
+keepjumps 323
+normal! 021|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -58,7 +67,6 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :
