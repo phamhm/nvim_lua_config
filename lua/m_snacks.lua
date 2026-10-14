@@ -115,13 +115,15 @@ local function open_markdown_links_picker()
           vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
           return
         end
-        vim.system(cmd, { detach = true}, function(err, _)
-          if err and err.code ~= 0 then
-            vim.schedule(function()
-              vim.notify("Failed to run:" .. vim.inspect(err), vim.log.levels.ERROR)
-            end)
-          end
-        end)
+        if type(cmd) == "table" and next(cmd) ~= nil then
+          vim.system(cmd, { detach = true}, function(err, _)
+            if err and err.code ~= 0 then
+              vim.schedule(function()
+                vim.notify("Failed to run:" .. vim.inspect(err), vim.log.levels.ERROR)
+              end)
+            end
+          end)
+        end
       end
     end,
   })
