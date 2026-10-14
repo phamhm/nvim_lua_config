@@ -11,7 +11,7 @@ endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
 badd +119 ~/Documents/configs/nvim/lua/m_keys.lua
-badd +36 ~/Documents/configs/nvim/lua/m_mini.lua
+badd +3 ~/Documents/configs/nvim/lua/m_mini.lua
 badd +2 ~/Documents/configs/kitty/kitty.conf
 badd +42 ~/Documents/configs/nvim/lua/m_treesitter.lua
 badd +8 ~/Documents/configs/nvim/lua/m_vimwiki.lua
@@ -31,9 +31,9 @@ badd +10 ~/Documents/configs/nvim/lua/m_oil.lua
 badd +1 ~/Documents/vimwiki/sessions/Configs.md
 argglobal
 %argdel
-edit ~/Documents/configs/nvim/lua/m_mini.lua
+edit ~/Documents/configs/nvim/lua/m_snacks.lua
 argglobal
-balt ~/Documents/configs/nvim/lua/cmp_config.lua
+balt ~/Documents/configs/nvim/lua/m_mini.lua
 setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
@@ -42,36 +42,12 @@ setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-1
-sil! normal! zo
-2
-sil! normal! zo
-7
-sil! normal! zo
-9
-sil! normal! zo
-11
-sil! normal! zo
-78
-sil! normal! zo
-80
-sil! normal! zo
-172
-sil! normal! zo
-174
-sil! normal! zo
-175
-sil! normal! zo
-176
-sil! normal! zo
-177
-sil! normal! zo
-let s:l = 36 - ((35 * winheight(0) + 23) / 46)
+let s:l = 2 - ((1 * winheight(0) + 23) / 47)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 36
-normal! 048|
+keepjumps 2
+normal! 018|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -85,7 +61,6 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :
