@@ -106,9 +106,10 @@ local function open_markdown_links_picker()
         -- 5. Open the link using your system's default handler
         local cmd
         if item.link:match("http://") or item.link:match("https://") then
-          cmd = {"google-chrome", item.link}
+          vim.ui.open(item.link)
+          return
         elseif  item.link:match(".zsh") then
-          cmd = {"$(which zsh)", item.link}
+          cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
           vim.cmd.edit(file_path)
           return
@@ -338,7 +339,7 @@ return {
     -- search
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
     -- search
-    { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
+    -- { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
     { '<leader>r', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
