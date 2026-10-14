@@ -25,8 +25,8 @@ return {
 
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "vimwiki", -- Target file type
-      callback = function()
-        vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<CR>", { desc = "clipboard paste" })
+      callback = function(ev)
+        vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", {desc ="vimwiki image paste"})
       end,
     })
 

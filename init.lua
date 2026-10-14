@@ -37,6 +37,8 @@ require('lazy').setup({
   require('m_treesitter'),
   require('m_vimwiki'),
   require('m_oil'),
+  require('m_autopair'),
+  require('m_surround'),
 
   {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
@@ -82,7 +84,7 @@ require('lazy').setup({
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
-      'nvim-mini/mini.nvim',
+      -- 'nvim-mini/mini.nvim',
       'nvim-mini/mini.icons',
       'nvim-tree/nvim-web-devicons'
     },            -- if you use the mini.nvim suite
