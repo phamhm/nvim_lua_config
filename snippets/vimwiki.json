@@ -2,5 +2,10 @@
   "Markdown Link": {
     "prefix": "li",
     "body": "[${1:desc}]($2)"
+  },
+
+  "Markdown Code Block": {
+    "prefix": "bl",
+    "body": "```${1:cod3}\n$2\n```"
   }
 }

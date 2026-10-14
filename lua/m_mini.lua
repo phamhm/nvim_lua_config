@@ -100,6 +100,16 @@ return {
       },
       { prefix='cdate', body='$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE' },
 
+      expand = {
+        -- Teach mini.snippets to look for markdown snippets when filetype is vimwiki
+        ext_match = function(ctx)
+          if vim.bo.filetype == 'vimwiki' then
+            return { 'vimwiki', 'markdown' , 'markdown_inline'}
+          end
+          return { vim.bo.filetype }
+        end
+      },
+
       mappings = {
         -- Expand snippet at cursor position. Created globally in Insert mode.
         expand = '<C-.>',
