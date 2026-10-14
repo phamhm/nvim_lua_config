@@ -159,6 +159,6 @@ map('n', "<leader>cc", function()
   vim.fn.setreg("+", reg)
   vim.notify('Copied @" into system clipboard @+:'..reg)
 end, {desc = 'copy yanked @" into system clipboard @+'})
-map('i', "<M-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
+map('i', "<D-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
 
 map("v", "Y", '"*y', {desc = "yank virtual into system clipboard"})

@@ -6,7 +6,7 @@ return {
     opts = {
       -- 1. Enable fast_wrap
       fast_wrap = {
-        map = '<M-e>', -- Shortcut to trigger fastwrap (Alt+e / Option+e)
+        map = '<D-e>', -- Shortcut to trigger fastwrap (Alt+e / Option+e)
         chars = { '{', '[', '(', '"', "'" },
         pattern = [=[[%'%"%)%>%]%}%, Royal]]]=],
         end_key = 'z',
