@@ -106,12 +106,10 @@ local function open_markdown_links_picker()
         -- 5. Open the link using your system's default handler
         local cmd
         if item.link:match("http://") or item.link:match("https://") then
-          cmd = {"open", item.link}
-        elseif  item.link:match(".rdp") then
-          cmd = {"open", item.link}
+          vim.ui.open(item.link)
+          return
         elseif  item.link:match(".zsh") then
-          vim.notify("testing "..item.link)
-          cmd = {"/bin/zsh", "-c", item.link}
+          cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
           vim.cmd.edit(file_path)
           return

@@ -98,7 +98,7 @@ return {
     require('mini.statusline').setup({
       content = {
         active = function()
-          local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+          -- local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
           local git           = MiniStatusline.section_git({ trunc_width = 40 })
           local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
           local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
@@ -110,7 +110,6 @@ return {
 
           return MiniStatusline.combine_groups({
             -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-            { hl = 'MiniStatuslineFilename',                  strings = { string.sub(mode, 1, 1) } },
             -- '%<', -- Mark general truncate point
             { hl = 'MiniStatuslineFilename', strings = {session, "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 2)}" .. "%m%r" } },
             '%=', -- End left alignment
