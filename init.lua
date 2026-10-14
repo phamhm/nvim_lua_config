@@ -82,7 +82,7 @@ require('lazy').setup({
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
-      'nvim-mini/mini.nvim',
+      -- 'nvim-mini/mini.nvim',
       'nvim-mini/mini.icons',
       'nvim-tree/nvim-web-devicons'
     },            -- if you use the mini.nvim suite

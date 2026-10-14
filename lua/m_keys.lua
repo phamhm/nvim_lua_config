@@ -93,7 +93,7 @@ map('n', '<leader>gc', function()
   end)
 end, { desc = 'Ask for text and append to end of file' })
 
-map('n', '<leader>gw', function()
+map('n', '<leader>gb', function()
   local reg_p = vim.fn.getreg('+')
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)

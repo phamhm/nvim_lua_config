@@ -12,7 +12,6 @@
   "mini.diff": { "branch": "main", "commit": "ce542d15eacf068f81f5e516da7d486db808c559" },
   "mini.files": { "branch": "main", "commit": "3fe8e33d37a8c455762800c39bab9af317dd53b4" },
   "mini.icons": { "branch": "main", "commit": "f642e3ba8c12afbc8f32f6d77ef6597eac56786f" },
-  "mini.nvim": { "branch": "main", "commit": "0513ad9ada655a07af321c129b69dafaf9e63d80" },
   "mini.pairs": { "branch": "main", "commit": "03eb1f0062a2cee5314d1ac3939246e4bb21352e" },
   "mini.sessions": { "branch": "main", "commit": "273b94f797c7c260ed723880fd0d4f405372b8b6" },
   "mini.snippets": { "branch": "main", "commit": "4669506967da8109bf8cbf15c924fa43502cf312" },

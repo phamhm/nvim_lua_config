@@ -147,10 +147,10 @@ return {
     'echasnovski/mini.trailspace',
     config = function()
       -- don't call setup because don't want highlight everything
-      local ts = require("mini.trailspace")
       vim.api.nvim_create_autocmd('BufWritePre', {
         desc = 'Removes trailing whitespace on save',
         callback = function()
+          local ts = require("mini.trailspace")
           ts.trim()
           ts.trim_last_lines()
         end,

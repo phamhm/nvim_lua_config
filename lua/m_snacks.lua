@@ -385,13 +385,8 @@ return {
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-    { "<leader>lg",
-      function()
-        local today_date = os.date('%Y-%m-%d')
-        local date_pattern = "[" .. today_date .."]"
-        copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
-        Snacks.lazygit()
-      end, desc = "Lazygit" },
+    { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
+    { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
