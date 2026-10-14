@@ -37,6 +37,8 @@ require('lazy').setup({
   require('m_treesitter'),
   require('m_vimwiki'),
   require('m_oil'),
+  require('m_autopair'),
+  require('m_surround'),
 
   {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
