@@ -77,7 +77,11 @@ return {
   },
   {
     'echasnovski/mini.files',
-    config = function() require("mini.files").setup() end
+    config = function() require("mini.files").setup({
+      mappings = {
+        close = '<C-c>',
+      }
+    }) end
   },
   {
     'echasnovski/mini.completion',
@@ -94,6 +98,8 @@ return {
         require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
         require("mini.snippets").gen_loader.from_lang(),
       },
+      { prefix='cdate', body='$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE' },
+
       mappings = {
         -- Expand snippet at cursor position. Created globally in Insert mode.
         expand = '<C-.>',
@@ -190,5 +196,5 @@ return {
         }
       })
     end
-  }
+  },
 }

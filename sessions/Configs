@@ -11,28 +11,29 @@ endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
 badd +119 ~/Documents/configs/nvim/lua/m_keys.lua
-badd +87 ~/Documents/configs/nvim/lua/m_mini.lua
+badd +199 ~/Documents/configs/nvim/lua/m_mini.lua
 badd +2 ~/Documents/configs/kitty/kitty.conf
 badd +42 ~/Documents/configs/nvim/lua/m_treesitter.lua
 badd +8 ~/Documents/configs/nvim/lua/m_vimwiki.lua
 badd +1 ~/.zshrc
 badd +7 ~/Documents/configs/scripts/check_poweron_server.zsh
-badd +1 ~/Documents/configs/nvim/lua/my_vim_pencil.lua
-badd +3 ~/Documents/configs/nvim/lua/cmp_config.lua
+badd +2 ~/Documents/configs/nvim/lua/my_vim_pencil.lua
+badd +26 ~/Documents/configs/nvim/lua/cmp_config.lua
 badd +101 ~/Documents/configs/nvim/lua/m_options.lua
-badd +4 ~/Documents/configs/nvim/init.lua
+badd +118 ~/Documents/configs/nvim/init.lua
 badd +1 ~/Workspace/poweroninstall/nvim/poweron_upload.lua
 badd +6 ~/Documents/configs/shell_info.txt
 badd +6 ~/Documents/configs/kitty/current-theme.conf
 badd +1 ~/Documents/configs/nvim/lua/m_snacks.lua
 badd +3 ~/Documents/vimwiki/bookmarks.md
 badd +289 ~/Documents/vimwiki/index.md
-badd +11 ~/Documents/configs/nvim/lua/m_oil.lua
+badd +10 ~/Documents/configs/nvim/lua/m_oil.lua
+badd +1 ~/Documents/vimwiki/sessions/Configs.md
 argglobal
 %argdel
 edit ~/Documents/configs/nvim/lua/m_mini.lua
 argglobal
-balt ~/Documents/configs/nvim/init.lua
+balt ~/Documents/configs/nvim/lua/cmp_config.lua
 setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
@@ -51,20 +52,26 @@ sil! normal! zo
 sil! normal! zo
 11
 sil! normal! zo
-63
+78
 sil! normal! zo
-66
+80
 sil! normal! zo
-66
+172
 sil! normal! zo
-82
+174
 sil! normal! zo
-let s:l = 127 - ((37 * winheight(0) + 23) / 46)
+175
+sil! normal! zo
+176
+sil! normal! zo
+177
+sil! normal! zo
+let s:l = 13 - ((12 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 127
-normal! 04|
+keepjumps 13
+normal! 017|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

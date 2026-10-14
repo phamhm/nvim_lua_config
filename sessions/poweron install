@@ -4,13 +4,12 @@ let v:this_session=expand("<sfile>:p")
 doautoall SessionLoadPre
 silent only
 silent tabonly
-cd ~/Workspace/poweroninstall
+cd ~/Workspace/poweroninstall/repwriterspecs
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
-badd +393 ~/Workspace/poweroninstall/app.py
 badd +1 ~/Workspace/poweroninstall/repwriterspecs/SSE.CC.CASH.BACK.890
 badd +184 ~/Workspace/poweroninstall/repwriterspecs/backups/SYMPSC.BUSINESS.POSSIBLE
 badd +82 ~/Workspace/poweroninstall/repwriterspecs/backups/SYMPSC.BUSINESS.POSSIBLE.BATCH
@@ -20,18 +19,20 @@ badd +793 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.CONF
 badd +1 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.CONF.DEF
 badd +5 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACS.FILTER.BATCH
 badd +1145 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.PRO
-badd +94 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.BATCH
+badd +1 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.BATCH
 badd +90 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.DEF
 badd +97 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.PO.REVIEWS.CONFIG
 badd +1072 ~/Workspace/poweroninstall/repwriterspecs/hp.test
-badd +748 ~/tests/poweron.html
+badd +1 ~/Workspace/poweroninstall/app.py
+badd +144 ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.EXCESSIVE.DAILY.FEE
+badd +0 ~/Documents/vimwiki/index.md
 argglobal
 %argdel
-$argadd app.py
-edit ~/Workspace/poweroninstall/app.py
+$argadd ~/Workspace/poweroninstall/app.py
+edit ~/Documents/vimwiki/index.md
 argglobal
-balt ~/tests/poweron.html
-setlocal foldmethod=expr
+balt ~/Workspace/poweroninstall/repwriterspecs/SYMPSC.TRANSACTS.FILTER.BATCH
+setlocal foldmethod=manual
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
 setlocal foldignore=#
@@ -39,11 +40,13 @@ setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-let s:l = 393 - ((45 * winheight(0) + 23) / 46)
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 285 - ((0 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 393
+keepjumps 285
 normal! 0
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
@@ -58,7 +61,6 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :
