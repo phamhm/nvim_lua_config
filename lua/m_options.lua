@@ -45,8 +45,6 @@ local options = {
   spell = false,
   spelllang = 'en_us',
   autoread=true,
-  title=true,
-  titlestring="v:%t",
   -- shada="!,'200,<50,s10,h"   -- this sets how nvim remembers recent files, marks, etc...
   foldmethod = "expr",
   foldexpr = "v:lua.vim.treesitter.foldexpr()",
@@ -81,3 +79,23 @@ autocmd("FileType", {
     vim.bo.expandtab = true
   end,
 })
+
+
+vim.opt.title = true
+vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
+
+function _G.get_custom_title()
+  local file = vim.fn.expand('%:t')
+  if file == ""  then
+    file = "[No Name]"
+  end
+
+  -- Check if a session is active (using v:this_session)
+  local session = vim.v.this_session
+  if session ~= "" then
+    local session_name = vim.fn.fnamemodify(session, ':t:r')
+    return string.format("S:%s|%s", session_name, file)
+  end
+
+  return file
+end

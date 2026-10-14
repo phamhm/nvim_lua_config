@@ -28,7 +28,7 @@ return {
 
     ts.setup({
       highlight = {
-        enable = true,
+        enable = true, -- CRITICAL: This must be true
         additional_vim_regex_highlighting = false,
       },
     })
