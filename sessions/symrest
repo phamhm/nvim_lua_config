@@ -11,13 +11,14 @@ endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
 badd +4 ~/Workspace/symrest/api/routes/symxsoap/soap.js
-badd +27 ~/Workspace/symrest/lib/jxchange.lib.js
-badd +1 ~/Workspace/symrest/log/symrest.log.0
+badd +137 ~/Workspace/symrest/lib/jxchange.lib.js
 badd +1 ~/Workspace/symrest/lib/date.lib.js
+badd +1 ~/Documents/vimwiki/sessions/symrest.md
 argglobal
 %argdel
-edit ~/Workspace/symrest/lib/date.lib.js
+edit ~/Workspace/symrest/lib/jxchange.lib.js
 argglobal
+balt ~/Documents/vimwiki/sessions/symrest.md
 setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
 setlocal foldmarker={{{,}}}
@@ -26,18 +27,18 @@ setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-6
+11
 sil! normal! zo
-18
+21
 sil! normal! zo
-34
+22
 sil! normal! zo
-let s:l = 1 - ((0 * winheight(0) + 23) / 47)
+let s:l = 137 - ((38 * winheight(0) + 23) / 47)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
-normal! 0
+keepjumps 137
+normal! 060|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
