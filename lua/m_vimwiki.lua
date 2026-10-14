@@ -23,13 +23,13 @@ return {
 
     -- Markdown Autocmds
     -- local mkd_group = vim.api.nvim_create_augroup('Mkd', { clear = true })
-    -- vim.api.nvim_create_autocmd("FileType", {
-    --   pattern = "vimwiki", -- Target file type
-    --   callback = function(ev)
-    --     -- Map 'K' to show LSP hover documentation, only in Lua files
-    --     vim.notify("entering vimwiki")
-    --   end,
-    -- })
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "vimwiki", -- Target file type
+      callback = function(ev)
+        -- Map 'K' to show LSP hover documentation, only in Lua files
+        vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", {desc ="vimwiki image paste"})
+      end,
+    })
 
     -- vim.api.nvim_create_autocmd({ 'BufRead', 'BufWinEnter', 'BufNewFile' }, {
     --   group = mkd_group,

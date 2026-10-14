@@ -48,7 +48,7 @@ require('lazy').setup({
     },
     keys = {
       -- suggested keymap
-      { "<leader>p", "<cmd>PasteImage<cr>", desc = "clipboard paste" },
+      { "<leader>p", function() vim.notify("img-clip only for vimwiki") end, desc = "clipboard paste" },
     },
   },
 
