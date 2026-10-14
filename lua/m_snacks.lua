@@ -82,8 +82,8 @@ local function open_markdown_links_picker()
     local title, link = line:match("%[(.-)%]%((.-)%)")
     if title and link then
       table.insert(items, {
-        text = title,    -- What shows up and is searchable in the picker
-        link = link,     -- Store the URL to use on confirmation
+        text = vim.trim(title),    -- What shows up and is searchable in the picker
+        link = vim.trim(link),     -- Store the URL to use on confirmation
       })
     end
   end
@@ -103,12 +103,11 @@ local function open_markdown_links_picker()
     confirm = function(picker, item)
       picker:close()
       if item and item.link then
-        -- 5. Open the link using your system's default handler
         local cmd
-        if item.link:match("http://") or item.link:match("https://") then
-          vim.ui.open(item.link)
+        if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
+          vim.ui.open(item.link) -- Open the link using your system's default handler
           return
-        elseif  item.link:match(".zsh") then
+        elseif  vim.endswith(item.link, ".zsh") then
           cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
           vim.cmd.edit(file_path)
@@ -240,7 +239,16 @@ return {
     dashboard = {
       preset = {
         header = [[
-          <(• •<) ^ (•o•)^ (>• •)>
+                          boooooo
+                          __J"L__
+                      ,-"`--...--'"-.
+                     /  /\       /\   \
+                    J  /__\  _  /__\   L
+                    |       / \        |
+                    J    _  """  _     F
+                     \   \\/\_/\//    /
+                      "-._\/\_/\/_,-"
+                         """""""
         ]],
         keys = {
           { icon = "󰬱 ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
@@ -277,22 +285,23 @@ return {
       desc = "Spelling Suggestions",
     },
     -- Top Pickers & Explorer
-    { "<leader>cn", function()
-      local today_date = os.date('%Y-%m-%d')
-      local date_pattern = "[" .. today_date .."]"
-      copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
-    end, {desc = 'copy dated line into @* register'} },
+    { "<leader>cn",
+      function()
+        local today_date = os.date('%Y-%m-%d')
+        local date_pattern = "[" .. today_date .."]"
+        copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
+      end, {desc = 'copy dated line into @* register'} },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
+    -- { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
-    { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end, desc="calling vimwiki"},
-    { "<leader>fs",function() Snacks.picker.smart() end, desc="calling vimwiki"},
-    {"<M-s>",
+    { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
+    { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
+    {"<D-s>",
       function()
         commands_menu({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },
@@ -320,6 +329,7 @@ return {
           { text = "Commands" , fn = function() Snacks.picker.commands() end},
           { text = "Diagnostics" , fn = function() Snacks.picker.diagnostics() end},
           { text = "Buffer Diagnostics" , fn = function() Snacks.picker.diagnostics_buffer() end},
+          -- { text = "Help Pages" , fn = function() Snacks.picker.help() end},
           { text = "Highlights" , fn = function() Snacks.picker.highlights() end},
           { text = "Icons" , fn = function() Snacks.picker.icons() end},
           { text = "Jumps" , fn = function() Snacks.picker.jumps() end},
@@ -372,7 +382,7 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  "<Esc>:clo<CR>", desc = "Delete Buffer" },
+    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
     { "<leader>lg",
       function()
         local today_date = os.date('%Y-%m-%d')
@@ -386,27 +396,6 @@ return {
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
   },
   init = function()
-    -- vim.api.nvim_create_autocmd("FileType", {
-    --   pattern = "help",
-    --   callback = function(ev)
-    --     -- Check if it's already a floating window to prevent infinite loops
-    --     if vim.api.nvim_win_get_config(0).relative ~= "" then
-    --       return
-    --     end
-    --
-    --     local buf = ev.buf
-    --     -- Close the default help split window right after it opens
-    --     vim.cmd("wincmd c")
-    --
-    --     -- Re-open the help buffer using snacks.win in a styled float
-    --     Snacks.win({
-    --       buf = buf,
-    --       style = "vscode", -- Uses snacks.nvim's built-in help window style layout
-    --       border = "rounded"
-    --     })
-    --   end,
-    -- })
-
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       callback = function()

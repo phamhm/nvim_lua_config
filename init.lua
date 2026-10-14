@@ -25,18 +25,22 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  -- {'metalelf0/jellybeans-nvim'},
+  {"catppuccin/nvim", name = "catppuccin", priority = 1000,
+    config = function()
+      vim.cmd.colorscheme("catppuccin-mocha")
+    end
+  },
   require('m_snacks'),
   require('m_mini'),
   require('m_lsp'),
   require('m_treesitter'),
   require('m_vimwiki'),
-  -- require('m_gitsign'),
+  require('m_oil'),
 
-  -- {'rktjmp/lush.nvim'},
-  -- {'metalelf0/jellybeans-nvim'},
-  {"catppuccin/nvim", name = "catppuccin", priority = 1000 },
   {"HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
+    priority = 1,
     opts = {
       default = {
         dir_path = function()
@@ -48,7 +52,7 @@ require('lazy').setup({
     },
     keys = {
       -- suggested keymap
-      { "<leader>p", function() vim.notify("img-clip only for vimwiki") end, desc = "clipboard paste" },
+      { "<leader>p", function() vim.notify("image paste only works in vimwiki", vim.log.levels.ERROR) end, desc = "clipboard paste" },
     },
   },
 
@@ -58,12 +62,8 @@ require('lazy').setup({
 
   {'easymotion/vim-easymotion'},
   {'nvim-tree/nvim-web-devicons'},
-  -- { "preservim/vim-lexical" },
-  -- { "preservim/vim-pencil"},
-  -- { "preservim/vim-litecorrect"},
-  -- { "preservim/vim-textobj-sentence"},
-  -- { "kana/vim-textobj-user"},
-  { 'preservim/vim-markdown',
+  {'preservim/vim-markdown',
+    priority = 1,
     config = function()
       vim.g.vim_markdown_conceal_code_blocks = 0
       vim.g.vim_markdown_folding_style_pythonic = 1
@@ -80,15 +80,34 @@ require('lazy').setup({
   },
   {
     'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim', 'nvim-mini/mini.icons', 'nvim-tree/nvim-web-devicons' },            -- if you use the mini.nvim suite
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-mini/mini.nvim',
+      'nvim-mini/mini.icons',
+      'nvim-tree/nvim-web-devicons'
+    },            -- if you use the mini.nvim suite
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    opts = {},
+    opts = {
+      code = {
+        sign = true,
+        width = "block", -- Renders background color across the code block width
+        right_pad = 1,
+        background = 'ColorColumn',
+      },
+    },
     config = function()
       require('render-markdown').setup({
-        enabled = false,
+        enabled = true,
         file_types = { 'markdown', 'vimwiki' },
         render_modes = { 'n', 'c', 't' },
+        heading = {
+          -- Set arrays to empty to completely remove the plugin's background and foreground colors
+          backgrounds = {},
+          -- foregrounds = {},
+          position = "inline",
+          sign = false
+        },
       })
 
       vim.api.nvim_create_autocmd("FileType", {
@@ -107,7 +126,6 @@ require('lazy').setup({
 
 -- setup must be called before loading
 -- vim.opt.background = "dark" -- set this to dark or light
-vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
     virtual_text = false,
