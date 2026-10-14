@@ -137,7 +137,6 @@ vim.diagnostic.config({
 })
 
 require('m_keys')
--- require('m_vimpencil')
 require('m_options')
 
 -- prevent snacks from create history
