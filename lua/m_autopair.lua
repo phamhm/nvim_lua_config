@@ -18,6 +18,7 @@ return {
         highlight = 'Search',
         highlight_grey = 'Comment',
       },
+      check_ts = true,
     },
     -- Keep this if you also need nvim-cmp integration
     config = function(_, opts)
