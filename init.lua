@@ -126,7 +126,6 @@ require('lazy').setup({
           end, { desc = 'Toggle Markdown Rendering (Global)' })
         end,
       })
-
     end,
   }
 })
