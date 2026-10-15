@@ -118,7 +118,7 @@ require('lazy').setup({
 
       vim.api.nvim_create_autocmd("FileType", {
         pattern = {"vimwiki", "markdown"}, -- Target file type
-        callback = function(ev)
+        callback = function()
           -- Map 'K' to show LSP hover documentation, only in Lua files
           vim.keymap.set('n', '<leader>mt', function()
             require('render-markdown').toggle()
