@@ -141,7 +141,7 @@ function F.open_markdown_links_picker()
           return
         elseif  vim.endswith(item.link, ".applescript") then
           cmd = {"osascript", vim.fn.expand( item.link )}
-        elseif  vim.startswith(item.text, "ktab_") and  vim.endswith(item.text, ".zsh") then
+        elseif  vim.endswith(item.text, ".zsh") then
           local socket = os.getenv("KITTY_LISTEN_ON")
           cmd = {
             'kitten',
@@ -150,10 +150,10 @@ function F.open_markdown_links_picker()
             socket,
             'launch',
             '--type=tab',
+            'zsh',
+            '-f',
             vim.fn.expand( item.link )
           }
-        elseif  vim.endswith(item.link, ".zsh") then
-          cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
           vim.cmd.edit(file_path)
           return
