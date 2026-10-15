@@ -71,25 +71,25 @@ return {
       },
       layout = {
         -- options include default, ivy, dropdown, vertical, sidebar, telescope
-        preset = "ivy",
-        preview = false,
+        preset = "default",
+        preview = true,
         layout = {
-          box = "vertical",
-          backdrop = false,
-          row = vim.o.lines - 5,
-          col = 0,
-          width = 0.5,
-          height = 0.5,
-          border = "rounded",
-          title = " {title} {live} {flags}",
-          align = "left",
-          title_pos = "left",
-          { win = "input", height = 1, border = "none" },
-          {
-            box = "horizontal",
-            { win = "list", border = "none" },
-            { win = "preview", title = "{preview}", width = 0.6, border = "left" },
-          },
+          -- box = "vertical",
+          -- backdrop = false,
+          -- row = vim.o.lines - 5,
+          -- col = 0,
+          -- width = 0.5,
+          -- height = 0.5,
+          -- border = "rounded",
+          -- title = " {title} {live} {flags}",
+          -- align = "left",
+          -- title_pos = "left",
+          -- { win = "input", height = 1, border = "none" },
+          -- {
+          --   box = "horizontal",
+          --   { win = "list", border = "none" },
+          --   { win = "preview", title = "{preview}", width = 0.6, border = "left" },
+          -- },
         },
       }
     },
@@ -97,7 +97,7 @@ return {
     scope = { enabled = true },
     scroll = { enabled = true },
     statuscolumn = {
-      enabled = false ,
+      enabled = true ,
       git =  { enabled = true}
     },
     words = { enabled = false },
@@ -232,10 +232,10 @@ return {
     end, desc = "Colorschemes" },
 
     -- LSP
-    { "<leader>gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
-    { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
-    { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
-    { "<leader>gR", function() vim.lsp.buf.rename() end, nowait = true, desc = "rename variables" },
+    { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
+    { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
+    { "gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
+    { "gR", function() vim.lsp.buf.rename() end, nowait = true, desc = "rename variables" },
     { "K", function() vim.lsp.buf.hover({border='rounded'}) end, nowait = true, desc = "LSP Hover Doc" },
     { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },

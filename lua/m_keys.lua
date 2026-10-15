@@ -80,7 +80,7 @@ end, opt)
 
 -- capture
 
-map('n', '<leader>gc', function()
+map('n', '<leader>cc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
       local today_date = os.date('%Y-%m-%d')
@@ -122,11 +122,15 @@ map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle c
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
 
-map('n', "<leader>cc", function()
-  local reg = vim.fn.getreg('"')
-  vim.fn.setreg("+", reg)
-  vim.notify('Copied @" into system clipboard @+:'..reg)
-end, {desc = 'copy yanked @" into system clipboard @+'})
-map('i', "<D-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
+-- map('n', "<leader>cc", function()
+--   local reg = vim.fn.getreg('"')
+--   vim.fn.setreg("+", reg)
+--   vim.notify('Copied @" into system clipboard @+:'..reg)
+-- end, {desc = 'copy yanked @" into system clipboard @+'})
+-- map('i', "<D-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
 
-map("v", "Y", '"*y', {desc = "yank virtual into system clipboard"})
+map("v", "Y", function()
+  vim.cmd.normal([["*y]])
+  local reg = vim.fn.getreg('*')
+  vim.notify("@*="..reg)
+end, {desc = "yank virtual into system clipboard"})

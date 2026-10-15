@@ -9,6 +9,7 @@
   "mini.ai": { "branch": "main", "commit": "d0c4987a1ead2bcf4eb22cc9815c662d76677c08" },
   "mini.align": { "branch": "main", "commit": "34efb28993933ba1bded1890ca81821bc1dfd258" },
   "mini.bracketed": { "branch": "main", "commit": "98fe9eef0e4a89bfa1b055ac51195e74fafe3663" },
+  "mini.clue": { "branch": "main", "commit": "149236aed07cf15266dbaf2736452ad6b0dced47" },
   "mini.cmdline": { "branch": "main", "commit": "1006a386ab8e6d3c4567fddd31cd9d47b3cb63ba" },
   "mini.completion": { "branch": "main", "commit": "9d4a963299bf824e316af116920bb27079e5b4eb" },
   "mini.diff": { "branch": "main", "commit": "ce542d15eacf068f81f5e516da7d486db808c559" },

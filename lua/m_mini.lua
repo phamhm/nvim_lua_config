@@ -219,6 +219,9 @@ return {
     version = '*', -- Use main or stable branch
     config = function()
       require('mini.git').setup()
-    end
-  }
+    end,
+    keys = {
+      {"<leader>gc", function() MiniGit.show_at_cursor() end, desc = "show git at cursor"}
+    }
+  },
 }
