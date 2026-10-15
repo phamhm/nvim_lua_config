@@ -88,7 +88,6 @@ local function picker_list_files(m_path)
          vim.endswith(name, ".applescript") or
          vim.endswith(name, ".rdp")) then
         local full_path = dir_path ..  vim.trim(name)
-        vim.notify('Found file:'..full_path)
         table.insert(items, {
           text = vim.trim(name),    -- What shows up and is searchable in the picker
           link = vim.trim(full_path),     -- Store the URL to use on confirmation
@@ -137,11 +136,24 @@ function M.open_markdown_links_picker()
       picker:close()
       if item and item.link then
         local cmd
+        vim.notify("db:"..item.link)
         if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
           vim.ui.open(item.link) -- Open the link using your system's default handler
           return
         elseif  vim.endswith(item.link, ".applescript") then
           cmd = {"osascript", vim.fn.expand( item.link )}
+        elseif  vim.startswith(item.text, "ktab_") and  vim.endswith(item.text, ".zsh") then
+          vim.notify("running kitty new tabs")
+          local socket = os.getenv("KITTY_LISTEN_ON")
+          cmd = {
+            'kitten',
+            '@',
+            '--to',
+            socket,
+            'launch',
+            '--type=tab',
+            vim.fn.expand( item.link )
+          }
         elseif  vim.endswith(item.link, ".zsh") then
           cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
