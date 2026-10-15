@@ -1,6 +1,6 @@
-local M = {}
+local F = {}
 
-function M.copy_dated_lines(filepath, pattern)
+function F.copy_dated_lines(filepath, pattern)
   -- Expand the file path (handles ~ for home directory, etc.)
   local expanded_path = vim.fn.expand(filepath)
 
@@ -43,7 +43,7 @@ local m_layout = {
   }
 }
 
-function M.commands_menu(items, title)
+function F.commands_menu(items, title)
   Snacks.picker.pick({
     pattern="^",
     items = items,
@@ -71,7 +71,7 @@ function M.commands_menu(items, title)
   })
 end
 
-local function picker_list_files(m_path)
+local function picker_list_files(m_path, prefix)
   local items = {} -- must be first line
 
   local dir_path = vim.fn.expand(m_path)
@@ -83,8 +83,7 @@ local function picker_list_files(m_path)
         break
       end
 
-      if type == 'file' and
-        vim.endswith(name, ".zsh") then
+      if type == 'file' and vim.endswith(name, ".zsh") then
         local full_path = dir_path ..  vim.trim(name)
         table.insert(items, {
           text = vim.trim(name),    -- What shows up and is searchable in the picker
@@ -96,9 +95,8 @@ local function picker_list_files(m_path)
   return items
 end
 
-function M.open_markdown_links_picker()
+function F.open_markdown_links_picker()
   local items = {} -- must be first line
-
 
   -- 1. Define the path to your file
   local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
@@ -116,7 +114,7 @@ function M.open_markdown_links_picker()
     end
   end
 
-  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/"))
+  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/", "nv_"))
 
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
@@ -196,4 +194,4 @@ local function prompt_and_run_lua(prompt, cmp_type)
 end
 
 
-return M
+return F
