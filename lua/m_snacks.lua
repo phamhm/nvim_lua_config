@@ -1,13 +1,4 @@
-local m_layout = {
-  preview = false,
-  layout = {
-    width = 0.3,
-    height = 0.5,
-  }
-}
-
 local utils_funcs = require("utils.functions")
-
 
 return {
   "folke/snacks.nvim",
@@ -183,6 +174,7 @@ return {
     { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
     { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
+    { "<leader>fd",function()  Snacks.picker.diagnostics() end,desc = "diagnostics" },
     {"<D-s>",
       function()
         utils_funcs.commands_menu({
