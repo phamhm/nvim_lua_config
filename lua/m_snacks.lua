@@ -171,11 +171,13 @@ return {
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
-    { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
     { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
+    { "<leader>fr", function() Snacks.picker.resume() end, desc="resume"},
+    { "<leader>h",function() Snacks.picker.help() end,desc = "Help Page" },
+    { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
     {"<D-s>",
       function()
         utils_funcs.commands_menu({
@@ -212,7 +214,6 @@ return {
           { text = "Man Pages" , fn = function() Snacks.picker.man() end},
           { text = "Search for Plugin Spec" , fn = function() Snacks.picker.lazy() end},
           { text = "Quickfix List" , fn = function() Snacks.picker.qflist() end},
-          { text = "Resume" , fn = function() Snacks.picker.resume() end},
           { text = "Undo History" , fn = function() Snacks.picker.undo() end},
           { text = "Colorschemes" , fn = function() Snacks.picker.colorschemes() end},
         },"Snacks menu" )

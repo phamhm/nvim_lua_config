@@ -127,7 +127,7 @@ require('lazy').setup({
       })
 
     end,
-  }
+  },
 })
 
 -- setup must be called before loading

@@ -79,7 +79,7 @@ return {
     'echasnovski/mini.files',
     config = function() require("mini.files").setup({
       mappings = {
-        close = '<C-c>',
+        -- close = '<C-c>',
       }
     }) end
   },
@@ -207,4 +207,10 @@ return {
       })
     end
   },
+  {
+    'nvim-mini/mini.cmdline',
+    config = function()
+      require('mini.cmdline').setup({})
+    end,
+  }
 }

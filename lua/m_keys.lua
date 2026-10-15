@@ -18,8 +18,6 @@ map('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o-
 
 -- map('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 
-vim.keymap.set('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
-
 -- end key maps
 --
 
@@ -51,8 +49,6 @@ map('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true }
 -- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
 map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
-
-map("n", "<leader>hw", ":term curl 'wttr.in' <CR>", {silent = true})
 
 -- shortcut to google
 local google_shortcut ="<leader>gg"
@@ -121,7 +117,6 @@ map('n', '<leader>vd',
     end)
   end, { desc = 'Ask for text and append to end of file' })
 
-map('n', "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, { desc = "get help for current file type" } )
 -- end capture
 
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
