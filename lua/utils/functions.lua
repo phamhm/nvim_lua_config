@@ -71,13 +71,44 @@ function M.commands_menu(items, title)
   })
 end
 
+local function picker_list_files(m_path)
+  local items = {} -- must be first line
+
+  local dir_path = vim.fn.expand(m_path)
+  local handle = vim.uv.fs_scandir(dir_path)
+  if handle then
+    while true do
+      local name, type = vim.uv.fs_scandir_next(handle)
+      if not name then
+        break
+      end
+
+      if type == 'file' and
+        (vim.endswith(name, ".zsh") or
+         vim.endswith(name, ".applescript") or
+         vim.endswith(name, ".rdp")) then
+        local full_path = dir_path ..  vim.trim(name)
+        vim.notify('Found file:'..full_path)
+        table.insert(items, {
+          text = vim.trim(name),    -- What shows up and is searchable in the picker
+          link = vim.trim(full_path),     -- Store the URL to use on confirmation
+        })
+      end
+    end
+  end
+  return items
+end
+
 function M.open_markdown_links_picker()
+  local items = {} -- must be first line
+
+  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/"))
+  vim.list_extend(items, picker_list_files("~/Documents/rdps/"))
+
   -- 1. Define the path to your file
   local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
-
   -- 2. Read lines from the file
   local lines = vim.fn.readfile(file_path)
-  local items = {}
 
   -- 3. Parse each line for the [title](link) format
   for _, line in ipairs(lines) do
@@ -109,6 +140,8 @@ function M.open_markdown_links_picker()
         if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
           vim.ui.open(item.link) -- Open the link using your system's default handler
           return
+        elseif  vim.endswith(item.link, ".applescript") then
+          cmd = {"osascript", vim.fn.expand( item.link )}
         elseif  vim.endswith(item.link, ".zsh") then
           cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
