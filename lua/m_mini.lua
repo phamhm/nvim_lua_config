@@ -182,6 +182,9 @@ return {
   {
     'echasnovski/mini.statusline',
     config = function()
+      vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#aaf0c9', bg = '#222222' })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineGit', { fg = '#ffffff', bg = '#222222' })
+
       require('mini.statusline').setup({
         content = {
           active = function()
@@ -201,7 +204,7 @@ return {
               '%<', -- Mark general truncate point
               { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r", location} },
               '%=', -- End left alignment
-              { hl = 'MiniStatuslineFilename', strings = { git} },
+              { hl = 'MiniStatuslineGit', strings = { git} },
               { hl = 'MiniStatuslineFileinfo', strings = {lsp, diagnostics, '|' .. session  } },
             })
           end
