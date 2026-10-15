@@ -91,12 +91,6 @@ require('lazy').setup({
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     opts = {
-      code = {
-        sign = true,
-        width = "block", -- Renders background color across the code block width
-        right_pad = 1,
-        background = 'ColorColumn',
-      },
     },
     config = function()
       require('render-markdown').setup({
@@ -108,7 +102,18 @@ require('lazy').setup({
           backgrounds = {},
           -- foregrounds = {},
           position = "inline",
-          sign = false
+          sign = false,
+          icons = { '󰎤 ', '󰎧 ', '󰎪 ', '󰎭 ', '󰎱 ', '󰎳 ' },
+          border = true,
+          border_virtual = true,
+          above = "",
+          below = "-",
+        },
+        code = {
+          sign = false,
+          width = "block", -- Renders background color across the code block width
+          right_pad = 1,
+          background = 'ColorColumn',
         },
       })
 
