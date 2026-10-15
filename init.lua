@@ -26,7 +26,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   -- {'metalelf0/jellybeans-nvim'},
-  {"catppuccin/nvim", name = "catppuccin", priority = 1000,
+  {"catppuccin/nvim", name = "catppuccin",
     config = function()
       vim.cmd.colorscheme("catppuccin-mocha")
     end
