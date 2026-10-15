@@ -23,26 +23,30 @@ return {
         end,
       })
 
-      -- 2. Configure global capabilities or on_attach logic using standard Neovim autocommands
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-          local bufnr = args.buf
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-
-          -- Add your keymaps and on_attach logic here
-          local opts = { buffer = bufnr }
-          -- vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-        end,
-      })
-
-      -- 3. Pass specific server settings directly via vim.lsp.config
-      vim.lsp.config("lua_ls", {
+      -- Pass specific server settings directly via vim.lsp.config
+      -- Configure lua_ls natively using the 0.11+ API
+      vim.lsp.config('lua_ls', {
         settings = {
           Lua = {
-            diagnostics = { globals = { "vim" } },
+            runtime = {
+              version = 'LuaJIT',
+            },
+            diagnostics = {
+              globals = { 'vim' }, -- Prevents the "undefined global vim" warning
+            },
+            workspace = {
+              checkThirdParty = false,
+              library = {
+                -- Pass Neovim's runtime files straight into the workspace
+                vim.env.VIMRUNTIME,
+              },
+            },
+            telemetry = { enable = false },
           },
         },
       })
+
+
     end,
   }
 }
