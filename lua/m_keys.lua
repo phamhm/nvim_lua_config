@@ -18,9 +18,8 @@ map('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o-
 
 -- map('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
 
-map('n', '<leader>hv', ":wincmd H | :vert resize 90<CR>",{silent = true})
-
-map("n", "<leader>vt", ":e ~/Documents/vimwiki/trade_journal.md<CR>Gzt", { noremap = true, silent = true, desc = "Open init.lua" })
+-- end key maps
+--
 
 --map("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --map("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
@@ -51,12 +50,9 @@ map('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true }
 
 map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
-map("n", "<leader>hw", ":term curl 'wttr.in' <CR>", {silent = true})
-
 -- shortcut to google
 local google_shortcut ="<leader>gg"
 local google_prompt = "Google: "
-local opts = { noremap=true, silient=true}
 
 local function google_search(input)
   if input and input ~="" then
@@ -84,7 +80,7 @@ end, opt)
 
 -- capture
 
-map('n', '<leader>gc', function()
+map('n', '<leader>cc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
       local today_date = os.date('%Y-%m-%d')
@@ -120,40 +116,21 @@ map('n', '<leader>vd',
     end)
   end, { desc = 'Ask for text and append to end of file' })
 
-map('n', "<leader>hf", function() vim.cmd.help(vim.bo.filetype) end, { desc = "get help for current file type" } )
 -- end capture
 
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-local function prompt_and_run_lua(prompt, cmp_type)
-  vim.ui.input({ prompt = prompt, completion = cmp_type }, function(input)
-    -- If the user hits Esc or Cancels, input is nil
-    if not input or input == "" then return end
 
-    -- Compile the string into an executable Lua chunk
-    local chunk, err = load(input)
+-- map('n', "<leader>cc", function()
+--   local reg = vim.fn.getreg('"')
+--   vim.fn.setreg("+", reg)
+--   vim.notify('Copied @" into system clipboard @+:'..reg)
+-- end, {desc = 'copy yanked @" into system clipboard @+'})
+-- map('i', "<D-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
 
-    if chunk then
-      -- Safely execute the compiled chunk
-      local success, result = pcall(chunk)
-      if not success then
-        vim.notify("Runtime Error: " .. tostring(result), vim.log.levels.ERROR)
-      end
-    else
-      vim.notify("Syntax Error: " .. tostring(err), vim.log.levels.ERROR)
-    end
-  end)
-end
-
--- Map it to a key (e.g., <leader>le for "Lua Execute")
-map('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
-
-map('n', "<leader>cc", function()
-  local reg = vim.fn.getreg('"')
-  vim.fn.setreg("+", reg)
-  vim.notify('Copied @" into system clipboard @+:'..reg)
-end, {desc = 'copy yanked @" into system clipboard @+'})
-map('i', "<M-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
-
-map("v", "Y", '"*y', {desc = "yank virtual into system clipboard"})
+map("v", "Y", function()
+  vim.cmd.normal([["*y]])
+  local reg = vim.fn.getreg('*')
+  vim.notify("@*="..reg)
+end, {desc = "yank virtual into system clipboard"})

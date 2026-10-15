@@ -71,13 +71,39 @@ function M.commands_menu(items, title)
   })
 end
 
+local function picker_list_files(m_path)
+  local items = {} -- must be first line
+
+  local dir_path = vim.fn.expand(m_path)
+  local handle = vim.uv.fs_scandir(dir_path)
+  if handle then
+    while true do
+      local name, type = vim.uv.fs_scandir_next(handle)
+      if not name then
+        break
+      end
+
+      if type == 'file' and
+        vim.endswith(name, ".zsh") then
+        local full_path = dir_path ..  vim.trim(name)
+        table.insert(items, {
+          text = vim.trim(name),    -- What shows up and is searchable in the picker
+          link = vim.trim(full_path),     -- Store the URL to use on confirmation
+        })
+      end
+    end
+  end
+  return items
+end
+
 function M.open_markdown_links_picker()
+  local items = {} -- must be first line
+
+
   -- 1. Define the path to your file
   local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
-
   -- 2. Read lines from the file
   local lines = vim.fn.readfile(file_path)
-  local items = {}
 
   -- 3. Parse each line for the [title](link) format
   for _, line in ipairs(lines) do
@@ -89,6 +115,8 @@ function M.open_markdown_links_picker()
       })
     end
   end
+
+  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/"))
 
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
@@ -106,9 +134,22 @@ function M.open_markdown_links_picker()
       picker:close()
       if item and item.link then
         local cmd
-        if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
+        if vim.startswith(item.link, "http") then
           vim.ui.open(item.link) -- Open the link using your system's default handler
           return
+        elseif  vim.endswith(item.link, ".applescript") then
+          cmd = {"osascript", vim.fn.expand( item.link )}
+        elseif  vim.startswith(item.text, "ktab_") and  vim.endswith(item.text, ".zsh") then
+          local socket = os.getenv("KITTY_LISTEN_ON")
+          cmd = {
+            'kitten',
+            '@',
+            '--to',
+            socket,
+            'launch',
+            '--type=tab',
+            vim.fn.expand( item.link )
+          }
         elseif  vim.endswith(item.link, ".zsh") then
           cmd = {"zsh", vim.fn.expand( item.link )}
         elseif item.link == "edit" then
@@ -131,5 +172,28 @@ function M.open_markdown_links_picker()
     end,
   })
 end
+
+-- not using it. stash it here
+-- map('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
+local function prompt_and_run_lua(prompt, cmp_type)
+  vim.ui.input({ prompt = prompt, completion = cmp_type }, function(input)
+    -- If the user hits Esc or Cancels, input is nil
+    if not input or input == "" then return end
+
+    -- Compile the string into an executable Lua chunk
+    local chunk, err = load(input)
+
+    if chunk then
+      -- Safely execute the compiled chunk
+      local success, result = pcall(chunk)
+      if not success then
+        vim.notify("Runtime Error: " .. tostring(result), vim.log.levels.ERROR)
+      end
+    else
+      vim.notify("Syntax Error: " .. tostring(err), vim.log.levels.ERROR)
+    end
+  end)
+end
+
 
 return M

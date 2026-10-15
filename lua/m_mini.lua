@@ -79,7 +79,7 @@ return {
     'echasnovski/mini.files',
     config = function() require("mini.files").setup({
       mappings = {
-        close = '<C-c>',
+        -- close = '<C-c>',
       }
     }) end
   },
@@ -189,22 +189,39 @@ return {
             local git           = MiniStatusline.section_git({ trunc_width = 40 })
             local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
             local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
-            local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+            -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+            local location = '[%c:%l/ %L]'
             local session = ''
             if vim.v.this_session ~= "" then
-              session       =  '(' .. vim.fs.basename( vim.v.this_session ) .. ')'
+              session       =   vim.fs.basename( vim.v.this_session ) .. '\\'
             end
 
             return MiniStatusline.combine_groups({
               -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
               -- '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = {session, "%{pathshorten(fnamemodify(expand('%:p'), ':~'), 2)}" .. "%m%r" } },
+              { hl = 'MiniStatuslineFilename', strings = {session, "%t" .. "%m%r", location} },
               '%=', -- End left alignment
-              { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
+              { hl = 'MiniStatuslineFileinfo', strings = {'G:' .. git, 'L:' .. lsp, 'D:' ..diagnostics  } },
             })
           end
         }
       })
     end
+  },
+  {
+    'nvim-mini/mini.cmdline',
+    config = function()
+      require('mini.cmdline').setup({})
+    end,
+  },
+  {
+    'nvim-mini/mini-git',
+    version = '*', -- Use main or stable branch
+    config = function()
+      require('mini.git').setup()
+    end,
+    keys = {
+      {"<leader>gc", function() MiniGit.show_at_cursor() end, desc = "show git at cursor"}
+    }
   },
 }

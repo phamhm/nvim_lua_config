@@ -71,25 +71,25 @@ return {
       },
       layout = {
         -- options include default, ivy, dropdown, vertical, sidebar, telescope
-        preset = "ivy",
-        preview = false,
+        preset = "default",
+        preview = true,
         layout = {
-          box = "vertical",
-          backdrop = false,
-          row = vim.o.lines - 5,
-          col = 0,
-          width = 0.5,
-          height = 0.5,
-          border = "rounded",
-          title = " {title} {live} {flags}",
-          align = "left",
-          title_pos = "left",
-          { win = "input", height = 1, border = "none" },
-          {
-            box = "horizontal",
-            { win = "list", border = "none" },
-            { win = "preview", title = "{preview}", width = 0.6, border = "left" },
-          },
+          -- box = "vertical",
+          -- backdrop = false,
+          -- row = vim.o.lines - 5,
+          -- col = 0,
+          -- width = 0.5,
+          -- height = 0.5,
+          -- border = "rounded",
+          -- title = " {title} {live} {flags}",
+          -- align = "left",
+          -- title_pos = "left",
+          -- { win = "input", height = 1, border = "none" },
+          -- {
+          --   box = "horizontal",
+          --   { win = "list", border = "none" },
+          --   { win = "preview", title = "{preview}", width = 0.6, border = "left" },
+          -- },
         },
       }
     },
@@ -171,11 +171,13 @@ return {
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
-    { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
     { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
+    { "<leader>fr", function() Snacks.picker.resume() end, desc="resume"},
+    { "<leader>h",function() Snacks.picker.help() end,desc = "Help Page" },
+    { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
     {"<M-s>",
       function()
         utils_funcs.commands_menu({
@@ -212,7 +214,6 @@ return {
           { text = "Man Pages" , fn = function() Snacks.picker.man() end},
           { text = "Search for Plugin Spec" , fn = function() Snacks.picker.lazy() end},
           { text = "Quickfix List" , fn = function() Snacks.picker.qflist() end},
-          { text = "Resume" , fn = function() Snacks.picker.resume() end},
           { text = "Undo History" , fn = function() Snacks.picker.undo() end},
           { text = "Colorschemes" , fn = function() Snacks.picker.colorschemes() end},
         },"Snacks menu" )
@@ -231,10 +232,10 @@ return {
     end, desc = "Colorschemes" },
 
     -- LSP
-    { "<leader>gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
-    { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
-    { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
-    { "<leader>gR", function() vim.lsp.buf.rename() end, nowait = true, desc = "rename variables" },
+    { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
+    { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
+    { "gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
+    { "gR", function() vim.lsp.buf.rename() end, nowait = true, desc = "rename variables" },
     { "K", function() vim.lsp.buf.hover({border='rounded'}) end, nowait = true, desc = "LSP Hover Doc" },
     { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
@@ -257,7 +258,16 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    {
+      "<leader>q",
+      function()
+        Snacks.bufdelete()
+        if vim.fn.winnr('$') > 1 then
+          vim.cmd('close')
+        end
+      end,
+      desc = "Delete Buffer"
+    },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },

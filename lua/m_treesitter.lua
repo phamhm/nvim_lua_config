@@ -6,7 +6,8 @@ return {
   config = function()
     local ts = require("nvim-treesitter")
     local languages = {
-      "bash", "zsh",
+      "bash",
+      "zsh",
       "css",
       "dockerfile",
       "go",
@@ -43,6 +44,7 @@ return {
     ts.install(languages)
 
     vim.treesitter.language.register('markdown', 'vimwiki')
+    vim.treesitter.language.register('bash', 'zsh')
 
     -- Treesitter features for installed languages must be enabled manually
     vim.api.nvim_create_autocmd("FileType", {
