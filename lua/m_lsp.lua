@@ -1,5 +1,3 @@
---local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
 return {
   {
     "williamboman/mason.nvim",
@@ -8,58 +6,43 @@ return {
       "neovim/nvim-lspconfig", -- Kept strictly for server config templates
     },
     config = function()
-      -- 1. Initialize Mason
+-- 1. Initialize mason plugins
       require("mason").setup()
-
-      -- 2. Ensure language servers are downloaded locally via Mason
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "basedpyright", -- Python LSP
+          "pyright", -- Python LSP
           "ts_ls",        -- JavaScript/TypeScript LSP
           "lua_ls", -- Lua/Neovim
-        },
+          "bashls"
+        } -- your desired servers
       })
-
-      -- 3. Unified Keymaps (Triggers automatically via native LspAttach)
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-        callback = function(ev)
-          local opts = { buffer = ev.buf }
-
-          -- vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)          -- Go to definition
-          -- vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)          -- Find references
-          -- vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)                -- Show documentation
-          -- vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)      -- Smart rename
-          -- vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- Code actions
-        end,
-      })
-
-      -- 4. Extensible Capabilities for Autocomplete (e.g., nvim-cmp or blink.cmp)
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      local has_cmp, cmp_lsp = pcall(require, "cmp_nvim_lsp")
-      if has_cmp then
-        capabilities = cmp_lsp.default_capabilities()
-      end
-
-
       vim.api.nvim_create_autocmd("FileType", {
-        pattern = {"snacks_picker_input", "snacks_picker",  }, -- "snacks_input"
+        pattern = {"snacks_picker",  }, -- "snacks_input""snacks_picker_input",
         callback = function()
           vim.b.minicompletion_disable = true
         end,
       })
 
-      -- 5. Native Neovim 0.11+ LSP initialization (Zero lspconfig requires!)
-      local servers = { "basedpyright", "ts_ls" , "lua_ls"}
+      -- 2. Configure global capabilities or on_attach logic using standard Neovim autocommands
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local bufnr = args.buf
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-      for _, server in ipairs(servers) do
-        -- Modifies server config with your client capabilities
-        vim.lsp.config(server, {
-          capabilities = capabilities,
-        })
-        -- Enforce native activation across file types
-        vim.lsp.enable(server)
-      end
+          -- Add your keymaps and on_attach logic here
+          local opts = { buffer = bufnr }
+          -- vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+        end,
+      })
+
+      -- 3. Pass specific server settings directly via vim.lsp.config
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            diagnostics = { globals = { "vim" } },
+          },
+        },
+      })
     end,
   }
 }

@@ -20,6 +20,7 @@ return {
       "scss",
       "sql",
       "vim",
+      "vimdoc",
       "yaml",
       "markdown",
       "markdown_inline",
