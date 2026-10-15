@@ -1,6 +1,6 @@
-local M = {}
+local F = {}
 
-function M.copy_dated_lines(filepath, pattern)
+function F.copy_dated_lines(filepath, pattern)
   -- Expand the file path (handles ~ for home directory, etc.)
   local expanded_path = vim.fn.expand(filepath)
 
@@ -43,7 +43,7 @@ local m_layout = {
   }
 }
 
-function M.commands_menu(items, title)
+function F.commands_menu(items, title)
   Snacks.picker.pick({
     pattern="^",
     items = items,
@@ -98,7 +98,7 @@ local function picker_list_files(m_path)
   return items
 end
 
-function M.open_markdown_links_picker()
+function F.open_markdown_links_picker()
   local items = {} -- must be first line
 
   vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/"))
@@ -136,14 +136,12 @@ function M.open_markdown_links_picker()
       picker:close()
       if item and item.link then
         local cmd
-        vim.notify("db:"..item.link)
         if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
           vim.ui.open(item.link) -- Open the link using your system's default handler
           return
         elseif  vim.endswith(item.link, ".applescript") then
           cmd = {"osascript", vim.fn.expand( item.link )}
         elseif  vim.startswith(item.text, "ktab_") and  vim.endswith(item.text, ".zsh") then
-          vim.notify("running kitty new tabs")
           local socket = os.getenv("KITTY_LISTEN_ON")
           cmd = {
             'kitten',
@@ -200,4 +198,4 @@ local function prompt_and_run_lua(prompt, cmp_type)
 end
 
 
-return M
+return F
