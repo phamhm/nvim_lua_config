@@ -1,13 +1,4 @@
-local m_layout = {
-  preview = false,
-  layout = {
-    width = 0.3,
-    height = 0.5,
-  }
-}
-
 local utils_funcs = require("utils.functions")
-
 
 return {
   "folke/snacks.nvim",
@@ -183,6 +174,8 @@ return {
     { "<leader>fh",function() Snacks.picker.help() end,desc = "Help Page" },
     { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
+    { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
+    { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
     {"<M-s>",
       function()
         utils_funcs.commands_menu({
@@ -209,8 +202,6 @@ return {
           { text = "Search History" , fn = function() Snacks.picker.search_history() end},
           { text = "Autocmds" , fn = function() Snacks.picker.autocmds() end},
           { text = "Commands" , fn = function() Snacks.picker.commands() end},
-          { text = "Diagnostics" , fn = function() Snacks.picker.diagnostics() end},
-          { text = "Buffer Diagnostics" , fn = function() Snacks.picker.diagnostics_buffer() end},
           -- { text = "Help Pages" , fn = function() Snacks.picker.help() end},
           { text = "Highlights" , fn = function() Snacks.picker.highlights() end},
           { text = "Icons" , fn = function() Snacks.picker.icons() end},
@@ -273,47 +264,10 @@ return {
     { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+    { "<leader>`", function() utils_funcs.open_markdown_links_picker() end, desc = "Open Link Picker" }
   },
   init = function()
-    -- vim.api.nvim_create_autocmd("User", {
-    --   pattern = "VeryLazy",
-    --   callback = function()
-    --     -- Setup some globals for debugging (lazy-loaded)
-    --     _G.dd = function(...)
-    --       Snacks.debug.inspect(...)
-    --     end
-    --     _G.bt = function()
-    --       Snacks.debug.backtrace()
-    --     end
-    --
-    --     -- Override print to use snacks for `:=` command
-    --     if vim.fn.has("nvim-0.11") == 1 then
-    --       vim._print = function(_, ...)
-    --         dd(...)
-    --       end
-    --     else
-    --       vim.print = _G.dd
-    --     end
-    --     -- Create some toggle mappings
-    --     Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
-    --     Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
-    --     Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
-    --     Snacks.toggle.diagnostics():map("<leader>ud")
-    --     Snacks.toggle.line_number():map("<leader>ul")
-    --     Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map("<leader>uc")
-    --     Snacks.toggle.treesitter():map("<leader>uT")
-    --     Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
-    --     Snacks.toggle.inlay_hints():map("<leader>uh")
-    --     Snacks.toggle.indent():map("<leader>ug")
-    --     Snacks.toggle.dim():map("<leader>uD")
-    --   end,
-    -- })
-
-
-
-
     -- 6. Create a user command or keymap to run it
     -- vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
-    vim.keymap.set("n", "<leader>`", function() utils_funcs.open_markdown_links_picker() end, { desc = "Open Link Picker" })
   end,
 }

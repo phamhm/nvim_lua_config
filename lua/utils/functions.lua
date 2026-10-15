@@ -35,6 +35,14 @@ function M.copy_dated_lines(filepath, pattern)
   vim.notify(string.format("Copied %d lines to the * register!", #matched_lines), vim.log.levels.INFO)
 end
 
+local m_layout = {
+  preview = false,
+  layout = {
+    width = 0.3,
+    height = 0.5,
+  }
+}
+
 function M.commands_menu(items, title)
   Snacks.picker.pick({
     pattern="^",
