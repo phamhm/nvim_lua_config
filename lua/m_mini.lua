@@ -52,10 +52,6 @@ return {
     'echasnovski/mini.align',
     config = function() require("mini.align").setup() end
   },
-  -- {
-  --   'echasnovski/mini.pairs',
-  --   config = function() require("mini.pairs").setup() end
-  -- },
   {
     'echasnovski/mini.bracketed',
     config = function() require("mini.bracketed").setup() end
@@ -70,10 +66,6 @@ return {
       },
     }
     ) end
-  },
-  {
-    'echasnovski/mini.bracketed',
-    config = function() require("mini.bracketed").setup() end
   },
   {
     'echasnovski/mini.files',
