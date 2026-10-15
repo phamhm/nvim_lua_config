@@ -135,6 +135,7 @@ return {
   lazy = false,
   ---@type snacks.Config
   opts = {
+    explorer = { enabled = false },
     bigfile = { enabled = true },
     indent = {
       enabled = true,
@@ -225,7 +226,7 @@ return {
     scope = { enabled = true },
     scroll = { enabled = true },
     statuscolumn = {
-      enabled = true ,
+      enabled = false ,
       git =  { enabled = true}
     },
     words = { enabled = false },
@@ -317,7 +318,7 @@ return {
           { text = "Pull Requests (open)", fn = function() Snacks.picker.gh_pr() end },
           { text = "Pull Requests (all)", fn = function() Snacks.picker.gh_pr({ state = "all" }) end },
           { text = "Browse", fn = function() Snacks.gitbrowse() end  },
-          { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
+          -- { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
           { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
           { text = "Git Files", fn = function() Snacks.picker.git_files() end },
           { text = "Projects", fn = function() Snacks.picker.projects() end },
@@ -362,6 +363,8 @@ return {
     { "<leader>gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
     { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
     { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
+    { "<leader>gR", function() vim.lsp.buf.rename() end, nowait = true, desc = "rename variables" },
+    { "K", function() vim.lsp.buf.hover({border='rounded'}) end, nowait = true, desc = "LSP Hover Doc" },
     { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
@@ -369,7 +372,7 @@ return {
     { "<leader>gs", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>gS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
     { "<leader><leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
-    { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
+    { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
       "<C-`>", function()
         Snacks.scratch({

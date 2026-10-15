@@ -150,10 +150,6 @@ end
 -- Map it to a key (e.g., <leader>le for "Lua Execute")
 map('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
 
-map('n', 'K', function()
-  vim.lsp.buf.hover({ border = 'rounded' })
-end, { desc = 'LSP Hover Documentation', silent = true })
-
 map('n', "<leader>cc", function()
   local reg = vim.fn.getreg('"')
   vim.fn.setreg("+", reg)
