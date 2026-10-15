@@ -189,7 +189,8 @@ return {
             local git           = MiniStatusline.section_git({ trunc_width = 40 })
             local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
             local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
-            local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+            -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+            local location = '[%c:%l/ %L]'
             local session = ''
             if vim.v.this_session ~= "" then
               session       =   vim.fs.basename( vim.v.this_session ) .. '\\'
@@ -198,9 +199,9 @@ return {
             return MiniStatusline.combine_groups({
               -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
               -- '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = {session, "%t" .. "%m%r" } },
+              { hl = 'MiniStatuslineFilename', strings = {session, "%t" .. "%m%r", location} },
               '%=', -- End left alignment
-              { hl = 'MiniStatuslineFileinfo', strings = { git, lsp, diagnostics, "|", fileinfo} },
+              { hl = 'MiniStatuslineFileinfo', strings = {'G:' .. git, 'L:' .. lsp, 'D:' ..diagnostics  } },
             })
           end
         }

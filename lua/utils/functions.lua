@@ -132,4 +132,27 @@ function M.open_markdown_links_picker()
   })
 end
 
+-- not using it. stash it here
+-- map('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
+local function prompt_and_run_lua(prompt, cmp_type)
+  vim.ui.input({ prompt = prompt, completion = cmp_type }, function(input)
+    -- If the user hits Esc or Cancels, input is nil
+    if not input or input == "" then return end
+
+    -- Compile the string into an executable Lua chunk
+    local chunk, err = load(input)
+
+    if chunk then
+      -- Safely execute the compiled chunk
+      local success, result = pcall(chunk)
+      if not success then
+        vim.notify("Runtime Error: " .. tostring(result), vim.log.levels.ERROR)
+      end
+    else
+      vim.notify("Syntax Error: " .. tostring(err), vim.log.levels.ERROR)
+    end
+  end)
+end
+
+
 return M

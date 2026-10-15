@@ -53,7 +53,6 @@ map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 -- shortcut to google
 local google_shortcut ="<leader>gg"
 local google_prompt = "Google: "
-local opts = { noremap=true, silient=true}
 
 local function google_search(input)
   if input and input ~="" then
@@ -122,28 +121,6 @@ map('n', '<leader>vd',
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-local function prompt_and_run_lua(prompt, cmp_type)
-  vim.ui.input({ prompt = prompt, completion = cmp_type }, function(input)
-    -- If the user hits Esc or Cancels, input is nil
-    if not input or input == "" then return end
-
-    -- Compile the string into an executable Lua chunk
-    local chunk, err = load(input)
-
-    if chunk then
-      -- Safely execute the compiled chunk
-      local success, result = pcall(chunk)
-      if not success then
-        vim.notify("Runtime Error: " .. tostring(result), vim.log.levels.ERROR)
-      end
-    else
-      vim.notify("Syntax Error: " .. tostring(err), vim.log.levels.ERROR)
-    end
-  end)
-end
-
--- Map it to a key (e.g., <leader>le for "Lua Execute")
-map('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
 
 map('n', "<leader>cc", function()
   local reg = vim.fn.getreg('"')

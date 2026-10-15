@@ -258,7 +258,16 @@ return {
       desc="snack scrach reminder notes"
     },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<leader>q",  function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    {
+      "<leader>q",
+      function()
+        Snacks.bufdelete()
+        if vim.fn.winnr('$') > 1 then
+          vim.cmd('close')
+        end
+      end,
+      desc = "Delete Buffer"
+    },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
