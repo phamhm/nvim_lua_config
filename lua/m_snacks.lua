@@ -136,6 +136,7 @@ return {
   lazy = false,
   ---@type snacks.Config
   opts = {
+    explorer = { enabled = false },
     bigfile = { enabled = true },
     indent = {
       enabled = true,
@@ -226,7 +227,7 @@ return {
     scope = { enabled = true },
     scroll = { enabled = true },
     statuscolumn = {
-      enabled = true ,
+      enabled = false ,
       git =  { enabled = true}
     },
     words = { enabled = false },
@@ -318,7 +319,7 @@ return {
           { text = "Pull Requests (open)", fn = function() Snacks.picker.gh_pr() end },
           { text = "Pull Requests (all)", fn = function() Snacks.picker.gh_pr({ state = "all" }) end },
           { text = "Browse", fn = function() Snacks.gitbrowse() end  },
-          { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
+          -- { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
           { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
           { text = "Git Files", fn = function() Snacks.picker.git_files() end },
           { text = "Projects", fn = function() Snacks.picker.projects() end },

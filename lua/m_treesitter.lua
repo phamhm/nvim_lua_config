@@ -23,7 +23,8 @@ return {
       "yaml",
       "markdown",
       "markdown_inline",
-      "regex"
+      "regex",
+      "latex"
     }
 
     ts.setup({

@@ -2,7 +2,7 @@ return {
   "vimwiki/vimwiki",
   init = function()
     vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
-    vim.g.vimwiki_listsyms = '.○◐●✓'
+    vim.g.vimwiki_listsyms = '.◐✓'
     vim.g.vim_markdown_folding_disabled=1
     -- Vimwiki setup
     local wiki = {
