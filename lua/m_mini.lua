@@ -190,18 +190,19 @@ return {
             local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
             local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
             -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-            local location = '[%c : %l/%L]'
+            local location = '(%l:%c)'
             local session = ''
             if vim.v.this_session ~= "" then
-              session       =   vim.fs.basename( vim.v.this_session ) .. '\\'
+              session       =   vim.fs.basename( vim.v.this_session )
             end
 
             return MiniStatusline.combine_groups({
               -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-              -- '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = {session, "%t" .. "%m%r", location} },
+              '%<', -- Mark general truncate point
+              { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r", location} },
               '%=', -- End left alignment
-              { hl = 'MiniStatuslineFileinfo', strings = {'G:' .. git, 'L:' .. lsp, 'D:' ..diagnostics  } },
+              { hl = 'MiniStatuslineFilename', strings = { git} },
+              { hl = 'MiniStatuslineFileinfo', strings = {lsp, diagnostics, '|' .. session  } },
             })
           end
         }
@@ -217,6 +218,7 @@ return {
   {
     'nvim-mini/mini-git',
     version = '*', -- Use main or stable branch
+    lazy=false, -- ministatusline won't work if lazy loaded
     config = function()
       require('mini.git').setup()
     end,
