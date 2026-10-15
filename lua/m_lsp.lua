@@ -17,7 +17,7 @@ return {
         } -- your desired servers
       })
       vim.api.nvim_create_autocmd("FileType", {
-        pattern = {"snacks_picker",  }, -- "snacks_input""snacks_picker_input",
+        pattern = {"snacks_picker", "snacks_picker_input" }, -- "snacks_input""snacks_picker_input",
         callback = function()
           vim.b.minicompletion_disable = true
         end,
