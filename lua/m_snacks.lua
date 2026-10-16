@@ -282,5 +282,14 @@ return {
   init = function()
     -- 6. Create a user command or keymap to run it
     -- vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
+
+    -- prevent snacks from create history
+    vim.api.nvim_create_autocmd("VimEnter", {
+      group = vim.api.nvim_create_augroup("no_picker_hist", { clear = true }),
+      callback = function()
+        require("snacks.picker.util.history") -- Preload file
+        vim.api.nvim_clear_autocmds({ group = "snacks_history" })
+      end,
+    })
   end,
 }
