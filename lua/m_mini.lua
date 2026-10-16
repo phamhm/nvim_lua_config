@@ -90,7 +90,7 @@ return {
     config = function()
       require("mini.completion").setup({
         lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-        delay = { completion = 300, info = 300, signature = 100 }
+        delay = { completion = 900, info = 500, signature = 500 }
     }) end
   },
   {
@@ -102,17 +102,6 @@ return {
       snippets = {
         -- require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
         require("mini.snippets").gen_loader.from_lang(),
-      },
-      { prefix='cdate', body='$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE' },
-
-      expand = {
-        -- Teach mini.snippets to look for markdown snippets when filetype is vimwiki
-        ext_match = function(ctx)
-          if vim.bo.filetype == 'vimwiki' then
-            return { 'vimwiki', 'markdown' , 'markdown_inline'}
-          end
-          return { vim.bo.filetype }
-        end
       },
 
       mappings = {
