@@ -15,6 +15,16 @@ return {
         end,
         file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
         extension = "png",
+      },
+      filetypes = {
+        markdown = {
+          template = "![$FILE_NAME_NO_EXT]($FILE_PATH)",
+        },
+
+        vimwiki = {
+          template = "![$FILE_NAME_NO_EXT]($FILE_PATH)",
+        },
+
       }
     },
     keys = {
@@ -31,7 +41,7 @@ return {
       vim.g.vimwiki_folding = 'expr'
       -- Vimwiki setup
       local wiki = {
-        nested_syntaxes = { python = 'python', rust = 'rust', ['c++'] = 'cpp', c = 'c' },
+        nested_syntaxes = { python = 'python', rust = 'rust', ['c++'] = 'cpp', c = 'c', bash = 'sh', zsh = 'zsh'  },
         path = vim.g.m_vimwiki_path,
         syntax = 'markdown',
         ext = '.md',
