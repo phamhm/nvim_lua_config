@@ -87,14 +87,17 @@ return {
   },
   {
     'echasnovski/mini.completion',
-    config = function() require("mini.completion").setup({
-      lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-      delay = { completion = 300, info = 300, signature = 100 }
+    config = function()
+      require("mini.completion").setup({
+        lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
+        delay = { completion = 300, info = 300, signature = 100 }
     }) end
   },
   {
     'echasnovski/mini.snippets',
-    config = function() require("mini.snippets").setup({
+    dependencies = { "rafamadriz/friendly-snippets" },
+    config = function()
+      require("mini.snippets").setup({
       -- Integrates seamlessly with mini.completion's fallback logic
       snippets = {
         require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
