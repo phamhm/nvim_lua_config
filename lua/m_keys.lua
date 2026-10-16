@@ -16,8 +16,6 @@ map('i', '<C-a>', "<Esc>A",{silent = true})
 map('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 map('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
--- map('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
-
 -- end key maps
 --
 

@@ -71,54 +71,6 @@ require('lazy').setup({
     ft = { "markdown" },
     build = "cd app && npm install",
   },
-  {
-    'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-      -- 'nvim-mini/mini.nvim',
-      'nvim-mini/mini.icons',
-      'nvim-tree/nvim-web-devicons'
-    },            -- if you use the mini.nvim suite
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
-    opts = {
-    },
-    config = function()
-      require('render-markdown').setup({
-        enabled = false,
-        file_types = { 'markdown', 'vimwiki' },
-        render_modes = { 'n', 'c', 't' },
-        heading = {
-          -- Set arrays to empty to completely remove the plugin's background and foreground colors
-          backgrounds = {},
-          -- foregrounds = {},
-          position = "inline",
-          sign = false,
-          -- icons = { '󰎤 ', '󰎧 ', '󰎪 ', '󰎭 ', '󰎱 ', '󰎳 ' },
-          border = true,
-          border_virtual = true,
-          above = "",
-          below = "-",
-        },
-        code = {
-          sign = false,
-          width = "block", -- Renders background color across the code block width
-          right_pad = 1,
-          background = 'ColorColumn',
-        },
-      })
-
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {"vimwiki", "markdown"}, -- Target file type
-        callback = function()
-          -- Map 'K' to show LSP hover documentation, only in Lua files
-          vim.keymap.set('n', '<leader>mt', function()
-            require('render-markdown').toggle()
-          end, { desc = 'Toggle Markdown Rendering (Global)' })
-        end,
-      })
-    end,
-  }
 })
 
 -- setup must be called before loading

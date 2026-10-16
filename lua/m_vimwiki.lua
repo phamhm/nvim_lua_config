@@ -28,6 +28,7 @@ return {
       pattern = "vimwiki", -- Target file type
       callback = function(ev)
         vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", {buffer = true, noremap = false, silent = true})
+        vim.keymap.set("n", "<leader>mt", ":MarkdownPreviewToggle<CR>", {buffer = true, noremap = false, silent = true})
       end,
     })
 
