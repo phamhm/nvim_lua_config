@@ -152,7 +152,7 @@ function F.open_markdown_links_picker()
             '--type=tab',
             'zsh',
             '-f',
-            vim.fn.expand( item.link )
+            vim.fn.expand( item.link ),
           }
         elseif item.link == "edit" then
           vim.cmd.edit(file_path)
