@@ -100,7 +100,7 @@ return {
       require("mini.snippets").setup({
       -- Integrates seamlessly with mini.completion's fallback logic
       snippets = {
-        require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
+        -- require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
         require("mini.snippets").gen_loader.from_lang(),
       },
       { prefix='cdate', body='$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE' },
