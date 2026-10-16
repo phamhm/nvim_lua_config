@@ -33,14 +33,24 @@ return {
             i = '@class.inner',
           }),
 
+          L = ai.gen_spec.treesitter({
+            a = { '@loop.outer' },
+            i = { '@loop.inner' },
+          }),
+
+          I = ai.gen_spec.treesitter({
+            a = { '@conditional.outer' },
+            i = { '@conditional.inner' },
+          }),
+
           -- Code blocks, loops, or conditionals
-          o = ai.gen_spec.treesitter({
-            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
-            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+          B = ai.gen_spec.treesitter({
+            a = { '@block.outer', },
+            i = { '@block.inner', },
           }),
 
           -- Function/Method parameters or arguments
-          a = ai.gen_spec.treesitter({
+          P = ai.gen_spec.treesitter({
             a = '@parameter.outer',
             i = '@parameter.inner',
           }),
