@@ -52,10 +52,6 @@ return {
     'echasnovski/mini.align',
     config = function() require("mini.align").setup() end
   },
-  -- {
-  --   'echasnovski/mini.pairs',
-  --   config = function() require("mini.pairs").setup() end
-  -- },
   {
     'echasnovski/mini.bracketed',
     config = function() require("mini.bracketed").setup() end
@@ -70,10 +66,6 @@ return {
       },
     }
     ) end
-  },
-  {
-    'echasnovski/mini.bracketed',
-    config = function() require("mini.bracketed").setup() end
   },
   {
     'echasnovski/mini.files',
@@ -182,6 +174,9 @@ return {
   {
     'echasnovski/mini.statusline',
     config = function()
+      vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#aaf0c9', bg = '#222222' })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineGit', { fg = '#ffffff', bg = '#222222' })
+
       require('mini.statusline').setup({
         content = {
           active = function()
@@ -190,18 +185,19 @@ return {
             local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
             local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
             -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-            local location = '[%c : %l/%L]'
+            local location = '(%l:%c)'
             local session = ''
             if vim.v.this_session ~= "" then
-              session       =   vim.fs.basename( vim.v.this_session ) .. '\\'
+              session       =   vim.fs.basename( vim.v.this_session )
             end
 
             return MiniStatusline.combine_groups({
               -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-              -- '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = {session, "%t" .. "%m%r", location} },
+              '%<', -- Mark general truncate point
+              { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r", location} },
               '%=', -- End left alignment
-              { hl = 'MiniStatuslineFileinfo', strings = {'G:' .. git, 'L:' .. lsp, 'D:' ..diagnostics  } },
+              { hl = 'MiniStatuslineGit', strings = { git} },
+              { hl = 'MiniStatuslineFileinfo', strings = {lsp, diagnostics, '|' .. session  } },
             })
           end
         }
@@ -217,6 +213,7 @@ return {
   {
     'nvim-mini/mini-git',
     version = '*', -- Use main or stable branch
+    lazy=false, -- ministatusline won't work if lazy loaded
     config = function()
       require('mini.git').setup()
     end,

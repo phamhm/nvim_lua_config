@@ -27,7 +27,11 @@ return {
         title = "terminal",
         title_post = "left",
         border = "rounded",
-        position = "float"
+        position = "float",
+        keys = {
+          -- Overrides the double-escape behavior to exit instantly
+          term_normal = { "<esc>", "<cmd>stopinsert<CR>", mode = "t", desc = "Escape to normal mode" },
+        },
       }
     },
     notifier = {

@@ -26,9 +26,9 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   -- {'metalelf0/jellybeans-nvim'},
-  {"catppuccin/nvim", name = "catppuccin", priority = 1000,
+  {"catppuccin/nvim", name = "catppuccin",
     config = function()
-      vim.cmd.colorscheme("catppuccin-mocha")
+      vim.cmd.colorscheme("catppuccin-frappe")
     end
   },
   require('m_snacks'),
@@ -77,7 +77,7 @@ require('lazy').setup({
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
-    build = function() vim.fn["mkdp#util#install"]() end,
+    build = "cd app && npm install",
   },
   {
     'MeanderingProgrammer/render-markdown.nvim',
@@ -125,7 +125,6 @@ require('lazy').setup({
           end, { desc = 'Toggle Markdown Rendering (Global)' })
         end,
       })
-
     end,
   },
 })
