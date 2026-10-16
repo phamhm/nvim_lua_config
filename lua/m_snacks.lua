@@ -141,9 +141,9 @@ return {
       },
       sections = {
         { section = "header" },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 3, padding = 1, limit= 20},
         { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-        { icon = " ", title = "Recent Files", section = "recent_files", indent = 3, padding = 1 },
-        { icon = " ", title = "Projects", section = "projects", indent = 3, padding = 1 },
+        -- { icon = " ", title = "Projects", section = "projects", indent = 3, padding = 1 },
         { section = "startup" },
       },
     }

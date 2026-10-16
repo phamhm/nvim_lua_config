@@ -16,8 +16,6 @@ map('i', '<C-a>', "<Esc>A",{silent = true})
 map('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
 map('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
--- map('n', '<leader>mt', ":MarkdownPreviewToggle<CR>",{silent = true})
-
 -- end key maps
 --
 
@@ -134,3 +132,28 @@ map("v", "Y", function()
   local reg = vim.fn.getreg('*')
   vim.notify("@*="..reg)
 end, {desc = "yank virtual into system clipboard"})
+
+
+-- use Mini.Files locate the file under cursor.
+vim.keymap.set('n', '<leader>gf', function()
+  -- Get the file path under the cursor using Neovim's built-in <cfile>
+  local target = vim.fn.expand('<cfile>')
+
+  -- Fallback to the current buffer's directory if <cfile> is empty
+  if target == "" then
+    MiniFiles.open(vim.api.nvim_buf_get_name(0))
+    return
+  end
+
+  -- Resolve full path relative to current working directory if it's not absolute
+  local full_path = vim.fn.fnamemodify(target, ':p')
+
+  -- Check if the target is a directory or a file
+  if vim.fn.isdirectory(full_path) == 1 then
+    MiniFiles.open(full_path)
+  else
+    -- If it's a file, get its parent directory
+    local dir = vim.fn.fnamemodify(full_path, ':h')
+    MiniFiles.open(dir)
+  end
+end, { desc = "Open MiniFiles in directory of file under cursor" })
