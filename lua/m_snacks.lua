@@ -6,6 +6,9 @@ return {
   lazy = false,
   ---@type snacks.Config
   opts = {
+    scratch = {
+      win = {width = 0.8, height = 0.8, border = "rounded",},
+    },
     explorer = { enabled = false },
     bigfile = { enabled = true },
     indent = {
