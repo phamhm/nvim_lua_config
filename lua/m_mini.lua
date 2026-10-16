@@ -48,12 +48,6 @@ return {
             a = { '@block.outer', },
             i = { '@block.inner', },
           }),
-
-          -- Function/Method parameters or arguments
-          P = ai.gen_spec.treesitter({
-            a = '@parameter.outer',
-            i = '@parameter.inner',
-          }),
         },
       })
     end
