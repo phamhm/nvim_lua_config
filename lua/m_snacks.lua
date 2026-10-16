@@ -65,7 +65,7 @@ return {
       win = {
         input = {
           keys = {
-            ["<D-p>"] = { "toggle_preview", mode = { "i", "n" } },
+            ["<C-t>"] = { "toggle_preview", mode = { "i", "n" } },
           }
         }
       },
@@ -181,9 +181,9 @@ return {
     { "<leader>fr", function() Snacks.picker.resume() end, desc="resume"},
     { "<leader>h",function() Snacks.picker.help() end,desc = "Help Page" },
     { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
-    {"<D-s>",
+    {"<leader>mc",
       function()
-        utils_funcs.commands_menu({
+        utils_funcs.menu_commands({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },
           { text = "Log", fn = function() Snacks.picker.git_log() end },
           { text = "Log Line", fn = function() Snacks.picker.git_log_line() end },
