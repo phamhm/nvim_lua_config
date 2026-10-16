@@ -94,7 +94,7 @@ return {
     scope = { enabled = true },
     scroll = { enabled = true },
     statuscolumn = {
-      enabled = true ,
+      enabled = false ,
       git =  {
         enabled = true,
         patterns = { "MiniDiffSign" },
@@ -249,9 +249,7 @@ return {
         Snacks.scratch({
           file = vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"),
           enter = true,
-          win = {
-            title = "Daily reminder"
-          }
+          name = "Daily Reminder",
         })
       end,
       desc="snack scrach reminder notes"

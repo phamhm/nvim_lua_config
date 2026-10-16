@@ -1,10 +1,16 @@
 {
-  "Todo Comment": {
-    "prefix": "todo",
-    "body": "TODO(${1:author}): $0"
-  },
-  "Console Log": {
-    "prefix": "clog",
-    "body": "console.log('$1: ', $1);"
-  }
+    "Todo Comment": {
+        "prefix": "todo",
+        "body": "TODO(${1:author}): $0"
+    },
+    "Current Date": {
+        "prefix": "date",
+        "body": "${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+        "description": "Inserts the current date"
+    },
+    "Current Date Time": {
+        "prefix": "timestamp",
+        "body": "${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${CURRENT_HOUR}:${CURRENT_MINUTE}",
+        "description": "Inserts the current date"
+    }
 }

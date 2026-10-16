@@ -33,14 +33,24 @@ return {
             i = '@class.inner',
           }),
 
+          L = ai.gen_spec.treesitter({
+            a = { '@loop.outer' },
+            i = { '@loop.inner' },
+          }),
+
+          I = ai.gen_spec.treesitter({
+            a = { '@conditional.outer' },
+            i = { '@conditional.inner' },
+          }),
+
           -- Code blocks, loops, or conditionals
-          o = ai.gen_spec.treesitter({
-            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
-            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+          B = ai.gen_spec.treesitter({
+            a = { '@block.outer', },
+            i = { '@block.inner', },
           }),
 
           -- Function/Method parameters or arguments
-          a = ai.gen_spec.treesitter({
+          P = ai.gen_spec.treesitter({
             a = '@parameter.outer',
             i = '@parameter.inner',
           }),
@@ -77,41 +87,38 @@ return {
   },
   {
     'echasnovski/mini.completion',
-    config = function() require("mini.completion").setup({
-      lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-      delay = { completion = 300, info = 300, signature = 100 }
+    config = function()
+      require("mini.completion").setup({
+        lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
+        delay = { completion = 200, info = 200, signature = 200 }
     }) end
   },
   {
     'echasnovski/mini.snippets',
-    config = function() require("mini.snippets").setup({
-      -- Integrates seamlessly with mini.completion's fallback logic
-      snippets = {
-        require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
-        require("mini.snippets").gen_loader.from_lang(),
-      },
-      { prefix='cdate', body='$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE' },
+    dependencies = { "rafamadriz/friendly-snippets" },
+    config = function()
+      local m_snippets =  require("mini.snippets")
+      m_snippets.setup({
+        -- Integrates seamlessly with mini.completion's fallback logic
+        snippets = {
+          m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
+          m_snippets.gen_loader.from_lang(),
+        },
 
-      expand = {
-        -- Teach mini.snippets to look for markdown snippets when filetype is vimwiki
-        ext_match = function(ctx)
-          if vim.bo.filetype == 'vimwiki' then
-            return { 'vimwiki', 'markdown' , 'markdown_inline'}
-          end
-          return { vim.bo.filetype }
-        end
-      },
+        mappings = {
+          -- Expand snippet at cursor position. Created globally in Insert mode.
+          expand = '<C-.>',
+          -- Interact with default `expand.insert` session.
+          -- Created for the duration of active session(s)
+          jump_next = '<C-n>',
+          jump_prev = '<C-p>',
+          stop = '<C-c>',
+        },
+      })
 
-      mappings = {
-        -- Expand snippet at cursor position. Created globally in Insert mode.
-        expand = '<C-.>',
-        -- Interact with default `expand.insert` session.
-        -- Created for the duration of active session(s)
-        jump_next = '<C-n>',
-        jump_prev = '<C-p>',
-        stop = '<C-c>',
-      },
-    }) end
+      -- must be after setup to add snipets to mini.completions
+      require("mini.snippets").start_lsp_server()
+    end
   },
   {
     'echasnovski/mini.sessions',
@@ -135,13 +142,20 @@ return {
       end, desc = 'Save named session'},
       {'<leader>sv',
         function()
-          local session = vim.fs.basename( vim.v.this_session )
-          if session ~= "" then
-            vim.cmd("edit "..vim.g.m_vimwiki_path .. '/sessions/'..session .. ".md")
+          local session_name = vim.fs.basename( vim.v.this_session )
+          if session_name ~= "" then
+            -- vim.cmd("edit "..vim.g.m_vimwiki_path .. '/sessions/'..session .. ".md")
+            local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. '/sessions/'..session_name .. ".md")
+
+            Snacks.scratch({
+              file = file_path,
+              enter = true,
+              name = "Session notes",
+            })
           else
             vim.notify("Not in a session", vim.log.levels.ERROR)
           end
-        end, { desc = 'Delete mini.sessions Workspace' } },
+        end, { desc = 'Open a floating window to edit notes' } },
 
     },
   },

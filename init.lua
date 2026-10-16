@@ -94,7 +94,7 @@ require('lazy').setup({
     },
     config = function()
       require('render-markdown').setup({
-        enabled = true,
+        enabled = false,
         file_types = { 'markdown', 'vimwiki' },
         render_modes = { 'n', 'c', 't' },
         heading = {
@@ -103,7 +103,7 @@ require('lazy').setup({
           -- foregrounds = {},
           position = "inline",
           sign = false,
-          icons = { '󰎤 ', '󰎧 ', '󰎪 ', '󰎭 ', '󰎱 ', '󰎳 ' },
+          -- icons = { '󰎤 ', '󰎧 ', '󰎪 ', '󰎭 ', '󰎱 ', '󰎳 ' },
           border = true,
           border_virtual = true,
           above = "",
