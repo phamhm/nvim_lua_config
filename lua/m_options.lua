@@ -53,7 +53,7 @@ local options = {
   foldlevelstart = 9,
   foldenable     = true,
   timeoutlen     = 500,
-  statuscolumn   = "", --%l%s
+  statuscolumn   = "",
   background     = "dark",
   spellfile      = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
 }

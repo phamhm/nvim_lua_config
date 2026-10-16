@@ -14,14 +14,7 @@ return {
       chunk = { enabled = true },
       animate = { enabled = false}
     },
-    input = {
-      enabled = true ,
-      win = {
-        relative = "editor",
-        row = vim.o.lines / 5,
-        -- col = 0,
-      }
-    },
+    input = { enabled = true  },
     terminal = {
       win = {
         title = "terminal",
@@ -102,7 +95,10 @@ return {
     scroll = { enabled = true },
     statuscolumn = {
       enabled = false ,
-      git =  { enabled = true}
+      git =  {
+        enabled = true,
+        patterns = { "MiniDiffSign" },
+      }
     },
     words = { enabled = false },
     styles = {
