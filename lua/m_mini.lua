@@ -98,22 +98,26 @@ return {
     dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
       require("mini.snippets").setup({
-      -- Integrates seamlessly with mini.completion's fallback logic
-      snippets = {
-        -- require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
-        require("mini.snippets").gen_loader.from_lang(),
-      },
+        -- Integrates seamlessly with mini.completion's fallback logic
+        snippets = {
+          -- require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
+          require("mini.snippets").gen_loader.from_lang(),
+        },
 
-      mappings = {
-        -- Expand snippet at cursor position. Created globally in Insert mode.
-        expand = '<C-.>',
-        -- Interact with default `expand.insert` session.
-        -- Created for the duration of active session(s)
-        jump_next = '<C-n>',
-        jump_prev = '<C-p>',
-        stop = '<C-c>',
-      },
-    }) end
+        mappings = {
+          -- Expand snippet at cursor position. Created globally in Insert mode.
+          expand = '<C-.>',
+          -- Interact with default `expand.insert` session.
+          -- Created for the duration of active session(s)
+          jump_next = '<C-n>',
+          jump_prev = '<C-p>',
+          stop = '<C-c>',
+        },
+      })
+
+      -- must be after setup to add snipets to mini.completions
+      require("mini.snippets").start_lsp_server()
+    end
   },
   {
     'echasnovski/mini.sessions',
