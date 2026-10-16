@@ -3,7 +3,8 @@ return {
   init = function()
     vim.g.vimwiki_global_ext = 0  -- don't treat all md files as vimwiki
     vim.g.vimwiki_listsyms = '.◐✓'
-    vim.g.vim_markdown_folding_disabled=1
+    vim.g.vim_markdown_folding_disabled=0
+    vim.g.vimwiki_folding = 'expr'
     -- Vimwiki setup
     local wiki = {
       nested_syntaxes = { python = 'python', rust = 'rust', ['c++'] = 'cpp', c = 'c' },

@@ -64,15 +64,6 @@ require('lazy').setup({
 
   {'easymotion/vim-easymotion'},
   {'nvim-tree/nvim-web-devicons'},
-  {'preservim/vim-markdown',
-    priority = 1,
-    config = function()
-      vim.g.vim_markdown_conceal_code_blocks = 0
-      vim.g.vim_markdown_folding_style_pythonic = 1
-      vim.g.vim_markdown_no_default_key_mappings = 1
-      vim.g.vim_markdown_new_list_item_indent = 0
-    end,
-  },
   {
     -- https://github.com/iamcco/markdown-preview.nvim?tab=readme-ov-file
     "iamcco/markdown-preview.nvim",
