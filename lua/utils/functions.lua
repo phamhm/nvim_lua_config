@@ -71,7 +71,7 @@ function F.menu_commands(items, title)
   })
 end
 
-local function picker_list_files(m_path, prefix)
+local function picker_list_files(m_path)
   local items = {} -- must be first line
 
   local dir_path = vim.fn.expand(m_path)
@@ -83,7 +83,10 @@ local function picker_list_files(m_path, prefix)
         break
       end
 
-      if type == 'file' and vim.endswith(name, ".zsh") then
+      if type == 'file' and
+        (vim.endswith(name, ".zsh") or
+         vim.endswith(name, ".applescript") or
+         vim.endswith(name, ".rdp")) then
         local full_path = dir_path ..  vim.trim(name)
         table.insert(items, {
           text = vim.trim(name),    -- What shows up and is searchable in the picker
@@ -97,6 +100,7 @@ end
 
 function F.open_markdown_links_picker()
   local items = {} -- must be first line
+
 
   -- 1. Define the path to your file
   local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
@@ -114,7 +118,7 @@ function F.open_markdown_links_picker()
     end
   end
 
-  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/", "nv_"))
+  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/"))
 
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
@@ -132,7 +136,7 @@ function F.open_markdown_links_picker()
       picker:close()
       if item and item.link then
         local cmd
-        if vim.startswith(item.link, "http") then
+        if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
           vim.ui.open(item.link) -- Open the link using your system's default handler
           return
         elseif  vim.endswith(item.link, ".applescript") then
