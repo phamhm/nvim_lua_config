@@ -90,18 +90,19 @@ return {
     config = function()
       require("mini.completion").setup({
         lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-        delay = { completion = 900, info = 500, signature = 500 }
+        delay = { completion = 200, info = 200, signature = 200 }
     }) end
   },
   {
     'echasnovski/mini.snippets',
     dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
-      require("mini.snippets").setup({
+      local m_snippets =  require("mini.snippets")
+      m_snippets.setup({
         -- Integrates seamlessly with mini.completion's fallback logic
         snippets = {
-          -- require("mini.snippets").gen_loader.from_file('~/.config/nvim/snippets/global.json'),
-          require("mini.snippets").gen_loader.from_lang(),
+          m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
+          m_snippets.gen_loader.from_lang(),
         },
 
         mappings = {
@@ -141,13 +142,20 @@ return {
       end, desc = 'Save named session'},
       {'<leader>sv',
         function()
-          local session = vim.fs.basename( vim.v.this_session )
-          if session ~= "" then
-            vim.cmd("edit "..vim.g.m_vimwiki_path .. '/sessions/'..session .. ".md")
+          local session_name = vim.fs.basename( vim.v.this_session )
+          if session_name ~= "" then
+            -- vim.cmd("edit "..vim.g.m_vimwiki_path .. '/sessions/'..session .. ".md")
+            local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. '/sessions/'..session_name .. ".md")
+
+            Snacks.scratch({
+              file = file_path,
+              enter = true,
+              name = "Session notes",
+            })
           else
             vim.notify("Not in a session", vim.log.levels.ERROR)
           end
-        end, { desc = 'Delete mini.sessions Workspace' } },
+        end, { desc = 'Open a floating window to edit notes' } },
 
     },
   },

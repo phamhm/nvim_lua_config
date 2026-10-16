@@ -84,7 +84,6 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-
 function _G.get_custom_title()
   local file = vim.fn.expand('%:t')
   if file == ""  then
