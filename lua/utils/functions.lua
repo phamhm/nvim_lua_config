@@ -43,7 +43,7 @@ local m_layout = {
   }
 }
 
-function F.commands_menu(items, title)
+function F.menu_commands(items, title)
   Snacks.picker.pick({
     pattern="^",
     items = items,
