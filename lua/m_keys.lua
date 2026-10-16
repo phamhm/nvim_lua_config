@@ -78,7 +78,7 @@ end, opt)
 
 -- capture
 
-map('n', '<leader>cc', function()
+map('n', '<leader>vc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
       local today_date = os.date('%Y-%m-%d')
@@ -87,7 +87,7 @@ map('n', '<leader>cc', function()
   end)
 end, { desc = 'Ask for text and append to end of file' })
 
-map('n', '<leader>gb', function()
+map('n', '<leader>vb', function()
   local reg_p = vim.fn.getreg('+')
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
@@ -119,13 +119,6 @@ map('n', '<leader>vd',
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-
--- map('n', "<leader>cc", function()
---   local reg = vim.fn.getreg('"')
---   vim.fn.setreg("+", reg)
---   vim.notify('Copied @" into system clipboard @+:'..reg)
--- end, {desc = 'copy yanked @" into system clipboard @+'})
--- map('i', "<D-v>", '<Esc>"*pa', {desc = 'paste from @* register '})
 
 map("v", "Y", function()
   vim.cmd.normal([["*y]])

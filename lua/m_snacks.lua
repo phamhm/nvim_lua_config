@@ -161,12 +161,6 @@ return {
       desc = "Spelling Suggestions",
     },
     -- Top Pickers & Explorer
-    { "<leader>cn",
-      function()
-        local today_date = os.date('%Y-%m-%d')
-        local date_pattern = "[" .. today_date .."]"
-        copy_dated_lines(vim.g.m_vimwiki_path .. "/daily_reminder.md", date_pattern)
-      end, {desc = 'copy dated line into @* register'} },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
