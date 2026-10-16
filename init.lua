@@ -29,7 +29,7 @@ require('lazy').setup({
   -- {'metalelf0/jellybeans-nvim'},
   {"catppuccin/nvim", name = "catppuccin",
     config = function()
-      vim.cmd.colorscheme("catppuccin-frappe")
+      vim.cmd.colorscheme("catppuccin-mocha")
     end
   },
   require('m_snacks'),

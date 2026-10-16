@@ -61,7 +61,7 @@ return {
     lazy=false,
     config =  function() require("mini.diff").setup({
       view = {
-        -- Signs used for hunks with 'sign' view
+        style = 'sign',
         signs = { add = '+', change = '|', delete = '--' },
       },
     }
