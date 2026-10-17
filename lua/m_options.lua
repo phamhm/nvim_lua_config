@@ -56,6 +56,7 @@ local options = {
   statuscolumn   = "",
   background     = "dark",
   spellfile      = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
+  winborder      = "rounded",
 }
 
 for k, v in pairs(options) do
