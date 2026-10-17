@@ -33,7 +33,8 @@ require('lazy').setup({
   require('m_vimwiki'),
   require('m_autopair'),
   require('m_surround'),
-  require('m_misc')
+  require('m_misc'),
+  -- require("m_orgmode"),
 })
 
 -- setup must be called before loading
