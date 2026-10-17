@@ -28,24 +28,29 @@ return {
   },
   {
     'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons',   "NStefan002/screenkey.nvim" },
+    dependencies = { 'nvim-tree/nvim-web-devicons', },
 
     config = function()
-      require("screenkey").setup()
-
-      vim.keymap.set("n", "<leader>ts", function()
-        require("screenkey").toggle_statusline_component()
-      end, { desc = "Toggle screenkey statusline component" })
-
       require('lualine').setup {
         options = {
           theme = "auto",
         },
         sections = {
           lualine_a = {},
-          lualine_b = {"filename", 'location', 'branch', 'diff', 'diagnostics'},
-          lualine_c = {function() return require("screenkey").get_keys() end},
-          lualine_x = {'encoding', 'fileformat', 'filetype'},
+          lualine_b = {
+            function() return vim.fs.basename( vim.v.this_session ) end,
+            "filename",
+            'location',
+            'branch',
+            'diff',
+            'diagnostics'
+          },
+          lualine_c = {},
+          lualine_x = {
+            'encoding',
+            'fileformat',
+            'filetype'
+          },
           lualine_y = {}, -- saved 'progress'
           lualine_z = {}
         },
