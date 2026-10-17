@@ -15,12 +15,6 @@ return {
         "bashls"
       } -- your desired servers
     })
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = {"snacks_picker", "snacks_picker_input" }, -- "snacks_input""snacks_picker_input",
-      callback = function()
-        vim.b.minicompletion_disable = true
-      end,
-    })
 
     -- Pass specific server settings directly via vim.lsp.config
     -- Configure lua_ls natively using the 0.11+ API

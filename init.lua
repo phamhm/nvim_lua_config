@@ -5,6 +5,7 @@ vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.m_vimwiki_path = "~/Documents/vimwiki"
+vim.g.m_scripts = "~/Documents/configs/scripts/"
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 local uv = vim.uv or vim.loop
@@ -34,17 +35,21 @@ require('lazy').setup({
   require('m_autopair'),
   require('m_surround'),
   require('m_misc'),
-  -- require("m_orgmode"),
 })
 
 -- setup must be called before loading
 -- vim.opt.background = "dark" -- set this to dark or light
 
 vim.diagnostic.config({
-    virtual_text = false,
-    signs = true,
-    update_in_insert = false,
-    underline = false,
+  virtual_text = {
+    severity = vim.diagnostic.severity.ERROR,
+    prefix = "●",
+  },
+  signs = {
+    severity = { min = vim.diagnostic.severity.WARN },
+  },
+  update_in_insert = false,
+  underline = false,
 })
 
 require('m_keys')

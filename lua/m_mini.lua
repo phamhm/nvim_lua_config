@@ -66,7 +66,7 @@ return {
     config =  function() require("mini.diff").setup({
       view = {
         style = 'sign',
-        signs = { add = '|', change = '=', delete = '-' },
+        signs = { add = '+', change = '=', delete = '-' },
       },
     }
     ) end
@@ -74,8 +74,9 @@ return {
   {
     'echasnovski/mini.files',
     config = function() require("mini.files").setup({
-      mappings = {
-        -- close = '<C-c>',
+      windows = {
+        preview=true,
+        width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
       }
     }) end
   },
@@ -202,7 +203,7 @@ return {
             return MiniStatusline.combine_groups({
               -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
               '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r", location} },
+              { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r",location, } },
               '%=', -- End left alignment
               { hl = 'MiniStatuslineGit', strings = { git} },
               { hl = 'MiniStatuslineFileinfo', strings = {lsp, diagnostics, '|' .. session  } },

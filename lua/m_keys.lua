@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
-map('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
-map('n', '<leader>vn', ":vnew<CR>", {})
+map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
+-- map('n', '<leader>vn', ":vnew<CR>", {})
 map('n', 'j', "gj", {silent=true})
 map('n', 'k', "gk", {silent=true})
 
@@ -13,11 +13,8 @@ map('n', '<leader>0', ":clo<CR>",{})
 map({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
 map('i', '<C-j>', "<Esc>o",{silent = true})
 map('i', '<C-a>', "<Esc>A",{silent = true})
-map('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
-map('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
 -- end key maps
---
 
 --map("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --map("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
@@ -81,14 +78,21 @@ end, opt)
 map('n', '<leader>vc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
-      local today_date = os.date('%Y-%m-%d')
-      vim.fn.writefile({ "[".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
+      local today_date = os.date('%Y-%m-%d %H:%M:%S')
+      vim.fn.writefile({ "* [".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
 
 map('n', '<leader>vb', function()
-  local reg_p = vim.fn.getreg('+')
+  local reg_p = vim.trim(vim.fn.getreg('*'))
+  if reg_p == "" then
+    vim.notify("Register @* is empty")
+    return
+  elseif  not vim.startswith(reg_p, "http") then
+    vim.notify("Register @* isn't an url:"..reg_p)
+    return
+  end
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
     if input and input ~= '' and reg_p and reg_p ~='' then

@@ -6,19 +6,24 @@ return {
     config = function()
       vim.cmd.colorscheme("catppuccin-mocha")
 
-      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "white", bold = true })
+      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "gold", bold = true })
 
-      local number_hex = '#ebecf0'
-      -- Style the relative numbers above the cursor (e.g., Dim Blue/Grey)
-      vim.api.nvim_set_hl(0, "LineNrAbove", { fg = number_hex })
-      vim.api.nvim_set_hl(0, "LineNrBelow", { fg = number_hex })
-
-      vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#aaf0c9', bg = '#222222' })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineGit', { fg = '#ffffff', bg = '#222222' })
-
-      vim.api.nvim_set_hl(0,"SnacksPickerBorder", { fg= "grey"})
-      vim.api.nvim_set_hl(0,"SnacksPickerInputBorder", { fg= "grey"})
-      vim.api.nvim_set_hl(0,"SnacksPickerBoxBorder", { fg= "grey"})
+      local border_color = "grey"
+      local border_list = {
+        -- "SnacksPickerBorder",
+        "SnacksPickerInputBorder",
+        "SnacksPickerBoxBorder",
+        "SnacksInputBorder",
+        -- "SnacksInputNormal",
+        -- "SnacksInputTitle",
+        -- "LineNrAbove",
+        -- "LineNrBelow",
+        "LineNr",
+        "FloatBorder"
+      }
+      for _, border in ipairs(border_list) do
+        vim.api.nvim_set_hl(0, border, { fg= border_color})
+      end
     end
   },
 }

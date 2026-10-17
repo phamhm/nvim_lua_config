@@ -1,5 +1,14 @@
 local utils_funcs = require("utils.functions")
 
+-- disable autocompletion in the windows. will work on vim.ui.open
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"snacks_picker", "snacks_picker_input", "snacks_input"}, -- "snacks_input""snacks_picker_input",
+  callback = function()
+    vim.b.minicompletion_disable = true
+  end,
+})
+
+
 return {
   "folke/snacks.nvim",
   priority = 1000,
@@ -7,7 +16,14 @@ return {
   ---@type snacks.Config
   opts = {
     scratch = {
-      win = {width = 0.8, height = 0.8, border = "rounded",},
+      win = {
+        width = 0.7,
+        height = 0.8,
+        border = "rounded",
+        wo = {
+          wrap = true,
+        }
+      },
     },
     explorer = { enabled = false },
     bigfile = { enabled = true },
@@ -35,8 +51,8 @@ return {
       timeout = 5000,
     },
     picker = {
-      hidden=true,
       enabled = true ,
+      hidden=true,
       sources = {
         explorer = {
           auto_close = false,
@@ -49,17 +65,7 @@ return {
           }
         },
         files = {
-          exclude = {
-            ".git",
-            "node_modules",
-            ".env",
-            "target",
-            "build",
-            "archive",
-            ".*env*",
-            "*env*",
-            "*pycache*",
-          }
+          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*",}
         }
       },
       win = {
@@ -134,7 +140,7 @@ return {
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
           { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
           { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-          { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua MiniSessions.select()" },
+          { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua require('mini.sessions').select()" },
           { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         }
@@ -168,7 +174,27 @@ return {
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
-    { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
+    -- this won't close any current floating windows.
+    { "<leader>fv",
+      function()
+        vim.cmd("fclose")
+
+        Snacks.picker.files({
+          title = "Vimwiki files",
+          cwd = vim.fn.expand(vim.g.m_vimwiki_path),
+          confirm = function(picker, item)
+            picker:close()
+            if item and item.file then
+              Snacks.scratch.open(
+                {
+                  file = vim.fn.expand(vim.g.m_vimwiki_path .. "/".. item.file),
+                  enter = true,
+                  name = item.file,
+                })
+            end
+          end,
+        })
+      end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
@@ -229,10 +255,10 @@ return {
     end, desc = "Colorschemes" },
 
     -- LSP
+    { "K", function() vim.lsp.buf.hover({border='rounded'}) end, nowait = true, desc = "LSP Hover Doc" },
     { "<leader>gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
     { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
     { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
-    { "K", function() vim.lsp.buf.hover({border='rounded'}) end, nowait = true, desc = "LSP Hover Doc" },
     { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
