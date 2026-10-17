@@ -99,8 +99,8 @@ local function picker_list_files(m_path)
 end
 
 function F.open_markdown_links_picker()
+  vim.cmd("fclose")
   local items = {} -- must be first line
-
 
   -- 1. Define the path to your file
   local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
@@ -118,7 +118,7 @@ function F.open_markdown_links_picker()
     end
   end
 
-  vim.list_extend(items, picker_list_files("~/Documents/configs/scripts/"))
+  vim.list_extend(items, picker_list_files(vim.g.m_scripts))
 
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then

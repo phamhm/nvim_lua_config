@@ -49,23 +49,14 @@ return {
           }
         },
         files = {
-          exclude = {
-            ".git",
-            "node_modules",
-            ".env",
-            "target",
-            "build",
-            "archive",
-            ".*env*",
-            "*env*",
-            "*pycache*",
-          }
+          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*",}
         }
       },
       win = {
         input = {
           keys = {
             ["<C-t>"] = { "toggle_preview", mode = { "i", "n" } },
+            ["<Cr>"] = { "edit_vsplit", mode = { "i", "n" } },
           }
         }
       },
