@@ -193,7 +193,7 @@ return {
             local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
             local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
             -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-            local location = '(%l:%c)'
+            local location = '(%l,%c)'
             local session = ''
             if vim.v.this_session ~= "" then
               session       =   vim.fs.basename( vim.v.this_session )
