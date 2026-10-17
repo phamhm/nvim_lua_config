@@ -183,36 +183,36 @@ return {
       })
     end,
   },
-  {
-    'echasnovski/mini.statusline',
-    config = function()
-      require('mini.statusline').setup({
-        content = {
-          active = function()
-            -- local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
-            local git           = MiniStatusline.section_git({ trunc_width = 40 })
-            local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
-            local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
-            -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-            local location = '(%l,%c)'
-            local session = ''
-            if vim.v.this_session ~= "" then
-              session       =   vim.fs.basename( vim.v.this_session )
-            end
-
-            return MiniStatusline.combine_groups({
-              -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
-              '%<', -- Mark general truncate point
-              { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r",location, } },
-              '%=', -- End left alignment
-              { hl = 'MiniStatuslineGit', strings = { git} },
-              { hl = 'MiniStatuslineFileinfo', strings = {lsp, diagnostics, '|' .. session  } },
-            })
-          end
-        }
-      })
-    end
-  },
+  -- {
+  --   'echasnovski/mini.statusline',
+  --   config = function()
+  --     require('mini.statusline').setup({
+  --       content = {
+  --         active = function()
+  --           -- local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+  --           local git           = MiniStatusline.section_git({ trunc_width = 40 })
+  --           local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+  --           local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
+  --           -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+  --           local location = '(%l,%c)'
+  --           local session = ''
+  --           if vim.v.this_session ~= "" then
+  --             session       =   vim.fs.basename( vim.v.this_session )
+  --           end
+  --
+  --           return MiniStatusline.combine_groups({
+  --             -- { hl = mode_hl,                  strings = { string.sub(mode, 1, 1) } },
+  --             '%<', -- Mark general truncate point
+  --             { hl = 'MiniStatuslineFilename', strings = { "%t" .. "%m%r",location, } },
+  --             '%=', -- End left alignment
+  --             { hl = 'MiniStatuslineGit', strings = { git} },
+  --             { hl = 'MiniStatuslineFileinfo', strings = {lsp, diagnostics, '|' .. session  } },
+  --           })
+  --         end
+  --       }
+  --     })
+  --   end
+  -- },
   {
     'nvim-mini/mini.cmdline',
     config = function()

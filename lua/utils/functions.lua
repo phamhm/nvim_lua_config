@@ -161,7 +161,7 @@ function F.open_markdown_links_picker()
           return
         end
         if type(cmd) == "table" and next(cmd) ~= nil then
-          vim.system(cmd, { detach = true}, function(err, _)
+          vim.system(cmd, { detach = true}, function(err)
             if err and err.code ~= 0 then
               vim.schedule(function()
                 vim.notify("Failed to run:" .. vim.inspect(err), vim.log.levels.ERROR)
