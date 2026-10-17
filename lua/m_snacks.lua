@@ -7,7 +7,14 @@ return {
   ---@type snacks.Config
   opts = {
     scratch = {
-      win = {width = 0.8, height = 0.8, border = "rounded",},
+      win = {
+        width = 0.7,
+        height = 0.8,
+        border = "rounded",
+        wo = {
+          wrap = true,
+        }
+      },
     },
     explorer = { enabled = false },
     bigfile = { enabled = true },
