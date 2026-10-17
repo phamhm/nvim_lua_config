@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
 map('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
-map('n', '<leader>vn', ":vnew<CR>", {})
+-- map('n', '<leader>vn', ":vnew<CR>", {})
 map('n', 'j', "gj", {silent=true})
 map('n', 'k', "gk", {silent=true})
 

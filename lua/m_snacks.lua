@@ -168,7 +168,27 @@ return {
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
-    { "<leader>fv",function() Snacks.picker.files({ cwd = vim.fn.expand(vim.g.m_vimwiki_path)}) end,desc = "Help Page" },
+    -- this won't close any current floating windows.
+    { "<leader>fv",
+      function()
+        vim.cmd("fclose")
+
+        Snacks.picker.files({
+          title = "Vimwiki files",
+          cwd = vim.fn.expand(vim.g.m_vimwiki_path),
+          confirm = function(picker, item)
+            picker:close()
+            if item and item.file then
+              Snacks.scratch.open(
+                {
+                  file = vim.fn.expand(vim.g.m_vimwiki_path .. "/".. item.file),
+                  enter = true,
+                  name = item.file,
+                })
+            end
+          end,
+        })
+      end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},

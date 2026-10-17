@@ -95,6 +95,8 @@ function _G.get_custom_title()
   if session ~= "" then
     local session_name = vim.fn.fnamemodify(session, ':t:r')
     return string.format("%s|%s", session_name, file)
+  else
+    return file
   end
 
   return file
