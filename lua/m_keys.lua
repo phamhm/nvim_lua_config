@@ -28,7 +28,13 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-local move_line_prefix = "C-M"
+--
+local move_line_prefix
+if vim.uv.os_uname().sysname == "Darwin" then
+  move_line_prefix = "C-D"
+else
+  move_line_prefix = "C-M"
+end
 map('n', '<' .. move_line_prefix .. '-j>', ':m .+1<CR>==', { silent = true })
 map('i', '<' .. move_line_prefix .. '-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
 map('v', '<' .. move_line_prefix .. '-j>', ":m '>+1<CR>gv=gv", { silent = true })
