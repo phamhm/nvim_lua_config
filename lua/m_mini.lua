@@ -76,6 +76,7 @@ return {
     config = function() require("mini.files").setup({
       windows = {
         preview=true,
+        width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
       }
     }) end
   },

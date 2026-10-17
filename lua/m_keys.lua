@@ -1,6 +1,6 @@
 local map = vim.keymap.set
 
-map('n', '<C-q><C-q><C-q>', ":q!<CR>", {})
+map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
 -- map('n', '<leader>vn', ":vnew<CR>", {})
 map('n', 'j', "gj", {silent=true})
 map('n', 'k', "gk", {silent=true})
@@ -13,11 +13,8 @@ map('n', '<leader>0', ":clo<CR>",{})
 map({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
 map('i', '<C-j>', "<Esc>o",{silent = true})
 map('i', '<C-a>', "<Esc>A",{silent = true})
-map('n', '<F3>', "Go<C-R><C-c>## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o - Idea:<CR>- Thought:<Esc>kA",{})
-map('i', '<F3>', "<Esc>0Di## <C-R>=strftime(\"%Y-%m-%d %a %I:%M %p\")<CR><Esc>o- Idea:<CR>- Thought:<Esc>kA",{})
 
 -- end key maps
---
 
 --map("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --map("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
