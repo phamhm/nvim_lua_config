@@ -7,6 +7,31 @@ function F.write_note(note_text)
   end
 end
 
+function F.move_line_to_file(target_path)
+  -- 1. Expand the target path (handles ~ or relative paths safely)
+  local expanded_path = vim.fn.expand(target_path)
+
+  -- 2. Get the current cursor line text
+  local current_line_content = vim.api.nvim_get_current_line()
+
+  local file, err = io.open(expanded_path, "a")
+  if not file then
+    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+
+  file:write(current_line_content.. "\n")
+  file:close()
+
+  -- 5. Delete the line from the active Neovim buffer
+  -- nvim_buf_set_lines replaces a range of lines. Passing an empty table {} deletes them.
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
+
+  vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
+
+end
+
 function F.bookmark_line(target_path)
   -- 1. Expand the target path (handles ~ or relative paths safely)
   local expanded_path = vim.fn.expand(target_path)
@@ -41,7 +66,6 @@ function F.bookmark_line(target_path)
   vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
 
   vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
-
 end
 
 
