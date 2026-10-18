@@ -85,7 +85,7 @@ return {
     config = function()
       require("mini.completion").setup({
         lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-        delay = { completion = 200, info = 200, signature = 200 }
+        delay = { completion = 200, info = 200, signature = 200 },
     }) end
   },
   {
@@ -93,10 +93,14 @@ return {
     dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
       local m_snippets =  require("mini.snippets")
+
       m_snippets.setup({
         -- Integrates seamlessly with mini.completion's fallback logic
         snippets = {
           m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
+          m_snippets.gen_loader.from_lang({lang_patterns = {
+            markdown_inline = { 'markdown.json' },
+          }}),
         },
 
         mappings = {

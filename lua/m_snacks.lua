@@ -73,7 +73,11 @@ return {
           keys = {
             ["<C-t>"] = { "toggle_preview", mode = { "i", "n" } },
           }
-        }
+        },
+        list = {
+          keys = {
+          }
+        },
       },
       layout = {
         -- options include default, ivy, dropdown, vertical, sidebar, telescope
@@ -175,7 +179,7 @@ return {
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     -- this won't close any current floating windows.
-    { "<leader>fv",
+    { "<leader>ww",
       function()
         vim.cmd("fclose")
 
@@ -183,17 +187,6 @@ return {
           title = "Notes files",
           exclude = {"backups", "sessions", "assets", "archive"},
           cwd = vim.fn.expand(vim.g.m_notes_path),
-          confirm = function(picker, item)
-            picker:close()
-            if item and item.file then
-              Snacks.scratch.open(
-                {
-                  file = vim.fn.expand(vim.g.m_notes_path .. "/".. item.file),
-                  enter = true,
-                  name = item.file,
-                })
-            end
-          end,
         })
       end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },

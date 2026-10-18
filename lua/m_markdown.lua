@@ -8,7 +8,8 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     local md_key_opt = {buffer = true, noremap = false, silent = true}
     vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", md_key_opt)
-    vim.keymap.set("n", "<leader>mt", ":MarkdownPreviewToggle<CR>", md_key_opt)
+    vim.keymap.set("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", md_key_opt)
+    vim.keymap.set("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", md_key_opt)
 
     -- 1. Enable soft wrapping
     vim.opt_local.wrap = true
