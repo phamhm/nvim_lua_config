@@ -32,7 +32,6 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-local move_line_prefix = vim.uv.os_uname().sysname == "Darwin" and "C-D" or "C-M"
 map('n', utils.format_os_altkey("<C-%s-j>"), ':m .+1<CR>==', { silent = true })
 map('i', utils.format_os_altkey("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true })
 map('v', utils.format_os_altkey("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true })
@@ -81,7 +80,7 @@ end, {desc="googling google"})
 -- capture
 map('n', '<leader>vc', function()
   vim.ui.input({ prompt = 'Capture: ' }, utils.write_note )
-end, { desc = 'Ask for text and capture to end of file' })
+end, { desc = 'Capture text and apped to working_notes.md' })
 
 map('n', '<leader>vb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
@@ -94,7 +93,7 @@ map('n', '<leader>vb', function()
     local note_text = "[" .. input .. "](" .. reg_p .. ")"
     utils.write_note(note_text)
   end)
-end, {silent = true, desc = 'append url/bookmarking to file' })
+end, {silent = true, desc = 'Capture url/bookmarking to working_notes.md' })
 
 map('n', '<leader>vd',
   function()
@@ -111,7 +110,7 @@ map('n', '<leader>vd',
         vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
       end
     end)
-  end, { desc = 'Ask for text and append to end of file' })
+  end, { desc = 'Capture to today diary file' })
 
 -- end capture
 
@@ -125,6 +124,7 @@ map("v", "Y", function()
   vim.notify("@*="..reg)
 end, {desc = "yank virtual into system clipboard"})
 
+map("n", "<leader>p", '"*p', {desc="paste @* clipboard", remap=false})
 
 -- use Mini.Files locate the file under cursor.
 map('n', '<leader>gf', function()
@@ -176,4 +176,5 @@ map("n", "<leader>tk",
     end)
 
   end,
-  { desc = "Toggle Kitty Window Decorations" })
+  { desc = "Toggle Kitty Window Decorations" }
+)
