@@ -133,7 +133,7 @@ end, {desc = "yank virtual into system clipboard"})
 
 
 -- use Mini.Files locate the file under cursor.
-vim.keymap.set('n', '<leader>gf', function()
+map('n', '<leader>gf', function()
   -- Get the file path under the cursor using Neovim's built-in <cfile>
   local target = vim.fn.expand('<cfile>')
 
@@ -155,3 +155,21 @@ vim.keymap.set('n', '<leader>gf', function()
     MiniFiles.open(dir)
   end
 end, { desc = "Open MiniFiles in directory of file under cursor" })
+
+
+map("n", "<leader>tk",
+  function()
+    vim.notify("If full screen, toggle may not work")
+    local cmd = "CONFIG=~/.config/kitty/kitty.conf; grep -q '^hide_window_decorations yes' \"$CONFIG\" && sed -i '/^hide_window_decorations yes/d' \"$CONFIG\" || echo 'hide_window_decorations yes' >> \"$CONFIG\""
+
+    vim.fn.jobstart(cmd, {
+      on_exit = function(_, exit_code, _)
+        if exit_code == 0 then
+          vim.notify("Kitty window decorations toggled successfully!", vim.log.levels.INFO)
+        else
+          vim.notify("Failed to toggle Kitty window decorations.", vim.log.levels.ERROR)
+        end
+      end,
+    })
+  end,
+  { desc = "Toggle Kitty Window Decorations" })
