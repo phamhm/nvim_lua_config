@@ -254,7 +254,7 @@ return {
     { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
     { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
     { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
-    { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
+    { "<leader>gt", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader>gs", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },

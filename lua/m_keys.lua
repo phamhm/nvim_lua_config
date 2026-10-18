@@ -59,32 +59,26 @@ local function query(query_url)
   end
 end
 
-map("n", "<leader>gu", function()
+map("n", "<leader>gy", function()
   vim.ui.input( { prompt = "Youtube:"},query("https://www.youtube.com/results?search_query="))
 end, opt)
 
-local google_shortcut ="<leader>gg"
-local google_prompt = "Google: "
-local google_search = query("https://www.google.com/search?q=")
-map("n", google_shortcut, function()
-  vim.ui.input( { prompt = google_prompt}, google_search)
-end, opt)
-
-map("v", google_shortcut, function()
-  vim.cmd('noautocmd normal! "vy') -- yank selected into register v
-
-  local selected_text = vim.fn.getreg('v')
+map({"n","v" }, "<leader>gg", function()
+  local current_mode = vim.fn.mode(1)
+  local selected_text = ""
+  if current_mode == "v" or current_mode ==  "V" then
+    vim.cmd('noautocmd normal! "vy') -- yank selected into register v
+    selected_text = vim.fn.getreg('v')
+  end
 
   vim.ui.input({
-    prompt = google_prompt,
-    default = selected_text,
-  },
-    google_search)
+    prompt = "Google:",
+    default = selected_text .. ' ',
+  }, query("https://www.google.com/search?q="))
 end, opt)
 -- end googling, }
 
 -- capture
-
 map('n', '<leader>vc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
