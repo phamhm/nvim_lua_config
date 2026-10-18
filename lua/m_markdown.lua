@@ -1,0 +1,79 @@
+-- Create an augroup to ensure autocommands don't duplicate on reload
+local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = prose_group,
+  -- Target text-focused filetypes (mimicking vim-pencil's default targets)
+  pattern = { "markdown"},
+  callback = function()
+    local md_key_opt = {buffer = true, noremap = false, silent = true}
+    vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", md_key_opt)
+    vim.keymap.set("n", "<leader>mt", ":MarkdownPreviewToggle<CR>", md_key_opt)
+
+    -- 1. Enable soft wrapping
+    vim.opt_local.wrap = true
+
+    -- 2. Wrap at words instead of hard character boundaries
+    vim.opt_local.linebreak = true
+
+    -- 3. Maintain indentation when text wraps to the next visual line
+    vim.opt_local.breakindent = true
+
+    -- 4. Enable spell checking (optional, but standard for text mode)
+    vim.opt_local.spell = true
+
+    -- 6. Punctuation undo sequences (Mimics vim-pencil's granular undo)
+    -- Creates an undo point every time you hit a punctuation mark or Space
+    local punctuations = { ",", ".", "!", "?", ";", " " }
+    for _, char in ipairs(punctuations) do
+      vim.keymap.set("i", char, char .. "<c-g>u", opts)
+    end
+  end,
+})
+
+return {
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = "cd app && npm install",
+  },
+  {"HakonHarnes/img-clip.nvim",
+    event = "VeryLazy",
+    priority = 1,
+    opts = {
+      default = {
+        dir_path = function()
+          return  "assets/images/" .. vim.fn.expand("%:t:r")
+        end,
+        file_name = "%Y-%m-%d-%H-%M-%S", -- timestamp format
+        extension = "png",
+      },
+      filetypes = {
+        markdown = {
+          template = "![$FILE_NAME_NO_EXT]($FILE_PATH)",
+        },
+      }
+    },
+    keys = {
+      -- suggested keymap
+      { "<leader>p", function() vim.notify("image paste only works in vimwiki", vim.log.levels.ERROR) end, desc = "clipboard paste" },
+    },
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter',},            -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
+  {
+    "tadmccorkle/markdown.nvim",
+    ft = "markdown", -- or 'event = "VeryLazy"'
+    config = function()
+      require('markdown').setup()
+    end
+  }
+}

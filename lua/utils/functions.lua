@@ -1,5 +1,11 @@
 local F = {}
 
+function F.format_os_altkey(key_formatter)
+  -- example <C-%s-j> will return <C-D-j> on osx and <C-M-j> on everything else
+  local md_key = jit.os == "OSX" and "D" or "M"
+  return string.format(key_formatter, md_key)
+end
+
 function F.copy_dated_lines(filepath, pattern)
   -- Expand the file path (handles ~ for home directory, etc.)
   local expanded_path = vim.fn.expand(filepath)
@@ -103,7 +109,7 @@ function F.open_markdown_links_picker()
   local items = {} -- must be first line
 
   -- 1. Define the path to your file
-  local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
+  local file_path = vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md") -- Change this to your file path
   -- 2. Read lines from the file
   local lines = vim.fn.readfile(file_path)
 

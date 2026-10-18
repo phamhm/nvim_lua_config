@@ -144,7 +144,7 @@ return {
         function()
           local session_name = vim.fs.basename( vim.v.this_session )
           if session_name ~= "" then
-            local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. '/sessions/'..session_name .. ".md")
+            local file_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
             Snacks.scratch({
               file = file_path,
               enter = true,

@@ -180,15 +180,15 @@ return {
         vim.cmd("fclose")
 
         Snacks.picker.files({
-          title = "Vimwiki files",
+          title = "Notes files",
           exclude = {"backups", "sessions", "assets", "archive"},
-          cwd = vim.fn.expand(vim.g.m_vimwiki_path),
+          cwd = vim.fn.expand(vim.g.m_notes_path),
           confirm = function(picker, item)
             picker:close()
             if item and item.file then
               Snacks.scratch.open(
                 {
-                  file = vim.fn.expand(vim.g.m_vimwiki_path .. "/".. item.file),
+                  file = vim.fn.expand(vim.g.m_notes_path .. "/".. item.file),
                   enter = true,
                   name = item.file,
                 })
@@ -271,7 +271,7 @@ return {
     {
       "<C-`>", function()
         Snacks.scratch({
-          file = vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"),
+          file = vim.fn.expand(vim.g.m_notes_path .. "/daily_reminder.md"),
           enter = true,
           name = "Daily Reminder",
         })

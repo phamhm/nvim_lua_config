@@ -1,9 +1,13 @@
+local utils = require("utils.functions")
+
 local map = vim.keymap.set
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
 map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
-map('n', 'j', "gj", {silent=true})
-map('n', 'k', "gk", {silent=true})
+map({ 'n', 'v' }, 'j', "gj", {silent=true})
+map({ 'n', 'v' }, 'k', "gk", {silent=true})
+map({ "n", "v" }, "0", "g0", {silent=true})
+map({ "n", "v" }, "$", "g$", {silent=true})
 
 map('n', '<leader>1', ":only<CR>",{})
 map('n', '<leader>2', ":vsp<CR>",{})
@@ -29,12 +33,12 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 -- Bringing the whole line up or down
 -- Normal mode
 local move_line_prefix = vim.uv.os_uname().sysname == "Darwin" and "C-D" or "C-M"
-map('n', '<' .. move_line_prefix .. '-j>', ':m .+1<CR>==', { silent = true })
-map('i', '<' .. move_line_prefix .. '-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
-map('v', '<' .. move_line_prefix .. '-j>', ":m '>+1<CR>gv=gv", { silent = true })
-map('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent = true })
-map('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
-map('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
+map('n', utils.format_os_altkey("<C-%s-j>"), ':m .+1<CR>==', { silent = true })
+map('i', utils.format_os_altkey("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true })
+map('v', utils.format_os_altkey("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true })
+map('n', utils.format_os_altkey("<C-%s-k>"), ':m .-2<CR>==', { silent = true })
+map('i', utils.format_os_altkey("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true })
+map('v', utils.format_os_altkey("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true })
 
 -- simplify the capture. Don't need to move around.
 -- keeps these here as example of moving with vim command
@@ -79,7 +83,7 @@ map('n', '<leader>vc', function()
   vim.ui.input({ prompt = 'Capture: ' }, function(input)
     if input and input ~= '' then
       local today_date = os.date('%Y-%m-%d %H:%M:%S')
-      vim.fn.writefile({ "* [".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
+      vim.fn.writefile({ "* [".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_notes_path .. "/daily_reminder.md"), "a")
     end
   end)
 end, { desc = 'Ask for text and append to end of file' })
@@ -93,7 +97,7 @@ map('n', '<leader>vb', function()
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
     if input and input ~= '' and reg_p and reg_p ~='' then
-      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md"), "a")
+      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md"), "a")
     end
   end)
 end, {silent = true, desc = 'Ask for text and append to end of file' })
@@ -101,7 +105,7 @@ end, {silent = true, desc = 'Ask for text and append to end of file' })
 map('n', '<leader>vd',
   function()
     local today_date = os.date('%Y-%m-%d')
-    local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
+    local file_path = vim.g.m_notes_path .. "/diary/" .. today_date .. ".md"
     file_path = vim.fn.expand(file_path)
     vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
       local file = io.open(file_path, "a")

@@ -4,7 +4,7 @@ require('m_options')
 vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.g.m_vimwiki_path = "~/Documents/vimwiki"
+vim.g.m_notes_path = "~/Documents/notes"
 vim.g.m_scripts = "~/Documents/configs/scripts/"
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -31,7 +31,7 @@ require('lazy').setup({
   require('m_mini'),
   require('m_lsp'),
   require('m_treesitter'),
-  require('m_vimwiki'),
+  require('m_markdown'),
   require('m_autopair'),
   require('m_surround'),
   require('m_misc'),
