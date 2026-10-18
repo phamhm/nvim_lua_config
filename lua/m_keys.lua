@@ -153,8 +153,18 @@ end, { desc = "Open MiniFiles in directory of file under cursor" })
 
 map("n", "<leader>tk",
   function()
-    local cmd_str =
-[[
+    local cmd_str
+    if jit.os=="OSX" then
+     cmd_str= [[
+  KITTYCONF=~/.config/kitty/kitty.conf
+  if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
+    sed -i ''  '/^hide_window_decorations yes/d' "$KITTYCONF"
+  else
+    echo 'hide_window_decorations yes' >> "$KITTYCONF"
+  fi
+]]
+    else
+     cmd_str= [[
   KITTYCONF=~/.config/kitty/kitty.conf
   if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
     sed -i '/^hide_window_decorations yes/d' "$KITTYCONF"
@@ -162,6 +172,7 @@ map("n", "<leader>tk",
     echo 'hide_window_decorations yes' >> "$KITTYCONF"
   fi
 ]]
+    end
 
     vim.system({ "sh", "-c", cmd_str }, { text = true }, function(obj)
       if obj.code == 0 then
