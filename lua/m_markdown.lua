@@ -17,6 +17,7 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
+    vim.keymap.set('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
     vim.keymap.set('n',"<leader>bm",
       function()
@@ -24,17 +25,10 @@ vim.api.nvim_create_autocmd("FileType", {
         bm_line(vim.g.m_notes_path .. '/' .. 'bookmarks.md')
       end, opts("Move markdown link to the bookmarks.md file"))
 
-    -- 1. Enable soft wrapping
     vim.opt_local.wrap = true
-
-    -- 2. Wrap at words instead of hard character boundaries
     vim.opt_local.linebreak = true
-
-    -- 3. Maintain indentation when text wraps to the next visual line
     vim.opt_local.breakindent = true
-
-    -- 4. Enable spell checking (optional, but standard for text mode)
-    vim.opt_local.spell = true
+    vim.opt_local.spell = false
 
     -- 6. Punctuation undo sequences (Mimics vim-pencil's granular undo)
     -- Creates an undo point every time you hit a punctuation mark or Space
