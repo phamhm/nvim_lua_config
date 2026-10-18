@@ -68,12 +68,12 @@ map({"n","v" }, "<leader>gg", function()
   local selected_text = ""
   if current_mode == "v" or current_mode ==  "V" then
     vim.cmd('noautocmd normal! "vy') -- yank selected into register v
-    selected_text = vim.fn.getreg('v')
+    selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
   end
 
   vim.ui.input({
     prompt = "Google:",
-    default = selected_text .. ' ',
+    default = selected_text  .. ' ',
   }, query("https://www.google.com/search?q="))
 end, opt)
 -- end googling, }
