@@ -65,7 +65,7 @@ return {
           }
         },
         files = {
-          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*",}
+          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*", "*backup*"}
         }
       },
       win = {
@@ -73,7 +73,11 @@ return {
           keys = {
             ["<C-t>"] = { "toggle_preview", mode = { "i", "n" } },
           }
-        }
+        },
+        list = {
+          keys = {
+          }
+        },
       },
       layout = {
         -- options include default, ivy, dropdown, vertical, sidebar, telescope
@@ -173,27 +177,17 @@ return {
     -- { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
+    { "<leader>fk",function() Snacks.picker.keymaps() end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     -- this won't close any current floating windows.
-    { "<leader>fv",
+    { "<leader>ww",
       function()
         vim.cmd("fclose")
 
         Snacks.picker.files({
-          title = "Vimwiki files",
-          exclude = {"backups", "sessions", "assets"},
-          cwd = vim.fn.expand(vim.g.m_vimwiki_path),
-          confirm = function(picker, item)
-            picker:close()
-            if item and item.file then
-              Snacks.scratch.open(
-                {
-                  file = vim.fn.expand(vim.g.m_vimwiki_path .. "/".. item.file),
-                  enter = true,
-                  name = item.file,
-                })
-            end
-          end,
+          title = "Notes files",
+          exclude = {"backups", "sessions", "assets", "archive", },
+          cwd = vim.fn.expand(vim.g.m_notes_path),
         })
       end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
@@ -232,7 +226,6 @@ return {
           { text = "Highlights" , fn = function() Snacks.picker.highlights() end},
           { text = "Icons" , fn = function() Snacks.picker.icons() end},
           { text = "Jumps" , fn = function() Snacks.picker.jumps() end},
-          { text = "Keymaps" , fn = function() Snacks.picker.keymaps() end},
           { text = "Location List" , fn = function() Snacks.picker.loclist() end},
           { text = "Marks" , fn = function() Snacks.picker.marks() end},
           { text = "Man Pages" , fn = function() Snacks.picker.man() end},
@@ -261,7 +254,7 @@ return {
     { "<leader>gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
     { "<leader>gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
     { "<leader>gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
-    { "<leader>gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
+    { "<leader>gt", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader>gs", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
@@ -271,9 +264,9 @@ return {
     {
       "<C-`>", function()
         Snacks.scratch({
-          file = vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"),
+          file = vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"),
           enter = true,
-          name = "Daily Reminder",
+          name = "Working Notes",
         })
       end,
       desc="snack scrach reminder notes"

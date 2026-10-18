@@ -1,5 +1,56 @@
 local F = {}
 
+function F.write_note(note_text)
+  if note_text and note_text ~= "" then
+    local today_date = os.date('%Y-%m-%d %H:%M:%S')
+    vim.fn.writefile({ "- [".. today_date .."] " .. note_text }, vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"), "a")
+  end
+end
+
+function F.bookmark_line(target_path)
+  -- 1. Expand the target path (handles ~ or relative paths safely)
+  local expanded_path = vim.fn.expand(target_path)
+
+  -- 2. Get the current cursor line text
+  local current_line_content = vim.api.nvim_get_current_line()
+  local pattern = "(%b[])(%b())"
+
+  local bracket_match, paren_match = string.match(current_line_content, pattern)
+
+  if not (bracket_match and paren_match) then
+    vim.notify("No Markdown link found on this line.", vim.log.levels.WARN)
+    return
+  end
+
+  -- Strip the outer brackets and parentheses to get clean strings
+  local link_text = vim.trim(string.sub(bracket_match, 2, -2))
+  local url = vim.trim(string.sub(paren_match, 2, -2))
+
+  local file, err = io.open(expanded_path, "a")
+  if not file then
+    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+
+  file:write(string.format("[%s](%s)", link_text, url).. "\n")
+  file:close()
+
+  -- 5. Delete the line from the active Neovim buffer
+  -- nvim_buf_set_lines replaces a range of lines. Passing an empty table {} deletes them.
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
+
+  vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
+
+end
+
+
+function F.format_os_altkey(key_formatter)
+  -- example <C-%s-j> will return <C-D-j> on osx and <C-M-j> on everything else
+  local md_key = jit.os == "OSX" and "D" or "M"
+  return string.format(key_formatter, md_key)
+end
+
 function F.copy_dated_lines(filepath, pattern)
   -- Expand the file path (handles ~ for home directory, etc.)
   local expanded_path = vim.fn.expand(filepath)
@@ -103,7 +154,7 @@ function F.open_markdown_links_picker()
   local items = {} -- must be first line
 
   -- 1. Define the path to your file
-  local file_path = vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md") -- Change this to your file path
+  local file_path = vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md") -- Change this to your file path
   -- 2. Read lines from the file
   local lines = vim.fn.readfile(file_path)
 

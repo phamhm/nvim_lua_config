@@ -1,16 +1,20 @@
+local utils = require("utils.functions")
+
 local map = vim.keymap.set
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
 map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
-map('n', 'j', "gj", {silent=true})
-map('n', 'k', "gk", {silent=true})
+map({ 'n', 'v' }, 'j', "gj", {silent=true})
+map({ 'n', 'v' }, 'k', "gk", {silent=true})
+map({ "n", "v" }, "0", "g0", {silent=true})
+map({ "n", "v" }, "$", "g$", {silent=true})
 
 map('n', '<leader>1', ":only<CR>",{})
 map('n', '<leader>2', ":vsp<CR>",{})
 map('n', '<leader>3', ":sp<CR>",{})
 map('n', '<leader>0', ":clo<CR>",{})
 
-map({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
+map({'n', 'i', 'v'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
 map('i', '<C-j>', "<Esc>o",{silent = true})
 map('i', '<C-a>', "<Esc>A",{silent = true})
 
@@ -28,13 +32,12 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-local move_line_prefix = vim.uv.os_uname().sysname == "Darwin" and "C-D" or "C-M"
-map('n', '<' .. move_line_prefix .. '-j>', ':m .+1<CR>==', { silent = true })
-map('i', '<' .. move_line_prefix .. '-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
-map('v', '<' .. move_line_prefix .. '-j>', ":m '>+1<CR>gv=gv", { silent = true })
-map('n', '<' .. move_line_prefix .. '-k>', ':m .-2<CR>==', { silent = true })
-map('i', '<' .. move_line_prefix .. '-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
-map('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true })
+map('n', utils.format_os_altkey("<C-%s-j>"), ':m .+1<CR>==', { silent = true })
+map('i', utils.format_os_altkey("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true })
+map('v', utils.format_os_altkey("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true })
+map('n', utils.format_os_altkey("<C-%s-k>"), ':m .-2<CR>==', { silent = true })
+map('i', utils.format_os_altkey("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true })
+map('v', utils.format_os_altkey("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true })
 
 -- simplify the capture. Don't need to move around.
 -- keeps these here as example of moving with vim command
@@ -46,43 +49,38 @@ map('v', '<' .. move_line_prefix .. '-k>', ":m '<-2<CR>gv=gv", { silent = true }
 map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
 -- shortcut to google
-local google_shortcut ="<leader>gg"
-local google_prompt = "Google: "
-
-local function google_search(input)
-  if input and input ~="" then
-    local query = vim.uri_encode(input)
-    vim.ui.open("https://www.google.com/search?q=" .. query)
+local function query(query_url)
+  return function(input)
+    if input and input ~="" then
+      local query = vim.uri_encode(input)
+      vim.ui.open(query_url .. query)
+    end
   end
 end
 
-map("n", google_shortcut, function()
-  vim.ui.input( { prompt = google_prompt}, google_search)
-end, opt)
+map("n", "<leader>gy", function()
+  vim.ui.input( { prompt = "Youtube:"},query("https://www.youtube.com/results?search_query="))
+end, {desc="query youtube"})
 
-map("v", google_shortcut, function()
-  vim.cmd('noautocmd normal! "vy') -- yank selected into register v
-
-  local selected_text = vim.fn.getreg('v')
+map({"n","v" }, "<leader>gg", function()
+  local current_mode = vim.fn.mode(1)
+  local selected_text = ""
+  if current_mode == "v" or current_mode ==  "V" then
+    vim.cmd('noautocmd normal! "vy') -- yank selected into register v
+    selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
+  end
 
   vim.ui.input({
-    prompt = google_prompt,
-    default = selected_text,
-  },
-    google_search)
-end, opt)
+    prompt = "Google:",
+    default = selected_text  .. ' ',
+  }, query("https://www.google.com/search?q="))
+end, {desc="googling google"})
 -- end googling, }
 
 -- capture
-
 map('n', '<leader>vc', function()
-  vim.ui.input({ prompt = 'Capture: ' }, function(input)
-    if input and input ~= '' then
-      local today_date = os.date('%Y-%m-%d %H:%M:%S')
-      vim.fn.writefile({ "* [".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_vimwiki_path .. "/daily_reminder.md"), "a")
-    end
-  end)
-end, { desc = 'Ask for text and append to end of file' })
+  vim.ui.input({ prompt = 'Capture: ' }, utils.write_note )
+end, { desc = 'Capture text and apped to working_notes.md' })
 
 map('n', '<leader>vb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
@@ -92,16 +90,15 @@ map('n', '<leader>vb', function()
   end
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
-    if input and input ~= '' and reg_p and reg_p ~='' then
-      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand(vim.g.m_vimwiki_path .. "/bookmarks.md"), "a")
-    end
+    local note_text = "[" .. input .. "](" .. reg_p .. ")"
+    utils.write_note(note_text)
   end)
-end, {silent = true, desc = 'Ask for text and append to end of file' })
+end, {silent = true, desc = 'Capture url/bookmarking to working_notes.md' })
 
 map('n', '<leader>vd',
   function()
     local today_date = os.date('%Y-%m-%d')
-    local file_path = vim.g.m_vimwiki_path .. "/diary/" .. today_date .. ".md"
+    local file_path = vim.g.m_notes_path .. "/diary/" .. today_date .. ".md"
     file_path = vim.fn.expand(file_path)
     vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
       local file = io.open(file_path, "a")
@@ -113,7 +110,7 @@ map('n', '<leader>vd',
         vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
       end
     end)
-  end, { desc = 'Ask for text and append to end of file' })
+  end, { desc = 'Capture to today diary file' })
 
 -- end capture
 
@@ -127,9 +124,10 @@ map("v", "Y", function()
   vim.notify("@*="..reg)
 end, {desc = "yank virtual into system clipboard"})
 
+map("n", "<leader>p", '"*p', {desc="paste @* clipboard", remap=false})
 
 -- use Mini.Files locate the file under cursor.
-vim.keymap.set('n', '<leader>gf', function()
+map('n', '<leader>gf', function()
   -- Get the file path under the cursor using Neovim's built-in <cfile>
   local target = vim.fn.expand('<cfile>')
 
@@ -151,3 +149,32 @@ vim.keymap.set('n', '<leader>gf', function()
     MiniFiles.open(dir)
   end
 end, { desc = "Open MiniFiles in directory of file under cursor" })
+
+
+map("n", "<leader>tk",
+  function()
+    local cmd_str =
+[[
+  KITTYCONF=~/.config/kitty/kitty.conf
+  if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
+    sed -i '/^hide_window_decorations yes/d' "$KITTYCONF"
+  else
+    echo 'hide_window_decorations yes' >> "$KITTYCONF"
+  fi
+]]
+
+    vim.system({ "sh", "-c", cmd_str }, { text = true }, function(obj)
+      if obj.code == 0 then
+        vim.schedule(function()
+          print("Kitty window decorations toggled successfully!\nIf fullscreen, may bork")
+        end)
+      else
+        vim.schedule(function()
+          print("Error toggled kitty decorations: " .. (obj.stderr or ""))
+        end)
+      end
+    end)
+
+  end,
+  { desc = "Toggle Kitty Window Decorations" }
+)

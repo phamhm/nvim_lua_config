@@ -43,8 +43,6 @@ return {
     -- Use :TSInstall for manuall install languages
     ts.install(languages)
 
-    vim.treesitter.language.register('markdown', 'vimwiki')
-    vim.treesitter.language.register('markdown_inline', 'vimwiki')
     vim.treesitter.language.register('bash', 'zsh')
 
     -- Treesitter features for installed languages must be enabled manually
