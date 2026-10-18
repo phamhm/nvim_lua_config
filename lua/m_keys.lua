@@ -50,16 +50,22 @@ map('v', utils.format_os_altkey("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true
 map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
 
 -- shortcut to google
-local google_shortcut ="<leader>gg"
-local google_prompt = "Google: "
-
-local function google_search(input)
-  if input and input ~="" then
-    local query = vim.uri_encode(input)
-    vim.ui.open("https://www.google.com/search?q=" .. query)
+local function query(query_url)
+  return function(input)
+    if input and input ~="" then
+      local query = vim.uri_encode(input)
+      vim.ui.open(query_url .. query)
+    end
   end
 end
 
+map("n", "<leader>gu", function()
+  vim.ui.input( { prompt = "Youtube:"},query("https://www.youtube.com/results?search_query="))
+end, opt)
+
+local google_shortcut ="<leader>gg"
+local google_prompt = "Google: "
+local google_search = query("https://www.google.com/search?q=")
 map("n", google_shortcut, function()
   vim.ui.input( { prompt = google_prompt}, google_search)
 end, opt)
@@ -159,7 +165,8 @@ end, { desc = "Open MiniFiles in directory of file under cursor" })
 
 map("n", "<leader>tk",
   function()
-    local cmd_str = [[
+    local cmd_str =
+[[
   KITTYCONF=~/.config/kitty/kitty.conf
   if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
     sed -i '/^hide_window_decorations yes/d' "$KITTYCONF"
@@ -171,7 +178,7 @@ map("n", "<leader>tk",
     vim.system({ "sh", "-c", cmd_str }, { text = true }, function(obj)
       if obj.code == 0 then
         vim.schedule(function()
-          print("Kitty window decorations toggled successfully!")
+          print("Kitty window decorations toggled successfully!\nIf fullscreen, may bork")
         end)
       else
         vim.schedule(function()

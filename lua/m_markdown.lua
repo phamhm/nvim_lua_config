@@ -1,15 +1,18 @@
+local alt_key = require("utils.functions").format_os_altkey
 -- Create an augroup to ensure autocommands don't duplicate on reload
 local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
+local md_key_opt = {buffer = true, noremap = false, silent = true}
 
 vim.api.nvim_create_autocmd("FileType", {
   group = prose_group,
   -- Target text-focused filetypes (mimicking vim-pencil's default targets)
   pattern = { "markdown"},
   callback = function()
-    local md_key_opt = {buffer = true, noremap = false, silent = true}
     vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", md_key_opt)
     vim.keymap.set("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", md_key_opt)
     vim.keymap.set("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", md_key_opt)
+    vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts)
+    vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts)
 
     -- 1. Enable soft wrapping
     vim.opt_local.wrap = true
@@ -75,6 +78,6 @@ return {
     ft = "markdown", -- or 'event = "VeryLazy"'
     config = function()
       require('markdown').setup()
-    end
+    end,
   }
 }

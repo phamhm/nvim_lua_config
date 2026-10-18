@@ -65,7 +65,7 @@ return {
           }
         },
         files = {
-          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*",}
+          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*", "*backup*"}
         }
       },
       win = {
@@ -185,7 +185,7 @@ return {
 
         Snacks.picker.files({
           title = "Notes files",
-          exclude = {"backups", "sessions", "assets", "archive"},
+          exclude = {"backups", "sessions", "assets", "archive", },
           cwd = vim.fn.expand(vim.g.m_notes_path),
         })
       end,desc = "Help Page" },
