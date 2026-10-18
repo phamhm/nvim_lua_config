@@ -159,17 +159,26 @@ end, { desc = "Open MiniFiles in directory of file under cursor" })
 
 map("n", "<leader>tk",
   function()
-    vim.notify("If full screen, toggle may not work")
-    local cmd = "CONFIG=~/.config/kitty/kitty.conf; grep -q '^hide_window_decorations yes' \"$CONFIG\" && sed -i '/^hide_window_decorations yes/d' \"$CONFIG\" || echo 'hide_window_decorations yes' >> \"$CONFIG\""
+    local cmd_str = [[
+  KITTYCONF=~/.config/kitty/kitty.conf
+  if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
+    sed -i '/^hide_window_decorations yes/d' "$KITTYCONF"
+  else
+    echo 'hide_window_decorations yes' >> "$KITTYCONF"
+  fi
+]]
 
-    vim.fn.jobstart(cmd, {
-      on_exit = function(_, exit_code, _)
-        if exit_code == 0 then
-          vim.notify("Kitty window decorations toggled successfully!", vim.log.levels.INFO)
-        else
-          vim.notify("Failed to toggle Kitty window decorations.", vim.log.levels.ERROR)
-        end
-      end,
-    })
+    vim.system({ "sh", "-c", cmd_str }, { text = true }, function(obj)
+      if obj.code == 0 then
+        vim.schedule(function()
+          print("Kitty window decorations toggled successfully!")
+        end)
+      else
+        vim.schedule(function()
+          print("Error toggled kitty decorations: " .. (obj.stderr or ""))
+        end)
+      end
+    end)
+
   end,
   { desc = "Toggle Kitty Window Decorations" })
