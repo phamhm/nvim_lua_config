@@ -177,6 +177,7 @@ return {
     -- { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
+    { "<leader>fk",function() Snacks.picker.keymaps() end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     -- this won't close any current floating windows.
     { "<leader>ww",
@@ -225,7 +226,6 @@ return {
           { text = "Highlights" , fn = function() Snacks.picker.highlights() end},
           { text = "Icons" , fn = function() Snacks.picker.icons() end},
           { text = "Jumps" , fn = function() Snacks.picker.jumps() end},
-          { text = "Keymaps" , fn = function() Snacks.picker.keymaps() end},
           { text = "Location List" , fn = function() Snacks.picker.loclist() end},
           { text = "Marks" , fn = function() Snacks.picker.marks() end},
           { text = "Man Pages" , fn = function() Snacks.picker.man() end},
@@ -264,9 +264,9 @@ return {
     {
       "<C-`>", function()
         Snacks.scratch({
-          file = vim.fn.expand(vim.g.m_notes_path .. "/daily_reminder.md"),
+          file = vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"),
           enter = true,
-          name = "Daily Reminder",
+          name = "Working Notes",
         })
       end,
       desc="snack scrach reminder notes"

@@ -1,4 +1,5 @@
 local alt_key = require("utils.functions").format_os_altkey
+local bm_line = require("utils.functions").bookmark_line
 -- Create an augroup to ensure autocommands don't duplicate on reload
 local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
 local md_key_opt = {buffer = true, noremap = false, silent = true}
@@ -8,11 +9,17 @@ vim.api.nvim_create_autocmd("FileType", {
   -- Target text-focused filetypes (mimicking vim-pencil's default targets)
   pattern = { "markdown"},
   callback = function()
-    vim.keymap.set("n", "<leader>p", "<cmd>PasteImage<cr>", md_key_opt)
+    vim.keymap.set({ "i", "n" }, alt_key("<%s-p>"), "<cmd>PasteImage<cr>", md_key_opt)
     vim.keymap.set("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", md_key_opt)
     vim.keymap.set("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", md_key_opt)
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts)
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts)
+
+    vim.keymap.set('n',"<leader>bm",
+      function()
+        -- move the mddownlink to the bookmarks file
+        bm_line(vim.g.m_notes_path .. '/' .. 'bookmarks.md')
+      end, md_key_opt)
 
     -- 1. Enable soft wrapping
     vim.opt_local.wrap = true

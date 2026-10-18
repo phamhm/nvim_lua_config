@@ -61,7 +61,7 @@ end
 
 map("n", "<leader>gy", function()
   vim.ui.input( { prompt = "Youtube:"},query("https://www.youtube.com/results?search_query="))
-end, opt)
+end, {desc="query youtube"})
 
 map({"n","v" }, "<leader>gg", function()
   local current_mode = vim.fn.mode(1)
@@ -75,18 +75,13 @@ map({"n","v" }, "<leader>gg", function()
     prompt = "Google:",
     default = selected_text  .. ' ',
   }, query("https://www.google.com/search?q="))
-end, opt)
+end, {desc="googling google"})
 -- end googling, }
 
 -- capture
 map('n', '<leader>vc', function()
-  vim.ui.input({ prompt = 'Capture: ' }, function(input)
-    if input and input ~= '' then
-      local today_date = os.date('%Y-%m-%d %H:%M:%S')
-      vim.fn.writefile({ "* [".. today_date .."] " .. input }, vim.fn.expand(vim.g.m_notes_path .. "/daily_reminder.md"), "a")
-    end
-  end)
-end, { desc = 'Ask for text and append to end of file' })
+  vim.ui.input({ prompt = 'Capture: ' }, utils.write_note )
+end, { desc = 'Ask for text and capture to end of file' })
 
 map('n', '<leader>vb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
@@ -96,11 +91,10 @@ map('n', '<leader>vb', function()
   end
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
-    if input and input ~= '' and reg_p and reg_p ~='' then
-      vim.fn.writefile({ "[" .. input .. "](" .. reg_p .. ")"  }, vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md"), "a")
-    end
+    local note_text = "[" .. input .. "](" .. reg_p .. ")"
+    utils.write_note(note_text)
   end)
-end, {silent = true, desc = 'Ask for text and append to end of file' })
+end, {silent = true, desc = 'append url/bookmarking to file' })
 
 map('n', '<leader>vd',
   function()
