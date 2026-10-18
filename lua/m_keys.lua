@@ -10,7 +10,7 @@ map('n', '<leader>2', ":vsp<CR>",{})
 map('n', '<leader>3', ":sp<CR>",{})
 map('n', '<leader>0', ":clo<CR>",{})
 
-map({'n', 'i'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
+map({'n', 'i', 'v'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
 map('i', '<C-j>', "<Esc>o",{silent = true})
 map('i', '<C-a>', "<Esc>A",{silent = true})
 

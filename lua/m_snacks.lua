@@ -181,7 +181,7 @@ return {
 
         Snacks.picker.files({
           title = "Vimwiki files",
-          exclude = {"backups", "sessions", "assets"},
+          exclude = {"backups", "sessions", "assets", "archive"},
           cwd = vim.fn.expand(vim.g.m_vimwiki_path),
           confirm = function(picker, item)
             picker:close()
