@@ -57,7 +57,7 @@ return {
     },
     keys = {
       -- suggested keymap
-      { "<leader>p", function() vim.notify("image paste only works in vimwiki", vim.log.levels.ERROR) end, desc = "clipboard paste" },
+      { "<leader>p", function() vim.notify("image paste only works in markdown", vim.log.levels.ERROR) end, desc = "clipboard paste" },
     },
   },
   {

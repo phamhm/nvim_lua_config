@@ -93,16 +93,10 @@ return {
     dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
       local m_snippets =  require("mini.snippets")
-      local lang_patterns = {
-        -- Add these two mappings:
-        vimwiki = { 'markdown.json'},
-        markdown_inline = { 'markdown.json' },
-      }
       m_snippets.setup({
         -- Integrates seamlessly with mini.completion's fallback logic
         snippets = {
           m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
-          m_snippets.gen_loader.from_lang({lang_patterns = lang_patterns}),
         },
 
         mappings = {
