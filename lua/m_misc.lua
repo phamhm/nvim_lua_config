@@ -26,4 +26,39 @@ return {
       end
     end
   },
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons', },
+
+    config = function()
+      require('lualine').setup {
+        options = {
+          theme = "auto",
+        },
+        sections = {
+          lualine_a = {},
+          lualine_b = {
+            function() return vim.fs.basename( vim.v.this_session ) end,
+            "filename",
+            'location',
+            'branch',
+            'diff',
+            'diagnostics'
+          },
+          lualine_c = {},
+          lualine_x = {
+            'encoding',
+            'fileformat',
+            'filetype'
+          },
+          lualine_y = {}, -- saved 'progress'
+          lualine_z = {}
+        },
+        inactive_sections = {
+          lualine_c = {'filename'},
+          lualine_x = {'location'},
+        },
+      }
+    end
+  }
 }

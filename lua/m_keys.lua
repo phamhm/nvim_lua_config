@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
-map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
 -- map('n', '<leader>vn', ":vnew<CR>", {})
+map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
 map('n', 'j', "gj", {silent=true})
 map('n', 'k', "gk", {silent=true})
 
@@ -28,7 +28,7 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-local move_line_prefix = "C-M"
+local move_line_prefix = vim.uv.os_uname().sysname == "Darwin" and "C-D" or "C-M"
 map('n', '<' .. move_line_prefix .. '-j>', ':m .+1<CR>==', { silent = true })
 map('i', '<' .. move_line_prefix .. '-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
 map('v', '<' .. move_line_prefix .. '-j>', ":m '>+1<CR>gv=gv", { silent = true })
@@ -86,11 +86,8 @@ end, { desc = 'Ask for text and append to end of file' })
 
 map('n', '<leader>vb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
-  if reg_p == "" then
-    vim.notify("Register @* is empty")
-    return
-  elseif  not vim.startswith(reg_p, "http") then
-    vim.notify("Register @* isn't an url:"..reg_p)
+  if reg_p == "" or not vim.startswith(reg_p, "http") then
+    vim.notify("Register @* isn't an url:'"..reg_p.."'")
     return
   end
   vim.notify("Bookmarking:" .. reg_p)
