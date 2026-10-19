@@ -1,5 +1,6 @@
 local alt_key = require("utils.functions").format_os_altkey
 local bm_line = require("utils.functions").bookmark_line
+local move_line = require("utils.functions").move_line_to_file
 -- Create an augroup to ensure autocommands don't duplicate on reload
 local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
 
@@ -18,6 +19,11 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
     vim.keymap.set('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
+
+    vim.keymap.set('n', '<leader>td',
+      function()
+        move_line("~/Documents/notes/TODO.md")
+      end, opts("Markdown refile TODO.md"))
 
     vim.keymap.set('n',"<leader>bm",
       function()
