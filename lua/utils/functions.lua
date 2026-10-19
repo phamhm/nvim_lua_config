@@ -3,8 +3,47 @@ local F = {}
 function F.write_note(note_text)
   if note_text and note_text ~= "" then
     local today_date = os.date('%Y-%m-%d %H:%M:%S')
-    vim.fn.writefile({ "- [".. today_date .."] " .. note_text }, vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"), "a")
+    vim.fn.writefile({ "- ".. note_text .. " [".. today_date .."] " }, vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"), "a")
   end
+end
+
+function F.move_line_to_file(target_path)
+  -- 1. Expand the target path (handles ~ or relative paths safely)
+  local expanded_path = vim.fn.expand(target_path)
+
+  -- 2. Get the current cursor line text
+  local current_line_content = vim.trim(vim.api.nvim_get_current_line())
+  if current_line_content == "" then
+    vim.notify("Can't move empty line")
+    return
+  end
+
+  if current_line_content:match("^%-") then
+    current_line_content = vim.trim(current_line_content:sub(2))
+  end
+  if not vim.startswith(current_line_content, "[ ]") then
+    current_line_content = "[ ] " .. current_line_content
+  end
+
+  if not vim.startswith(current_line_content, "-") then
+    current_line_content = "- "..current_line_content
+  end
+
+  local file, err = io.open(expanded_path, "a")
+  if not file then
+    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+
+  file:write(current_line_content.. "\n")
+  file:close()
+
+  -- 5. Delete the line from the active Neovim buffer
+  -- nvim_buf_set_lines replaces a range of lines. Passing an empty table {} deletes them.
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
+
+  vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
 end
 
 function F.bookmark_line(target_path)
@@ -41,7 +80,6 @@ function F.bookmark_line(target_path)
   vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
 
   vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
-
 end
 
 

@@ -59,7 +59,7 @@ local function query(query_url)
 end
 
 map("n", "<leader>gy", function()
-  vim.ui.input( { prompt = "Youtube:"},query("https://www.youtube.com/results?search_query="))
+  vim.ui.input( { prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
 end, {desc="query youtube"})
 
 map({"n","v" }, "<leader>gg", function()
@@ -119,9 +119,10 @@ map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle co
 
 
 map("v", "Y", function()
+  vim.cmd.normal([["+y]])
   vim.cmd.normal([["*y]])
-  local reg = vim.fn.getreg('*')
-  vim.notify("@*="..reg)
+  local reg = vim.fn.getreg('+')
+  vim.notify("@+="..reg)
 end, {desc = "yank virtual into system clipboard"})
 
 map("n", "<leader>p", '"*p', {desc="paste @* clipboard", remap=false})
@@ -149,43 +150,3 @@ map('n', '<leader>gf', function()
     MiniFiles.open(dir)
   end
 end, { desc = "Open MiniFiles in directory of file under cursor" })
-
-
-map("n", "<leader>tk",
-  function()
-    local cmd_str
-    if jit.os=="OSX" then
-     cmd_str= [[
-  KITTYCONF=~/.config/kitty/kitty.conf
-  if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
-    sed -i ''  '/^hide_window_decorations yes/d' "$KITTYCONF"
-  else
-    echo 'hide_window_decorations yes' >> "$KITTYCONF"
-  fi
-]]
-    else
-     cmd_str= [[
-  KITTYCONF=~/.config/kitty/kitty.conf
-  if grep -q '^hide_window_decorations yes' "$KITTYCONF"; then
-    sed -i '/^hide_window_decorations yes/d' "$KITTYCONF"
-  else
-    echo 'hide_window_decorations yes' >> "$KITTYCONF"
-  fi
-]]
-    end
-
-    vim.system({ "sh", "-c", cmd_str }, { text = true }, function(obj)
-      if obj.code == 0 then
-        vim.schedule(function()
-          print("Kitty window decorations toggled successfully!\nIf fullscreen, may bork")
-        end)
-      else
-        vim.schedule(function()
-          print("Error toggled kitty decorations: " .. (obj.stderr or ""))
-        end)
-      end
-    end)
-
-  end,
-  { desc = "Toggle Kitty Window Decorations" }
-)
