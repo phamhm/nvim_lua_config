@@ -7,6 +7,24 @@ function F.write_note(note_text)
   end
 end
 
+function F.append_text_to_file(m_text, target_path)
+  m_text = vim.trim(m_text)
+  if m_text=="" then
+    vim.notify("Text is blank. Can't append to file")
+    return
+  end
+  local expanded_path = vim.fn.expand(target_path)
+
+  local file, err = io.open(expanded_path, "a")
+  if not file then
+    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+
+  file:write(m_text .. "\n")
+  file:close()
+end
+
 function F.move_line_to_file(target_path)
   -- 1. Expand the target path (handles ~ or relative paths safely)
   local expanded_path = vim.fn.expand(target_path)

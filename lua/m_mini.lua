@@ -124,7 +124,7 @@ return {
       directory = vim.fn.stdpath('config') .. '/sessions/'
     }) end,
     keys = {
-      {'<C-e>', function() MiniFiles.open() end, desc = 'Open mini.files' },
+      {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
       {'<leader>ss', function() MiniSessions.select() end, desc = 'Save current session'},
       {'<leader>sw', function() MiniSessions.write() end,  desc = 'Save current session' },
       {'<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end,  desc = 'Show current session' },
