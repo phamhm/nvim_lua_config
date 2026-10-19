@@ -36,9 +36,10 @@ return {
           theme = "auto",
         },
         sections = {
-          lualine_a = {},
-          lualine_b = {
+          lualine_a = {
             function() return vim.fs.basename( vim.v.this_session ) end,
+          },
+          lualine_b = {
             "filename",
             'location',
             'branch',

@@ -1,4 +1,5 @@
 local utils = require("utils.functions")
+local alt_key = utils.format_os_altkey
 
 local map = vim.keymap.set
 
@@ -32,12 +33,12 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
 
 -- Bringing the whole line up or down
 -- Normal mode
-map('n', utils.format_os_altkey("<C-%s-j>"), ':m .+1<CR>==', { silent = true })
-map('i', utils.format_os_altkey("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true })
-map('v', utils.format_os_altkey("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true })
-map('n', utils.format_os_altkey("<C-%s-k>"), ':m .-2<CR>==', { silent = true })
-map('i', utils.format_os_altkey("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true })
-map('v', utils.format_os_altkey("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true })
+map('n', alt_key("<C-%s-j>"), ':m .+1<CR>==', { silent = true })
+map('i', alt_key("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true })
+map('v', alt_key("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true })
+map('n', alt_key("<C-%s-k>"), ':m .-2<CR>==', { silent = true })
+map('i', alt_key("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true })
+map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true })
 
 -- simplify the capture. Don't need to move around.
 -- keeps these here as example of moving with vim command
@@ -78,11 +79,11 @@ end, {desc="googling google"})
 -- end googling, }
 
 -- capture
-map('n', '<leader>vc', function()
+map('n', '<leader>cc', function()
   vim.ui.input({ prompt = 'Capture: ' }, utils.write_note )
 end, { desc = 'Capture text and apped to working_notes.md' })
 
-map('n', '<leader>vb', function()
+map('n', '<leader>bb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
   if reg_p == "" or not vim.startswith(reg_p, "http") then
     vim.notify("Register @* isn't an url:'"..reg_p.."'")
@@ -150,3 +151,14 @@ map('n', '<leader>gf', function()
     MiniFiles.open(dir)
   end
 end, { desc = "Open MiniFiles in directory of file under cursor" })
+
+
+
+vim.keymap.set('n', '<leader>o', function()
+  vim.ui.open(vim.fn.expand('%'))
+end, { desc = 'Open current buffer with system handler' })
+
+
+-- Alternative example: Map to Ctrl + Down/Up arrow keys
+vim.keymap.set('n', alt_key('<C-%s-j>'), ']c', { desc = "Next diff change" })
+vim.keymap.set('n', alt_key('<C-%s-k>'), '[c', { desc = "Previous diff change" })
