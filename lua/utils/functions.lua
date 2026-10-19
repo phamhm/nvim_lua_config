@@ -193,7 +193,7 @@ local function picker_list_files(m_path)
          vim.endswith(name, ".rdp")) then
         local full_path = dir_path ..  vim.trim(name)
         table.insert(items, {
-          text = vim.trim(name),    -- What shows up and is searchable in the picker
+          text = "script:" .. vim.trim(name),    -- What shows up and is searchable in the picker
           link = vim.trim(full_path),     -- Store the URL to use on confirmation
         })
       end
@@ -207,9 +207,9 @@ function F.open_markdown_links_picker()
   local items = {} -- must be first line
 
   -- 1. Define the path to your file
-  local file_path = vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md") -- Change this to your file path
+  local bookmark_file_path = vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md") -- Change this to your file path
   -- 2. Read lines from the file
-  local lines = vim.fn.readfile(file_path)
+  local lines = vim.fn.readfile(bookmark_file_path)
 
   -- 3. Parse each line for the [title](link) format
   for _, line in ipairs(lines) do
@@ -258,7 +258,7 @@ function F.open_markdown_links_picker()
             vim.fn.expand( item.link ),
           }
         elseif item.link == "edit" then
-          vim.cmd.edit(file_path)
+          vim.cmd.edit(bookmark_file_path)
           return
         else
           vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
