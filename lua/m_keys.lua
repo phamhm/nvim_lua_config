@@ -1,7 +1,24 @@
 local utils = require("utils.functions")
 local alt_key = utils.format_os_altkey
 
-local map = vim.keymap.set
+local m_keys = {}
+local function map(mode, lhs, rhs, opt)
+  table.insert(m_keys, lhs ..":".. (opt.desc or "no description"))
+  vim.keymap.set(mode, lhs, rhs, opt)
+end
+
+vim.keymap.set(
+  'n',
+  "<leader>mk",
+  function()
+    local scratch = Snacks.scratch({
+      ft = "text",
+      name = "keys from m_keys.lua"
+    })
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, m_keys)
+  end,
+  {desc = "m_keys"}
+)
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
 map('n', alt_key('<%s-q>',3), ":qa!<CR>", {})
