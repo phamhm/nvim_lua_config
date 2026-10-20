@@ -3,6 +3,7 @@ local move_line = utils.move_line_to_file
 local move_lines_select_file = utils.move_lines_select_file
 local menu_commands = utils.menu_commands
 local open_markdown_links_picker = utils.open_markdown_links_picker
+local alt_key = utils.format_os_altkey
 
 -- disable autocompletion in the windows. will work on vim.ui.open
 vim.api.nvim_create_autocmd("FileType", {
@@ -12,6 +13,35 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+local md_scratch_ops = function(md_name)
+  return {
+    file = vim.fn.expand(vim.g.m_notes_path .. "/" .. md_name),
+    enter = true,
+    name = "Working Notes",
+    ft = "markdown",
+    win_by_ft = {
+      markdown = {
+        keys = {
+          ["archive"] = {
+            "aa", function() move_line("~/Documents/notes/archive/archive_ideas.md") end,
+            desc = "Archive idea",
+            mode = {"n", },
+          },
+          ["refile"] = {
+            "tt", function() move_line("~/Documents/notes/TODO.md") end,
+            desc = "Refile TODO",
+            mode = {"n", },
+          },
+          ["sfile"] = {
+            "tf", function() move_lines_select_file() end,
+            desc = "Refile select file",
+            mode = {"n", "v"},
+          },
+        }
+      },
+    }
+  }
+end
 
 return {
   "folke/snacks.nvim",
@@ -278,36 +308,17 @@ return {
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
       "<C-`>", function()
-        Snacks.scratch({
-          file = vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"),
-          enter = true,
-          name = "Working Notes",
-          ft = "markdown",
-          win_by_ft = {
-            markdown = {
-              keys = {
-                ["archive"] = {
-                  "aa", function() move_line("~/Documents/notes/archive/archive_ideas.md") end,
-                  desc = "Archive idea",
-                  mode = {"n", },
-                },
-                ["refile"] = {
-                  "tt", function() move_line("~/Documents/notes/TODO.md") end,
-                  desc = "Refile TODO",
-                  mode = {"n", },
-                },
-                ["sfile"] = {
-                  "tf", function() move_lines_select_file() end,
-                  desc = "Refile select file",
-                  mode = {"n", "v"},
-                },
-              }
-            },
-          }
-        })
+        Snacks.scratch(md_scratch_ops("working_notes.md"))
       end,
       desc="snack scrach reminder notes"
     },
+    {
+      alt_key("<C-%s-t>"), function()
+        Snacks.scratch(md_scratch_ops("TODO.md"))
+      end,
+      desc="snack scrach todo notes"
+    },
+
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     {
       "<leader>q",

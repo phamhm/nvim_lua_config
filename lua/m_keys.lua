@@ -4,7 +4,9 @@ local alt_key = utils.format_os_altkey
 local map = vim.keymap.set
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
+map('n', alt_key('<%s-q>',3), ":qa!<CR>", {})
+map('n', alt_key('<%s-r>', 3), "<cmd>restart<CR>", {})
+
 map({ 'n', 'v' }, 'j', "gj", {silent=true})
 map({ 'n', 'v' }, 'k', "gk", {silent=true})
 map({ "n", "v" }, "0", "g0", {silent=true})
@@ -169,12 +171,6 @@ vim.keymap.set('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
 vim.keymap.set('n', "j", 'jzz', { desc = "up, centered" })
 vim.keymap.set('n', "k", 'kzz', { desc = "up, centered" })
 
-vim.keymap.set(
-  'n',
-  "G",
-  function()
-    vim.cmd("normal! G")
-    vim.cmd("normal! zz")
-  end,
-  { desc = "up, centered" }
-)
+vim.keymap.set('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
+
+vim.keymap.set('n', "<leader>=", "gg=G<C-o>", { desc = "align the whole buffer" })

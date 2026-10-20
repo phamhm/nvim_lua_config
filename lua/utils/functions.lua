@@ -147,10 +147,13 @@ function F.bookmark_line(target_path)
 end
 
 
-function F.format_os_altkey(key_formatter)
+function F.format_os_altkey(key_formatter, repeat_n)
+  repeat_n = repeat_n or 1
   -- example <C-%s-j> will return <C-D-j> on osx and <C-M-j> on everything else
   local md_key = jit.os == "OSX" and "D" or "M"
-  return string.format(key_formatter, md_key)
+  local key = string.format(key_formatter, md_key)
+
+  return string.rep(key, repeat_n)
 end
 
 function F.copy_dated_lines(filepath, pattern)
@@ -238,8 +241,8 @@ local function picker_list_files(m_path)
 
       if type == 'file' and
         (vim.endswith(name, ".zsh") or
-         vim.endswith(name, ".applescript") or
-         vim.endswith(name, ".rdp")) then
+        vim.endswith(name, ".applescript") or
+        vim.endswith(name, ".rdp")) then
         local full_path = dir_path ..  vim.trim(name)
         table.insert(items, {
           text = "script:" .. vim.trim(name),    -- What shows up and is searchable in the picker
