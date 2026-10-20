@@ -1,4 +1,6 @@
-return {
+local utils = require("utils.functions")
+
+local m_mini = {
   {
     'echasnovski/mini.ai',
     dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", },
@@ -229,3 +231,13 @@ return {
     }
   },
 }
+
+for _, minimi in ipairs(m_mini) do
+  if minimi.keys then
+    for _, val in ipairs(minimi.keys) do
+      table.insert(utils.keys, val[1] ..":".. "Mini "..(val.desc or "no description"))
+    end
+  end
+end
+
+return m_mini

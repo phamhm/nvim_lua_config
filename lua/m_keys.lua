@@ -1,9 +1,8 @@
 local utils = require("utils.functions")
 local alt_key = utils.format_os_altkey
 
-local m_keys = {}
 local function map(mode, lhs, rhs, opt)
-  table.insert(m_keys, lhs ..":".. (opt.desc or "no description"))
+  table.insert(utils.keys, lhs ..":".. (opt.desc or "no description"))
   vim.keymap.set(mode, lhs, rhs, opt)
 end
 
@@ -13,30 +12,29 @@ vim.keymap.set(
   function()
     local scratch = Snacks.scratch({
       ft = "text",
-      name = "keys from m_keys.lua"
+      name = "keys from utils.lua"
     })
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, m_keys)
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, MiniAlign.align_strings(utils.keys, {split_pattern=':'}))
   end,
-  {desc = "m_keys"}
+  {desc = "utils.keys"}
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', alt_key('<%s-q>',3), ":qa!<CR>", {})
-map('n', alt_key('<%s-r>', 3), "<cmd>restart<CR>", {})
+map('n', alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
+map('n', alt_key('<%s-r>', 3), "<cmd>restart<CR>", {desc="restart nvim"})
 
-map({ 'n', 'v' }, 'j', "gj", {silent=true})
-map({ 'n', 'v' }, 'k', "gk", {silent=true})
-map({ "n", "v" }, "0", "g0", {silent=true})
-map({ "n", "v" }, "$", "g$", {silent=true})
+map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
+map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
+map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
+map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', '<leader>1', ":only<CR>",{})
-map('n', '<leader>2', ":vsp<CR>",{})
-map('n', '<leader>3', ":sp<CR>",{})
-map('n', '<leader>0', ":clo<CR>",{})
+map('n', '<leader>1', ":only<CR>",{desc = "only one window"})
+map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
+map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
+map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>', "<Esc>:w<CR>",{silent = true})
-map('i', '<C-j>', "<Esc>o",{silent = true})
-map('i', '<C-a>', "<Esc>A",{silent = true})
+map({'n', 'i', 'v'}, '<C-s>', "<Esc>:w<CR>",{silent = true, desc="save buffer"})
+map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
 
 -- end key maps
 
@@ -48,16 +46,16 @@ map({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMoti
 -- c-h delete before cursor.
 -- c-l delete after cursor.
 -- balancing out the universe
-map('i', '<C-l>', '<Del>', { noremap = true, silent = true })
+map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})
 
 -- Bringing the whole line up or down
 -- Normal mode
-map('n', alt_key("<C-%s-j>"), ':m .+1<CR>==', { silent = true })
-map('i', alt_key("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true })
-map('v', alt_key("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true })
-map('n', alt_key("<C-%s-k>"), ':m .-2<CR>==', { silent = true })
-map('i', alt_key("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true })
-map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true })
+map('n', alt_key("<C-%s-j>"), ':m .+1<CR>==', { silent = true, desc="move the whole block down" })
+map('i', alt_key("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true, desc="move the whole block down" })
+map('v', alt_key("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true, desc="move the whole block down" })
+map('n', alt_key("<C-%s-k>"), ':m .-2<CR>==', { silent = true, desc="move the whole block up" })
+map('i', alt_key("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true, desc="move the whole block up" })
+map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move the whole block up" })
 
 -- simplify the capture. Don't need to move around.
 -- keeps these here as example of moving with vim command
@@ -66,7 +64,7 @@ map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true })
 -- map("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 -- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
-map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true})
+map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to google
 local function query(query_url)

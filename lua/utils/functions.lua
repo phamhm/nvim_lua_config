@@ -1,5 +1,7 @@
 local F = {}
 
+F.keys = {}
+
 function F.write_note(note_text)
   if note_text and note_text ~= "" then
     local today_date = os.date('%Y-%m-%d %H:%M:%S')

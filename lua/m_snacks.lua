@@ -48,7 +48,7 @@ local md_scratch_ops = function(md_name)
   }
 end
 
-return {
+local m_snacks = {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
@@ -357,3 +357,11 @@ return {
     })
   end,
 }
+
+if m_snacks.keys then
+  for _, val in ipairs(m_snacks.keys) do
+    table.insert(utils.keys, val[1] ..":".. "Snacks "..(val.desc or "no description"))
+  end
+end
+
+return m_snacks
