@@ -46,11 +46,18 @@ return {
     config = function()
       require('mini.icons').setup()
       require("mini.icons").mock_nvim_web_devicons()
+      local custom_theme = require('lualine.themes.tomorrow_night')
 
+      -- 2. Modify background (bg) colors for specific modes and sections
+      -- Sections are structured as: theme.[mode].[section].[attribute]
+      custom_theme.normal.a.bg = 'None'
+      custom_theme.normal.b.bg = 'None'
+      custom_theme.normal.c.bg = 'None' -- Modifies the center/entire bar background
+      custom_theme.insert.a.bg = 'None'
 
       require('lualine').setup {
         options = {
-          theme = "tomorrow_night",
+          theme = custom_theme,
           component_separators = '',
           section_separators = '',
         },
@@ -61,12 +68,12 @@ return {
             function()  return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_c = {
-            {"filename", separator="", path = 1},
             {'filetype', separator="", icon_only=true},
+            {"filename", separator="", path = 1},
             'location',
-            'diff',
             'diagnostics',
             'branch',
+            'diff',
           },
           lualine_x = {
           },
