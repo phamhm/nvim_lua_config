@@ -1,11 +1,7 @@
 local utils = require("utils.functions")
 local alt_key = utils.format_os_altkey
+local map = utils.map
 
-local function map(mode, lhs, rhs, opt)
-  local key = lhs ..":".. (opt.desc or "no description")
-  utils.save_keys(key)
-  vim.keymap.set(mode, lhs, rhs, opt)
-end
 
 vim.keymap.set(
   'n',

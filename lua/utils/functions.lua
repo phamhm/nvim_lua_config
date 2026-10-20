@@ -2,8 +2,17 @@ local F = {}
 
 local custom_key_maps = {}
 
+
 function F.save_keys(key)
-  table.insert(custom_key_maps, key)
+  if not vim.tbl_contains(custom_key_maps, key) then
+    table.insert(custom_key_maps, key)
+  end
+end
+
+function F.map(mode, lhs, rhs, opt)
+  local key = lhs ..":".. (opt.desc or "no description")
+  F.save_keys(key)
+  vim.keymap.set(mode, lhs, rhs, opt)
 end
 
 function F.get_keys()
