@@ -1,6 +1,14 @@
 local F = {}
 
-F.keys = {}
+local custom_key_maps = {}
+
+function F.save_keys(key)
+  table.insert(custom_key_maps, key)
+end
+
+function F.get_keys()
+  return MiniAlign.align_strings(custom_key_maps, {split_pattern=':'})
+end
 
 function F.write_note(note_text)
   if note_text and note_text ~= "" then

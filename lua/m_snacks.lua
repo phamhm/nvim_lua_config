@@ -360,7 +360,8 @@ local m_snacks = {
 
 if m_snacks.keys then
   for _, val in ipairs(m_snacks.keys) do
-    table.insert(utils.keys, val[1] ..":".. "Snacks "..(val.desc or "no description"))
+    local key = val[1] ..":".. "Snacks "..(val.desc or "no description")
+    utils.save_keys(key)
   end
 end
 

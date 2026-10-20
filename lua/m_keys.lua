@@ -2,7 +2,8 @@ local utils = require("utils.functions")
 local alt_key = utils.format_os_altkey
 
 local function map(mode, lhs, rhs, opt)
-  table.insert(utils.keys, lhs ..":".. (opt.desc or "no description"))
+  local key = lhs ..":".. (opt.desc or "no description")
+  utils.save_keys(key)
   vim.keymap.set(mode, lhs, rhs, opt)
 end
 
@@ -14,7 +15,7 @@ vim.keymap.set(
       ft = "text",
       name = "keys from utils.lua"
     })
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, MiniAlign.align_strings(utils.keys, {split_pattern=':'}))
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, utils.get_keys())
   end,
   {desc = "utils.keys"}
 )
