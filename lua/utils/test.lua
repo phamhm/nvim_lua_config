@@ -8,6 +8,9 @@ local function get_lines()
   local opts = {}
   if mode == "v" or mode == "V" or mode == "\22" then
     -- opts = {type=mode}
+    local vpos = vim.fn.getpos "v"
+    local dpos = vim.fn.getpos "."
+    vim.print( vpos )
     local lines = vim.fn.getregion(vim.fn.getpos "v", vim.fn.getpos ".", {type=mode})
     return table.concat(lines, "\n")
   else
@@ -18,22 +21,27 @@ end
 
 vim.keymap.set({"n", "v"}, "<C-n>", function()
   local m_lines = get_lines()
-  vim.notify("Lines:" .. m_lines)
 
-  -- Snacks.picker.files({
-  --   cwd = "~/Documents/notes/",
-  --   actions = {
-  --     confirm = function(picker, item)
-  --       if item then
-  --         picker:close()
-  --         local target_file_path = item._path
-  --         u.append_text_to_file(table.concat(m_text, "\n"), target_file_path)
-  --       end
-  --     end
-  --   }
-  -- })
+  local winid = vim.api.nvim_get_current_win()
+
+  vim.notify("Winid:"..winid)
+  vim.notify("Lines:\n" .. m_lines)
+
+  Snacks.picker.files({
+    cwd = "~/Documents/notes/",
+    actions = {
+      confirm = function(picker, item)
+        if item then
+          picker:close()
+          local target_file_path = item._path
+          u.append_text_to_file(table.concat(m_text, "\n"), target_file_path)
+        end
+      end
+    }
+  })
 
 
+  vim.api.nvim_set_current_win(winid)
 end )
 
 -- vim.ui.select(items, {

@@ -40,8 +40,8 @@ function F.move_line_to_file(target_path)
     current_line_content = vim.trim(current_line_content:sub(2))
   end
 
-  if not vim.startswith(current_line_content, "#") then
-    current_line_content = "\n# "..current_line_content
+  if not vim.startswith(current_line_content, "##") then
+    current_line_content = "\n## "..current_line_content
   end
 
   local file, err = io.open(expanded_path, "a")
