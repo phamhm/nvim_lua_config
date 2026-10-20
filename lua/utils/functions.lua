@@ -1,5 +1,24 @@
 local F = {}
 
+local custom_key_maps = {}
+
+
+function F.save_keys(key)
+  if not vim.tbl_contains(custom_key_maps, key) then
+    table.insert(custom_key_maps, key)
+  end
+end
+
+function F.map(mode, lhs, rhs, opt)
+  local key = lhs ..":".. (opt.desc or "no description")
+  F.save_keys(key)
+  vim.keymap.set(mode, lhs, rhs, opt)
+end
+
+function F.get_keys()
+  return MiniAlign.align_strings(custom_key_maps, {split_pattern=':'})
+end
+
 function F.write_note(note_text)
   if note_text and note_text ~= "" then
     local today_date = os.date('%Y-%m-%d %H:%M:%S')

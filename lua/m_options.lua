@@ -69,7 +69,7 @@ vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
 -- JavaScript: 2 spaces
--- local augroup = vim.api.nvim_create_augroup
+local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 autocmd("FileType", {
@@ -85,22 +85,15 @@ autocmd("FileType", {
 
 
 vim.opt.title = true
-vim.opt.titlestring = "%t%m"
--- vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
--- function _G.get_custom_title()
---   local file = vim.fn.expand('%:t')
---   if file == ""  then
---     file = "[No Name]"
---   end
---
---   -- Check if a session is active (using v:this_session)
---   local session = vim.v.this_session
---   if session ~= "" then
---     local session_name = vim.fn.fnamemodify(session, ':t:r')
---     return string.format("%s|%s", session_name, file)
---   else
---     return file
---   end
---
---   return file
--- end
+vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
+function _G.get_custom_title()
+  local file = vim.fn.expand('%:t')
+  if file == ""  then
+    return "[No Name]"
+  end
+
+  local modified = vim.bo[0].modified and "[+] " or ""
+  local readonly = vim.bo[0].readonly and "[-]" or ""
+
+  return string.format("%s%s%s", file, readonly, modified)
+end

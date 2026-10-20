@@ -1,6 +1,7 @@
 local alt_key = require("utils.functions").format_os_altkey
 local bm_line = require("utils.functions").bookmark_line
 local move_line = require("utils.functions").move_line_to_file
+local map = require("utils.functions").map
 -- Create an augroup to ensure autocommands don't duplicate on reload
 local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
 
@@ -13,12 +14,12 @@ vim.api.nvim_create_autocmd("FileType", {
   -- Target text-focused filetypes (mimicking vim-pencil's default targets)
   pattern = { "markdown"},
   callback = function()
-    vim.keymap.set({ "i", "n" }, alt_key("<%s-p>"), "<cmd>PasteImage<cr>", opts("Paste Image into Markdown Buffer"))
-    vim.keymap.set("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
-    vim.keymap.set("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
-    vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
-    vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
-    vim.keymap.set('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
+    map({ "i", "n" }, alt_key("<%s-p>"), "<cmd>PasteImage<cr>", opts("Paste Image into Markdown Buffer"))
+    map("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
+    map("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
+    map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
+    map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
+    map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
     -- vim.keymap.set('n', '<leader>td',
     --   function()
@@ -31,9 +32,16 @@ vim.api.nvim_create_autocmd("FileType", {
         bm_line(vim.g.m_notes_path .. '/' .. 'bookmarks.md')
       end, opts("Move markdown link to the bookmarks.md file"))
 
+    -- Enable soft wrapping
     vim.opt_local.wrap = true
+    -- Wrap lines at word boundaries instead of mid-word
     vim.opt_local.linebreak = true
+    -- Turn off hard wrapping (prevents Neovim from inserting physical newlines)
+    vim.opt_local.textwidth = 0
+    vim.opt_local.wrapmargin = 0
+    -- Keep indents aligned for wrapped lines (great for nested lists)
     vim.opt_local.breakindent = true
+
     vim.opt_local.spell = false
 
     -- 6. Punctuation undo sequences (Mimics vim-pencil's granular undo)

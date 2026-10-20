@@ -46,11 +46,18 @@ return {
     config = function()
       require('mini.icons').setup()
       require("mini.icons").mock_nvim_web_devicons()
+      local custom_theme = require('lualine.themes.tomorrow_night')
 
+      -- 2. Modify background (bg) colors for specific modes and sections
+      -- Sections are structured as: theme.[mode].[section].[attribute]
+      custom_theme.normal.a.bg = 'None'
+      custom_theme.normal.b.bg = 'None'
+      custom_theme.normal.c.bg = 'None' -- Modifies the center/entire bar background
+      custom_theme.insert.a.bg = 'None'
 
       require('lualine').setup {
         options = {
-          theme = "tomorrow_night",
+          theme = custom_theme,
           component_separators = '',
           section_separators = '',
         },
@@ -58,37 +65,37 @@ return {
           lualine_a = {
           },
           lualine_b = {
-            function()  return vim.fs.basename( vim.v.this_session ) end,
+          },
+          lualine_c = {
             -- {'filetype', separator="", icon_only=true},
             -- {"filename", separator="", path = 1},
+            {
+              function()
+                local fname = vim.fn.expand('%:t')
+                local icon = MiniIcons.get('file', fname).. ' '
 
-            function()
-              local current_dir = vim.fn.expand('%:p:h:t')
+                fname = icon .. vim.fn.expand('%:p:h:t')..'/' .. fname
+                if vim.bo.modified then
+                  fname = fname .. ' [+]'
+                end
 
-              local filename = vim.fn.expand("%:t")
-              if filename == "" then return "[No Name]" end
-              filename = current_dir .. '/' .. filename
+                if vim.bo.readonly or not vim.bo.modifiable then
+                   fname = fname .. ' [-]'
+                end
+                return fname
 
-              -- Get icon and its highlight group from mini.icons
-              local icon, hl, _ = require("mini.icons").get("file", filename)
-
-              -- Return icon joined with the filename
-              return icon .. " " .. filename
-            end,
-
-
+              end
+            },
             'location',
+            'diagnostics',
             'branch',
             'diff',
-            'diagnostics'
           },
-          lualine_c = {},
           lualine_x = {
-            get_lsp_client
-              -- 'fileformat',
-            -- 'encoding',
+            function()  return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_y = {
+            get_lsp_client
           }, -- saved 'progress'
           lualine_z = {}
         },
