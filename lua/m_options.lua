@@ -69,7 +69,7 @@ vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
 -- JavaScript: 2 spaces
-local augroup = vim.api.nvim_create_augroup
+-- local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 autocmd("FileType", {

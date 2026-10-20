@@ -30,25 +30,28 @@ return {
       require('lualine').setup {
         options = {
           theme = "tomorrow_night",
+          component_separators = '',
+          section_separators = '',
         },
         sections = {
           lualine_a = {
           },
           lualine_b = {
             'location',
-            "filename",
-            function() return vim.fs.basename( vim.v.this_session ) end,
+            {"filename", path = 1},
             'branch',
             'diff',
             'diagnostics'
           },
           lualine_c = {},
           lualine_x = {
-            'encoding',
-            'fileformat',
-            'filetype'
+            -- 'encoding',
+            -- 'fileformat',
+            -- 'filetype',
           },
-          lualine_y = {}, -- saved 'progress'
+          lualine_y = {
+            function() return vim.fs.basename( vim.v.this_session ) end,
+          }, -- saved 'progress'
           lualine_z = {}
         },
         inactive_sections = {
