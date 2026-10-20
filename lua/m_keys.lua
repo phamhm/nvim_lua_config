@@ -160,5 +160,5 @@ end, { desc = 'Open current buffer with system handler' })
 
 
 -- Alternative example: Map to Ctrl + Down/Up arrow keys
-vim.keymap.set('n', alt_key('<C-%s-j>'), ']c', { desc = "Next diff change" })
-vim.keymap.set('n', alt_key('<C-%s-k>'), '[c', { desc = "Previous diff change" })
+vim.keymap.set('n', alt_key('<leader><leader>n'), ']c', { desc = "Next diff change" })
+vim.keymap.set('n', alt_key('<leader><leader>p'), '[c', { desc = "Previous diff change" })

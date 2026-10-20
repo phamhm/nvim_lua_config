@@ -8,6 +8,7 @@ return {
 
       vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "gold", bold = true })
 
+      vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
       local border_color = "grey"
       local border_list = {
         -- "SnacksPickerBorder",
