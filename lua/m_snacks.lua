@@ -65,7 +65,18 @@ return {
           }
         },
         files = {
-          exclude = {".git", "node_modules", ".env", "target", "build", "archive", ".*env*", "*env*", "*pycache*", "*backup*"}
+          exclude = {
+            ".git",
+            "node_modules",
+            ".env",
+            "target",
+            "build",
+            "archive",
+            ".*env*",
+            "*env*",
+            "*pycache*",
+            "*backup*",
+          }
         }
       },
       win = {

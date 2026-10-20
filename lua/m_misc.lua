@@ -6,7 +6,8 @@ return {
     config = function()
       vim.cmd.colorscheme("catppuccin-mocha")
 
-      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "gold", bold = true })
+      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
+      vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
 
       vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
       local border_color = "grey"
@@ -19,7 +20,6 @@ return {
         -- "SnacksInputTitle",
         -- "LineNrAbove",
         -- "LineNrBelow",
-        "LineNr",
         "FloatBorder"
       }
       for _, border in ipairs(border_list) do
