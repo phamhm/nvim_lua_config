@@ -1,5 +1,6 @@
 local utils = require("utils.functions")
 local move_line = utils.move_line_to_file
+local move_lines_select_file = utils.move_lines_select_file
 local menu_commands = utils.menu_commands
 local open_markdown_links_picker = utils.open_markdown_links_picker
 
@@ -285,15 +286,20 @@ return {
           win_by_ft = {
             markdown = {
               keys = {
+                ["archive"] = {
+                  "aa", function() move_line("~/Documents/notes/archive/archive_ideas.md") end,
+                  desc = "Archive idea",
+                  mode = {"n", },
+                },
                 ["refile"] = {
                   "tt", function() move_line("~/Documents/notes/TODO.md") end,
                   desc = "Refile TODO",
                   mode = {"n", },
                 },
-                ["archive"] = {
-                  "aa", function() move_line("~/Documents/notes/archive/archive_ideas.md") end,
-                  desc = "Archive idea",
-                  mode = {"n", },
+                ["sfile"] = {
+                  "tf", function() move_lines_select_file() end,
+                  desc = "Refile select file",
+                  mode = {"n", "v"},
                 },
               }
             },

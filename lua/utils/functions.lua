@@ -21,8 +21,57 @@ function F.append_text_to_file(m_text, target_path)
     return
   end
 
-  file:write(m_text .. "\n")
+  file:write("\n" .. m_text)
   file:close()
+end
+
+function F.move_lines_select_file()
+  local winid = vim.api.nvim_get_current_win()
+
+  local v_pos = vim.fn.getpos "v"
+  local d_pos = vim.fn.getpos "."
+
+  if v_pos[2] > d_pos[2] then
+    local tmp = d_pos
+    d_pos = v_pos
+    v_pos = tmp
+  end
+
+
+  local _, start_row,start_col, _ = unpack(v_pos)
+  local _, end_row, end_col, _ = unpack(d_pos)
+
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  local m_lines
+  local mode = vim.api.nvim_get_mode().mode
+  if mode == "v" or mode == "V" or mode == "\22" then
+    m_lines = vim.fn.getregion(v_pos, d_pos, {type=mode})
+  else
+    m_lines = {vim.trim(vim.api.nvim_get_current_line())}
+  end
+
+  for i, val in ipairs(m_lines) do
+    -- ^- matches a literal hyphen at the very beginning of the string
+    m_lines[i] = string.gsub(val, "^%-", "\n#")
+  end
+
+  m_lines = table.concat(m_lines, "\n")
+
+  Snacks.picker.files({
+    cwd = "~/Documents/notes/",
+    actions = {
+      confirm = function(picker, item)
+        if item then
+          picker:close()
+          F.append_text_to_file(m_lines, item._path)
+
+          vim.api.nvim_set_current_win(winid)
+          vim.api.nvim_buf_set_lines(bufnr, start_row-1, end_row, false, {})
+        end
+      end
+    }
+  })
 end
 
 function F.move_line_to_file(target_path)
