@@ -20,10 +20,10 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
     vim.keymap.set('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
-    vim.keymap.set('n', '<leader>td',
-      function()
-        move_line("~/Documents/notes/TODO.md")
-      end, opts("Markdown refile TODO.md"))
+    -- vim.keymap.set('n', '<leader>td',
+    --   function()
+    --     move_line("~/Documents/notes/TODO.md")
+    --   end, opts("Markdown refile TODO.md"))
 
     vim.keymap.set('n',"<leader>bm",
       function()

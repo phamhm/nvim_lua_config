@@ -14,30 +14,35 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local md_scratch_ops = function(md_name)
+  local keys = {
+    ["archive"] = {
+      "aa", function() move_line(vim.g.m_notes_path .. "/archive/archive_ideas.md") end,
+      desc = "Archive idea",
+      mode = {"n", },
+    },
+    ["select"] = {
+      "ss", function() move_lines_select_file() end,
+      desc = "Refile select file",
+      mode = {"n", "v"},
+    },
+  }
+
+  if md_name ~= "TODO.md" then
+    keys["todo"] = {
+      "tt", function() move_line(vim.g.m_notes_path .. "/TODO.md") end,
+      desc = "Refile TODO",
+      mode = {"n", },
+    }
+  end
+
   return {
     file = vim.fn.expand(vim.g.m_notes_path .. "/" .. md_name),
     enter = true,
-    name = "Working Notes",
+    name = md_name,
     ft = "markdown",
     win_by_ft = {
       markdown = {
-        keys = {
-          ["archive"] = {
-            "aa", function() move_line("~/Documents/notes/archive/archive_ideas.md") end,
-            desc = "Archive idea",
-            mode = {"n", },
-          },
-          ["refile"] = {
-            "tt", function() move_line("~/Documents/notes/TODO.md") end,
-            desc = "Refile TODO",
-            mode = {"n", },
-          },
-          ["sfile"] = {
-            "tf", function() move_lines_select_file() end,
-            desc = "Refile select file",
-            mode = {"n", "v"},
-          },
-        }
+        keys = keys
       },
     }
   }
@@ -313,7 +318,7 @@ return {
       desc="snack scrach reminder notes"
     },
     {
-      alt_key("<C-%s-t>"), function()
+      alt_key("<C-%s-`>"), function()
         Snacks.scratch(md_scratch_ops("TODO.md"))
       end,
       desc="snack scrach todo notes"
