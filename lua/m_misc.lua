@@ -58,17 +58,17 @@ return {
           lualine_a = {
           },
           lualine_b = {
+            function()  return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_c = {
-            function()  return vim.fs.basename( vim.v.this_session ) end,
-            {'filetype', separator="", icon_only=true},
             {"filename", separator="", path = 1},
+            {'filetype', separator="", icon_only=true},
             'location',
+            'diff',
+            'diagnostics',
+            'branch',
           },
           lualine_x = {
-            'branch',
-            'diff',
-            'diagnostics'
           },
           lualine_y = {
             get_lsp_client
