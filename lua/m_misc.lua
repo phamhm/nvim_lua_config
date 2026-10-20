@@ -33,11 +33,11 @@ return {
         },
         sections = {
           lualine_a = {
-            function() return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_b = {
-            "filename",
             'location',
+            "filename",
+            function() return vim.fs.basename( vim.v.this_session ) end,
             'branch',
             'diff',
             'diagnostics'
