@@ -1,3 +1,5 @@
+local utils = require("utils.functions")
+
 local options = {
   backup         = false,                          -- creates a backup file
   -- prevent yank/delete into "+ and "* registers. use <leader>cc to copy yanked @" into @+
@@ -86,14 +88,4 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-function _G.get_custom_title()
-  local file = vim.fn.expand('%:t')
-  if file == ""  then
-    return "[No Name]"
-  end
-
-  local modified = vim.bo[0].modified and "[+] " or ""
-  local readonly = vim.bo[0].readonly and "[-]" or ""
-
-  return string.format("%s%s%s", file, readonly, modified)
-end
+_G.get_custom_title = function() return utils.set_title() end

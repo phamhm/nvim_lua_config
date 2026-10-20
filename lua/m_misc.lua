@@ -1,3 +1,5 @@
+local utils = require('utils.functions')
+
 local function get_lsp_client()
   local msg = 'No Active LSP'
   local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
@@ -71,19 +73,7 @@ return {
             -- {"filename", separator="", path = 1},
             {
               function()
-                local fname = vim.fn.expand('%:t')
-                local icon = MiniIcons.get('file', fname).. ' '
-
-                fname = icon .. vim.fn.expand('%:p:h:t')..'/' .. fname
-                if vim.bo.modified then
-                  fname = fname .. ' [+]'
-                end
-
-                if vim.bo.readonly or not vim.bo.modifiable then
-                   fname = fname .. ' [-]'
-                end
-                return fname
-
+               return utils.set_title(true)
               end
             },
             'location',
@@ -92,7 +82,6 @@ return {
             'diff',
           },
           lualine_x = {
-            function()  return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_y = {
             get_lsp_client
