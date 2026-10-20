@@ -32,10 +32,16 @@ vim.api.nvim_create_autocmd("FileType", {
         bm_line(vim.g.m_notes_path .. '/' .. 'bookmarks.md')
       end, opts("Move markdown link to the bookmarks.md file"))
 
-    vim.opt_local.textwidth = 0
+    -- Enable soft wrapping
     vim.opt_local.wrap = true
+    -- Wrap lines at word boundaries instead of mid-word
     vim.opt_local.linebreak = true
+    -- Turn off hard wrapping (prevents Neovim from inserting physical newlines)
+    vim.opt_local.textwidth = 0
+    vim.opt_local.wrapmargin = 0
+    -- Keep indents aligned for wrapped lines (great for nested lists)
     vim.opt_local.breakindent = true
+
     vim.opt_local.spell = false
 
     -- 6. Punctuation undo sequences (Mimics vim-pencil's granular undo)

@@ -58,37 +58,20 @@ return {
           lualine_a = {
           },
           lualine_b = {
+          },
+          lualine_c = {
             function()  return vim.fs.basename( vim.v.this_session ) end,
-            -- {'filetype', separator="", icon_only=true},
-            -- {"filename", separator="", path = 1},
-
-            function()
-              local current_dir = vim.fn.expand('%:p:h:t')
-
-              local filename = vim.fn.expand("%:t")
-              if filename == "" then return "[No Name]" end
-              filename = current_dir .. '/' .. filename
-
-              -- Get icon and its highlight group from mini.icons
-              local icon, hl, _ = require("mini.icons").get("file", filename)
-
-              -- Return icon joined with the filename
-              return icon .. " " .. filename
-            end,
-
-
+            {'filetype', separator="", icon_only=true},
+            {"filename", separator="", path = 1},
             'location',
+          },
+          lualine_x = {
             'branch',
             'diff',
             'diagnostics'
           },
-          lualine_c = {},
-          lualine_x = {
-            get_lsp_client
-              -- 'fileformat',
-            -- 'encoding',
-          },
           lualine_y = {
+            get_lsp_client
           }, -- saved 'progress'
           lualine_z = {}
         },
