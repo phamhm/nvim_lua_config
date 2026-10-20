@@ -4,7 +4,9 @@ local alt_key = utils.format_os_altkey
 local map = vim.keymap.set
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', '<C-q><C-q><C-q>', ":qa!<CR>", {})
+map('n', alt_key('<%s-q>',3), ":qa!<CR>", {})
+map('n', alt_key('<%s-r>', 3), "<cmd>restart<CR>", {})
+
 map({ 'n', 'v' }, 'j', "gj", {silent=true})
 map({ 'n', 'v' }, 'k', "gk", {silent=true})
 map({ "n", "v" }, "0", "g0", {silent=true})
@@ -159,6 +161,12 @@ vim.keymap.set('n', '<leader>o', function()
 end, { desc = 'Open current buffer with system handler' })
 
 
--- Alternative example: Map to Ctrl + Down/Up arrow keys
-vim.keymap.set('n', alt_key('<leader><leader>n'), ']c', { desc = "Next diff change" })
-vim.keymap.set('n', alt_key('<leader><leader>p'), '[c', { desc = "Previous diff change" })
+map('n', "<C-d>", '<C-d>zz', { desc = "half page down, centered" })
+map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
+
+map('n', "j", 'jzz', { desc = "up, centered" })
+map('n', "k", 'kzz', { desc = "up, centered" })
+
+map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
+
+map('n', "<leader>=", "gg=G<C-o>", { desc = "align the whole buffer" })
