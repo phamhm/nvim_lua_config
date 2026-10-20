@@ -2,24 +2,19 @@ return {
   {'easymotion/vim-easymotion'},
   {'nvim-tree/nvim-web-devicons'},
   -- {'metalelf0/jellybeans-nvim'},
-  {"catppuccin/nvim", name = "catppuccin",
+  -- {"catppuccin/nvim", name = "catppuccin",
+  {"vague-theme/vague.nvim",
     config = function()
-      vim.cmd.colorscheme("catppuccin-mocha")
+      vim.cmd.colorscheme("vague")
 
       vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
       vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
-
       vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
       local border_color = "grey"
       local border_list = {
-        -- "SnacksPickerBorder",
         "SnacksPickerInputBorder",
         "SnacksPickerBoxBorder",
         "SnacksInputBorder",
-        -- "SnacksInputNormal",
-        -- "SnacksInputTitle",
-        -- "LineNrAbove",
-        -- "LineNrBelow",
         "FloatBorder"
       }
       for _, border in ipairs(border_list) do
