@@ -65,17 +65,34 @@ return {
           lualine_a = {
           },
           lualine_b = {
-            function()  return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_c = {
-            {'filetype', separator="", icon_only=true},
-            {"filename", separator="", path = 1},
+            -- {'filetype', separator="", icon_only=true},
+            -- {"filename", separator="", path = 1},
+            {
+              function()
+                local fname = vim.fn.expand('%:t')
+                local icon = MiniIcons.get('file', fname).. ' '
+
+                fname = icon .. vim.fn.expand('%:p:h:t')..'/' .. fname
+                if vim.bo.modified then
+                  fname = fname .. ' [+]'
+                end
+
+                if vim.bo.readonly or not vim.bo.modifiable then
+                   fname = fname .. ' [-]'
+                end
+                return fname
+
+              end
+            },
             'location',
             'diagnostics',
             'branch',
             'diff',
           },
           lualine_x = {
+            function()  return vim.fs.basename( vim.v.this_session ) end,
           },
           lualine_y = {
             get_lsp_client
