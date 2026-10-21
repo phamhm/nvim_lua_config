@@ -52,6 +52,7 @@ function M.advance_todo_time()
 
     local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
     vim.api.nvim_set_current_line(new_line)
+    vim.g.m_todo=""
     return
   else
     vim.notify("Task is DONE")
@@ -67,7 +68,8 @@ function M.todo_line_check(todo_line)
   end
 end
 
-local function match_single_link(str)
+local function match_single_link(str, suppressed_notify)
+  suppressed_notify = suppressed_notify or false
   local count = 0
   local first_text, first_url
 
@@ -79,6 +81,8 @@ local function match_single_link(str)
 
   if count == 1 then
     return first_text, first_url
+  elseif suppressed_notify then
+    return
   elseif count == 0 then
     vim.notify("No Markdown Link found", vim.log.levels.ERROR)
   else
@@ -94,7 +98,7 @@ local function create_file(filepath, first_line)
   if fd then
     vim.uv.fs_write(fd, "# "..first_line, 0)
     vim.uv.fs_close(fd)
-    vim.notify("Empty file created: " .. filepath)
+    vim.notify("File created: " .. vim.fn.fnamemodify(filepath, ":t"))
     return true
   else
     vim.notify("Error: Could not create file:" .. filepath, vim.log.levels.ERROR)
@@ -124,19 +128,37 @@ function M.md_follow_link()
       end
     end
   end
+end
 
-  local to_create_file = vim.fn.confirm("No Link found. Create link?", "&Yes\n&No")
-  if to_create_file == 1 then
-    local m_str = current_line:match("%- %[ %] (.-)@c")
-    local uuid = vim.fn.system('uuidgen'):gsub('%s+', '')
-    local new_file_name = string.format(vim.g.m_notes_path.."/todo_notes/%s.md", uuid)
-    local new_md_link = string.format("[%s](%s) ", m_str, new_file_name)
-
-    local updated_line = current_line:gsub("(%- %[ %] ).- (@c)", "%1" .. new_md_link .. "%2")
-    if create_file(new_file_name, m_str) then
-      vim.api.nvim_set_current_line(updated_line)
-    end
+function M.md_create_link()
+  local current_line = vim.api.nvim_get_current_line()
+  local text, url = match_single_link(current_line)
+  if text and url then
+    vim.notify("Link exists. Can't create new one", vim.log.levels.WARN)
+    return
   end
+  local m_str = current_line:match("%- %[ %] (.-)@c")
+  local uuid = vim.fn.system('uuidgen'):gsub('%s+', '')
+  local new_file_name = string.format(vim.g.m_notes_path.."/todo_notes/%s.md", uuid)
+  local new_md_link = string.format(" [%s](%s) ", m_str, new_file_name)
+
+  local updated_line = current_line:gsub("(%- %[ %] ).- (@c)", "%1" .. new_md_link .. "%2")
+  if create_file(new_file_name, m_str) then
+    vim.api.nvim_set_current_line(updated_line)
+  end
+end
+
+function M.set_todo()
+  local current_line = vim.api.nvim_get_current_line()
+  local text, url = match_single_link(current_line, true)
+  if text==nil and url==nil then
+    text = current_line:match("%- %[ %] (.-)@c")
+  end
+  if text==nil or text=="" then
+    vim.notify("Can't find text to set todo")
+    return
+  end
+  vim.g.m_todo = text
 end
 
 return M

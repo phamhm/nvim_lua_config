@@ -19,25 +19,38 @@ local md_scratch_ops = function(md_name)
 
   if md_name == "working_notes.md" then
     keys["todo"] = {
-      "tt", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
-      desc = "Start Todo time",
+      "<C-t>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
+      desc = "Move to Todo",
       mode = {"n"},
     }
 
     keys["archive"] = {
-      "aa", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
-      desc = "Archive idea",
+      "<C-a>", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      desc = "Discard idea",
       mode = {"n", },
     }
   elseif md_name == "TODO.md" then
     keys["advance"] = {
-      "tt", M.advance_todo_time,
+      "<C-t>", M.advance_todo_time,
       desc = "Advance Todo time",
       mode = {"n"},
     }
     keys["archive"] = {
-      "aa", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md") end,
+      "<C-a>", function()
+        vim.g.m_todo=""
+        F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md")
+      end,
       desc = "Archive done",
+      mode = {"n", },
+    }
+    keys["link"] = {
+      "<C-l>",  M.md_create_link,
+      desc = "Create md link",
+      mode = {"n", },
+    }
+    keys["doit"] = {
+      "<C-d>",  M.set_todo,
+      desc = "Do it",
       mode = {"n", },
     }
   end

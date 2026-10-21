@@ -1,22 +1,5 @@
 local utils = require('utils.functions')
 
-local function get_lsp_client()
-  local msg = 'No Active LSP'
-  local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
-  local clients = vim.lsp.get_clients({ bufnr = 0 })
-
-  if next(clients) == nil then
-    return msg
-  end
-
-  local client_names = {}
-  for _, client in ipairs(clients) do
-    table.insert(client_names, client.name)
-  end
-
-  return table.concat(client_names, '|')
-end
-
 return {
   {'easymotion/vim-easymotion'},
   {'nvim-tree/nvim-web-devicons'},
@@ -95,12 +78,16 @@ return {
             'diff',
           },
           lualine_x = {
-            get_lsp_client,
+          },
+          lualine_y = {
+            function()
+              if vim.g.m_todo ~="" then return '󰬱 ' .. vim.g.m_todo
+              else return ""
+              end
+            end,
             function()
               return " " .. os.date("%I:%M%p")
             end,
-          },
-          lualine_y = {
           }, -- saved 'progress'
           lualine_z = {
           }

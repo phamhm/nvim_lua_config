@@ -93,10 +93,6 @@ local m_mini = {
       require("mini.completion").setup({
         lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
         delay = { completion = 999999, info = 99999, signature = 99999 },
-        mappings = {
-          force_twostep = "<Tab>",
-          force_fallback = "<S-Tab>",
-        }
       }) end
   },
   {
