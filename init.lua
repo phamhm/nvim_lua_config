@@ -60,6 +60,7 @@ if ok then
   vim.notify("loaded poweron install app")
 end
 
+-- -- don't need this because redirecting Snacks.scratch to system /tmp
 -- Create the autocommand
 -- vim.api.nvim_create_autocmd("VimLeavePre", {
 --   desc = "Delete all scratch before leaving",

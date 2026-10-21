@@ -2,7 +2,6 @@ local F = {}
 
 local custom_key_maps = {}
 
-
 function F.save_keys(key)
   if not vim.tbl_contains(custom_key_maps, key) then
     table.insert(custom_key_maps, key)
@@ -22,10 +21,14 @@ end
 function F.write_note(note_text)
   if note_text and note_text ~= "" then
     local today_date = os.date('%Y-%m-%d %H:%M:%S')
-    vim.fn.writefile({ "- ".. note_text .. " [".. today_date .."] " }, vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"), "a")
+    vim.fn.writefile({ "- ".. note_text .. " @c(".. today_date ..") " }, vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"), "a")
   end
 end
 
+--[[
+-- take m_text and append to the end of target_path
+--
+--]]
 function F.append_text_to_file(m_text, target_path)
   m_text = vim.trim(m_text)
   if m_text=="" then

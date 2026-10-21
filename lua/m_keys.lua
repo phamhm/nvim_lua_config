@@ -16,8 +16,8 @@ vim.keymap.set(
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
-map('n', alt_key('<%s-r>', 3), "<cmd>restart<CR>", {desc="restart nvim"})
+map('n', alt_key('<%s-q>',2), ":qa!<CR>", {desc="force quit everything"})
+map('n', alt_key('<%s-r>', 2), "<cmd>restart<CR>", {desc="restart nvim"})
 
 map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
 map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
@@ -182,9 +182,9 @@ vim.keymap.set('n', '<leader><leader>o', function()
 end, { desc = 'Open current buffer with system handler' })
 
 
+-- how to define this but ignore minifiles
 map('n', "<C-d>", '<C-d>zz', { desc = "half page down, centered" })
 map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
-
 map('n', "j", 'jzz', { desc = "up, centered" })
 map('n', "k", 'kzz', { desc = "up, centered" })
 
