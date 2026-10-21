@@ -1,3 +1,4 @@
+local M = require("utils.markdowns")
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
 -- Create an augroup to ensure autocommands don't duplicate on reload
@@ -18,6 +19,8 @@ vim.api.nvim_create_autocmd("FileType", {
     map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
     map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
+
+    map('n', '<Cr>', function() M.md_follow_link() end, opts("Markdown task toggle"))
 
     -- Enable soft wrapping
     vim.opt_local.wrap = true
