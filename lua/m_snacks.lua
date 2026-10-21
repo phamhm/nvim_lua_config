@@ -167,6 +167,9 @@ local m_snacks = {
     words = { enabled = false },
     styles = {
       input = {
+        -- relative = "editor",
+        -- position = "center",
+        row = vim.o.lines/2-10,
         keys = {
           ["<C-c>"] = { "close", mode = { "i", "n" } },
         },
@@ -176,17 +179,17 @@ local m_snacks = {
     dashboard = {
       preset = {
         header = [[
-                          boooooo
-                          __J"L__
-                      ,-"`--...--'"-.
-                     /  /\       /\   \
-                    J  /__\  _  /__\   L
-                    |       / \        |
-                    J    _  """  _     F
-                     \   \\/\_/\//    /
-                      "-._\/\_/\/_,-"
-                         """""""
-        ]],
+          boooooo
+          __J"L__
+          ,-"`--...--'"-.
+          /  /\       /\   \
+          J  /__\  _  /__\   L
+          |       / \        |
+          J    _  """  _     F
+          \   \\/\_/\//    /
+          "-._\/\_/\/_,-"
+          """""""
+          ]],
         keys = {
           { icon = "󰬱 ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
           -- { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
