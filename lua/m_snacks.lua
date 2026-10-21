@@ -24,13 +24,27 @@ local md_scratch_ops = function(md_name)
     }
 
     keys["discard"] = {
-      alt_key("<C-%s-D>"), function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      alt_key("<C-%s-D>"), function()
+
+        local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
+        if choice ~= 1 then
+          return
+        end
+
+        F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
       desc = "Discard",
       mode = {"n", },
     }
   elseif md_name == "TODO.md" then
     keys["discard"] = {
-      alt_key("<C-%s-D>"), function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      alt_key("<C-%s-D>"), function()
+        local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
+        if choice ~= 1 then
+          return
+        end
+
+        F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md")
+      end,
       desc = "Discard",
       mode = {"n", },
     }
