@@ -81,7 +81,7 @@ return {
           },
           lualine_y = {
             function()
-              if vim.g.m_todo ~="" then return '󰬱 ' .. vim.g.m_todo
+              if vim.g.m_todo ~="" then return " " .. vim.g.m_todo
               else return ""
               end
             end,
