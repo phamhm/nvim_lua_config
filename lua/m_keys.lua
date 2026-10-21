@@ -2,7 +2,6 @@ local utils = require("utils.functions")
 local alt_key = utils.format_os_altkey
 local map = utils.map
 
-
 vim.keymap.set(
   'n',
   "<leader>mk",
@@ -77,6 +76,15 @@ map("n", "<leader>gy", function()
   vim.ui.input( { prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
 end, {desc="query youtube"})
 
+local function google(prompt, default)
+  vim.ui.input({
+    prompt = prompt,
+    default = default .. ' ',
+  }, query("https://www.google.com/search?q="))
+end
+
+map("n", "<leader>gr", function()  google("Goog Reddit", "reddit") end, {desc="query youtube"})
+
 map({"n","v" }, "<leader>gg", function()
   local current_mode = vim.fn.mode(1)
   local selected_text = ""
@@ -85,10 +93,7 @@ map({"n","v" }, "<leader>gg", function()
     selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
   end
 
-  vim.ui.input({
-    prompt = "Google:",
-    default = selected_text  .. ' ',
-  }, query("https://www.google.com/search?q="))
+  google("Google", selected_text)
 end, {desc="googling google"})
 -- end googling, }
 
@@ -181,4 +186,10 @@ map('n', "k", 'kzz', { desc = "up, centered" })
 
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
 
-map('n', "<leader>=", "gg=G<C-o>", { desc = "align the whole buffer" })
+map('n', "<leader>=", function()
+  vim.cmd("normal! mz") -- mark into z
+  vim.cmd("normal! vii") -- select in indent
+  vim.cmd("normal! =")   -- indent
+  vim.cmd("normal! `z")  -- go back to z mark
+  vim.cmd("normal! zz")  -- center
+end, { desc = "align the whole buffer" })

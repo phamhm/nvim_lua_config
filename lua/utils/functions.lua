@@ -376,6 +376,9 @@ function F.set_title(include_session)
   include_session = include_session or false
 
   local fname = vim.fn.expand('%:t')
+  if not (fname and fname~="") then
+    return "[no file]"
+  end
   local icon = MiniIcons.get('file', fname).. ' '
   fname = icon .. vim.fn.expand('%:p:h:t')..'/' .. fname
 
