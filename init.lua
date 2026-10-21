@@ -12,16 +12,16 @@ local uv = vim.uv or vim.loop
 
 -- Auto-install lazy.nvim if not present
 if not uv.fs_stat(lazypath) then
-    print('Installing lazy.nvim....')
-    vim.fn.system({
-        'git',
-        'clone',
-        '--filter=blob:none',
-        'https://github.com/folke/lazy.nvim.git',
-        '--branch=stable', -- latest stable release
-        lazypath,
-    })
-    print('Done.')
+  print('Installing lazy.nvim....')
+  vim.fn.system({
+    'git',
+    'clone',
+    '--filter=blob:none',
+    'https://github.com/folke/lazy.nvim.git',
+    '--branch=stable', -- latest stable release
+    lazypath,
+  })
+  print('Done.')
 end
 
 vim.opt.rtp:prepend(lazypath)
@@ -59,3 +59,13 @@ local ok, my_module = pcall(require, "m_load_poweron")
 if ok then
   vim.notify("loaded poweron install app")
 end
+
+-- Create the autocommand
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  desc = "Delete all scratch before leaving",
+  pattern = "*",
+  callback = function()
+    local scratch_dir = vim.fn.expand(vim.fn.stdpath("data") .. "/scratch")
+    vim.fn.delete(scratch_dir, "rf")
+  end,
+})
