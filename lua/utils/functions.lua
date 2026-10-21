@@ -20,7 +20,7 @@ end
 
 function F.write_note(note_text)
   if note_text and note_text ~= "" then
-    local today_date = os.date('%Y-%m-%d %H:%M:%S')
+    local today_date = os.date('%Y-%m-%d %H:%M')
     vim.fn.writefile({ "- ".. note_text .. " @c(".. today_date ..") " }, vim.fn.expand(vim.g.m_notes_path .. "/working_notes.md"), "a")
   end
 end
@@ -96,23 +96,18 @@ function F.move_lines_select_file()
   })
 end
 
-function F.move_line_to_file(target_path)
+function F.move_line_to_file(target_path, l_formatter)
+  l_formatter = l_formatter or function(x) return x end
+
   -- 1. Expand the target path (handles ~ or relative paths safely)
   local expanded_path = vim.fn.expand(target_path)
 
   -- 2. Get the current cursor line text
-  local current_line_content = vim.trim(vim.api.nvim_get_current_line())
-  if current_line_content == "" then
-    vim.notify("Can't move empty line")
+  local current_line = vim.api.nvim_get_current_line()
+  current_line = l_formatter(current_line)
+  if current_line == "" then
+    vim.notify("Can't move line")
     return
-  end
-
-  if current_line_content:match("^%-") then
-    current_line_content = vim.trim(current_line_content:sub(2))
-  end
-
-  if not vim.startswith(current_line_content, "##") then
-    current_line_content = "\n## "..current_line_content
   end
 
   local file, err = io.open(expanded_path, "a")
@@ -121,7 +116,7 @@ function F.move_line_to_file(target_path)
     return
   end
 
-  file:write(current_line_content.. "\n")
+  file:write(current_line.. "\n")
   file:close()
 
   -- 5. Delete the line from the active Neovim buffer

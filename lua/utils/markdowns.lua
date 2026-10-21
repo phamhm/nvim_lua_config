@@ -1,52 +1,127 @@
---[[
--- when moving an item to TODO.md file, insert @started(datetime)
--- when moving an item to TODO.md file, insert @started(datetime)
---]]
+-- to run :luafile %
+local M = {}
 
--- return {
---
--- }
---
-function copy_md_header()
-  local buf = vim.api.nvim_get_current_buf()
-  local node = vim.treesitter.get_node()
-
-  -- Walk up the tree to find the markdown heading node
-  while node and node:type() ~= "heading" do
-    node = node:parent()
-  end
-
-  -- If found, extract the text and assign it to a variable
-  local heading_text = ""
-  if node then
-    heading_text = vim.treesitter.get_node_text(node, buf)
-  end
-
-  -- Example usage: Print the result
-  print("Captured Heading: " .. heading_text)
+local function get_time(current_line)
+  local capture_time = current_line:match('@c%(([^)]+)%)')
+  local start_time = current_line:match('@s%(([^)]+)%)')
+  local finished_time = current_line:match('@f%(([^)]+)%)')
+  return capture_time , start_time , finished_time
 end
 
+local date_time_format ='%Y-%m-%d %H:%M'
 
-local query_str = [[
-  (atx_heading (atx_h2_marker)) @heading2
-]]
+local function format_duration(diff_seconds)
+  if diff_seconds >= 86400 then
+    local days = diff_seconds / 86400
+    return string.format("%.1f days", days)
+  elseif diff_seconds >= 3600 then
+    local hours = diff_seconds / 3600
+    return string.format("%.1f hours", hours)
+  else
+    local minutes = diff_seconds / 60
+    return string.format("%.1f minutes", minutes)
+  end
+end
 
-local query = vim.treesitter.query.parse("markdown", query_str)
+local function calc_time(m_date1, m_date2)
+  -- Using Vim's strptime if available
+  local t1 = vim.fn.strptime(date_time_format, m_date1)
+  local t2 = vim.fn.strptime(date_time_format, m_date2)
+  return format_duration(t2 - t1)
+end
 
-local function create_todo_detail_file()
+local function start_todo_time()
   local current_line = vim.api.nvim_get_current_line()
-  print(current_line)
-  local is_heading = current_line:match("^## ") ~= nil and current_line:match('@c(.*)')~=nil
-  if is_heading == false then
-    vim.notify("Not a capture heading", vim.log.levels.ERROR)
+  local capture_time, start_time, finished_time = get_time(current_line)
+
+  if not (current_line:match("^## ")) then
+    vim.notify("Not a TODO heading", vim.log.levels.ERROR)
+    return
+  elseif capture_time == nil then
+    vim.notify("Capture time missing", vim.log.levels.ERROR)
+    return
+  elseif start_time ~= nil then
+    vim.notify("Todo item alread started", vim.log.levels.ERROR)
+    return
+  elseif finish_time ~= nil then
+    vim.notify("Todo item alread finished", vim.log.levels.ERROR)
     return
   end
-  local todo_item = vim.trim(current_line:match("##(.-)@c"))
-  local fname = todo_item:gsub(" ", "_")
-  local md_link = string.format("[%s]("..vim.g.m_notes_path.."/%s.md)", todo_item, fname)
-  local new_line = string.gsub(current_line, "(##)(.-)(@c)", "%1 "..md_link.." %3")
+
+  local new_line = string.format("%s @s(%s)",current_line, os.date(date_time_format))
+
+  vim.api.nvim_set_current_line(new_line)
+end
+
+local function complete_todo_time()
+  local current_line = vim.api.nvim_get_current_line()
+  local capture_time, start_time, finished_time = get_time(current_line)
+
+  if not (current_line:match("^## ")) then
+    vim.notify("Not a TODO heading", vim.log.levels.ERROR)
+    return
+  elseif capture_time == nil then
+    vim.notify("Capture time missing", vim.log.levels.ERROR)
+    return
+  elseif start_time == nil then
+    vim.notify("Todo item NOT started", vim.log.levels.ERROR)
+    return
+  elseif finished_time ~= nil then
+    vim.notify("Todo item alread finished", vim.log.levels.ERROR)
+    return
+  end
+
+  finished_time = os.date(date_time_format)
+  local elapsed_time = calc_time(start_time, finished_time)
+
+  local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
   vim.api.nvim_set_current_line(new_line)
 end
 
 
-vim.keymap.set("n", "<leader>tt", function() create_todo_detail_file() end, {})
+-- vim.keymap.set("n", "<leader>tt", function() start_todo_time() end, {})
+-- vim.keymap.set("n", "<leader>tf", function() complete_todo_time() end, {})
+--
+--
+
+function M.advance_todo_time()
+  local current_line = vim.api.nvim_get_current_line()
+  if M.todo_line_check(current_line) == "" then
+    vim.notify("Not a well-formed todo line", vim.log.levels.ERROR)
+    return
+  end
+
+  local capture_time, start_time, finished_time = get_time(current_line)
+  if capture_time == nil then
+    vim.notify("There is no capture time", vim.log.levels.ERROR)
+    return
+  elseif start_time == nil then
+    local new_line = string.format("%s @s(%s)",current_line, os.date(date_time_format))
+    vim.api.nvim_set_current_line(new_line)
+    return
+  elseif finished_time == nil then
+    finished_time = os.date(date_time_format)
+    local elapsed_time = calc_time(start_time, finished_time)
+    current_line = current_line:gsub("^%- %[ %]", "- [x]")
+
+    local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
+    vim.api.nvim_set_current_line(new_line)
+    return
+  else
+    vim.notify("Task is DONE")
+  end
+end
+
+function M.todo_line_check(todo_line)
+  todo_line = vim.trim(todo_line)
+  if string.match(todo_line, "^%-.*@c") then
+    return todo_line:gsub("^%-", "- [ ]")
+  else
+    return ""
+  end
+end
+
+
+
+
+return M

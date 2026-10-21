@@ -1,9 +1,9 @@
-local utils = require("utils.functions")
-local move_line = utils.move_line_to_file
-local move_lines_select_file = utils.move_lines_select_file
-local menu_commands = utils.menu_commands
-local open_markdown_links_picker = utils.open_markdown_links_picker
-local alt_key = utils.format_os_altkey
+local F = require("utils.functions")
+local M = require("utils.markdowns")
+local move_lines_select_file = F.move_lines_select_file
+local menu_commands = F.menu_commands
+local open_markdown_links_picker = F.open_markdown_links_picker
+local alt_key = F.format_os_altkey
 
 -- disable autocompletion in the windows. will work on vim.ui.open
 vim.api.nvim_create_autocmd("FileType", {
@@ -15,22 +15,29 @@ vim.api.nvim_create_autocmd("FileType", {
 
 local md_scratch_ops = function(md_name)
   local keys = {
-    ["archive"] = {
-      "aa", function() move_line(vim.g.m_notes_path .. "/archive/archive_ideas.md") end,
-      desc = "Archive idea",
-      mode = {"n", },
-    },
-    ["select"] = {
-      "ss", function() move_lines_select_file() end,
-      desc = "Refile select file",
-      mode = {"n", "v"},
-    },
   }
 
-  if md_name ~= "TODO.md" then
+  if md_name == "working_notes.md" then
     keys["todo"] = {
-      "tt", function() move_line(vim.g.m_notes_path .. "/TODO.md") end,
-      desc = "Refile TODO",
+      "tt", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
+      desc = "Start Todo time",
+      mode = {"n"},
+    }
+
+    keys["archive"] = {
+      "aa", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      desc = "Archive idea",
+      mode = {"n", },
+    }
+  elseif md_name == "TODO.md" then
+    keys["advance"] = {
+      "tt", M.advance_todo_time,
+      desc = "Advance Todo time",
+      mode = {"n"},
+    }
+    keys["archive"] = {
+      "aa", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks") end,
+      desc = "Archive idea",
       mode = {"n", },
     }
   end
@@ -365,7 +372,7 @@ local m_snacks = {
 if m_snacks.keys then
   for _, val in ipairs(m_snacks.keys) do
     local key = val[1] ..":".. "Snacks "..(val.desc or "no description")
-    utils.save_keys(key)
+    F.save_keys(key)
   end
 end
 

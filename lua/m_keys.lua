@@ -29,13 +29,7 @@ map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
 map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
 map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>', function()
-  vim.cmd("normal! mz")     -- mark into z
-  vim.cmd("normal! gg=G")   -- indent
-  vim.cmd("normal! `z")     -- go back to z mark
-  vim.cmd("normal! zz")     -- center
-  vim.cmd("write")
-end,{silent = true, desc="save buffer"})
+map({'n', 'i', 'v'}, '<C-s>', "<cmd>w<cr>",{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
 
 -- end key maps
@@ -185,7 +179,5 @@ end, { desc = 'Open current buffer with system handler' })
 -- how to define this but ignore minifiles
 map('n', "<C-d>", '<C-d>zz', { desc = "half page down, centered" })
 map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
-map('n', "j", 'jzz', { desc = "up, centered" })
-map('n', "k", 'kzz', { desc = "up, centered" })
 
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })

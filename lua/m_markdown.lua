@@ -1,5 +1,4 @@
 local alt_key = require("utils.functions").format_os_altkey
-local bm_line = require("utils.functions").bookmark_line
 local map = require("utils.functions").map
 -- Create an augroup to ensure autocommands don't duplicate on reload
 local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
@@ -19,18 +18,6 @@ vim.api.nvim_create_autocmd("FileType", {
     map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
     map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
-
-    -- local move_line = require("utils.functions").move_line_to_file
-    -- vim.keymap.set('n', '<leader>td',
-    --   function()
-    --     move_line("~/Documents/notes/TODO.md")
-    --   end, opts("Markdown refile TODO.md"))
-
-    vim.keymap.set('n',"<leader>bm",
-      function()
-        -- move the mddownlink to the bookmarks file
-        bm_line(vim.g.m_notes_path .. '/' .. 'bookmarks.md')
-      end, opts("Move markdown link to the bookmarks.md file"))
 
     -- Enable soft wrapping
     vim.opt_local.wrap = true

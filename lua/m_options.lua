@@ -4,7 +4,7 @@ local options = {
   backup         = false,                          -- creates a backup file
   -- prevent yank/delete into "+ and "* registers. use <leader>cc to copy yanked @" into @+
   clipboard      = "",
-  cmdheight      = 0,                           -- more space in the neovim command line for displaying messages
+  cmdheight      = 1,                           -- more space in the neovim command line for displaying messages
   completeopt    = { "menuone", "noselect"}, -- mostly just for cmp
   conceallevel   = 0,                        -- so that `` is visible in markdown files
   fileencoding   = "utf-8",                  -- the encoding written to a file
@@ -66,7 +66,7 @@ for k, v in pairs(options) do
   vim.opt[k] = v
 end
 
-vim.opt.shortmess:append("c")
+vim.opt.shortmess:append("cW")
 vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
