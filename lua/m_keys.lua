@@ -78,7 +78,7 @@ end, {desc="query youtube"})
 
 local function google(prompt, default)
   vim.ui.input({
-    prompt = "Google:",
+    prompt = prompt,
     default = default .. ' ',
   }, query("https://www.google.com/search?q="))
 end
@@ -93,7 +93,7 @@ map({"n","v" }, "<leader>gg", function()
     selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
   end
 
-  google(prompt, selected_text)
+  google("Google", selected_text)
 end, {desc="googling google"})
 -- end googling, }
 
