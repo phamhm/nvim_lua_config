@@ -52,10 +52,23 @@ return {
 
       -- 2. Modify background (bg) colors for specific modes and sections
       -- Sections are structured as: theme.[mode].[section].[attribute]
-      custom_theme.normal.a.bg = 'None'
-      custom_theme.normal.b.bg = 'None'
-      custom_theme.normal.c.bg = 'None' -- Modifies the center/entire bar background
-      custom_theme.insert.a.bg = 'None'
+      --
+      --
+      --
+      --
+      local hl = vim.api.nvim_get_hl(0, { name = "Normal" })
+      local bg_dec = hl.bg
+
+      --
+      -- get colorscheme bg color, then set it to the statusline.
+      -- this blends the statusline and the bg
+      if bg_dec then
+        local bg_hex = string.format("#%06x", bg_dec)
+        custom_theme.normal.a.bg = bg_hex
+        custom_theme.normal.b.bg = bg_hex
+        custom_theme.normal.c.bg = bg_hex
+        custom_theme.insert.a.bg = bg_hex
+      end
 
       require('lualine').setup {
         options = {
@@ -82,12 +95,12 @@ return {
             'diff',
           },
           lualine_x = {
-          },
-          lualine_y = {
             get_lsp_client,
             function()
               return " " .. os.date("%I:%M%p")
             end,
+          },
+          lualine_y = {
           }, -- saved 'progress'
           lualine_z = {
           }
