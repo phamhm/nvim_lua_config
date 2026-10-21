@@ -73,7 +73,7 @@ return {
             -- {"filename", separator="", path = 1},
             {
               function()
-               return utils.set_title(true)
+                return utils.set_title(true)
               end
             },
             'location',
@@ -86,7 +86,7 @@ return {
           lualine_y = {
             get_lsp_client,
             function()
-              return " " .. os.date("%R") -- Displays HH:MM (e.g., 16:12)
+              return " " .. os.date("%I:%M%p")
             end,
           }, -- saved 'progress'
           lualine_z = {
