@@ -17,22 +17,27 @@ local md_scratch_ops = function(md_name)
   local keys = {
   }
 
-  if md_name == "working_notes.md" then
+  if md_name == "capture_notes.md" then
     keys["todo"] = {
       "<C-t>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
       desc = "Move to Todo",
       mode = {"n"},
     }
 
-    keys["archive"] = {
-      "<C-a>", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
-      desc = "Discard idea",
+    keys["discard"] = {
+      alt_key("<C-%s-D>"), function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      desc = "Discard",
       mode = {"n", },
     }
   elseif md_name == "TODO.md" then
+    keys["discard"] = {
+      alt_key("<C-%s-D>"), function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      desc = "Discard",
+      mode = {"n", },
+    }
     keys["advance"] = {
       "<C-t>", M.advance_todo_time,
-      desc = "Advance Todo time",
+      desc = "Adv time",
       mode = {"n"},
     }
     keys["archive"] = {
@@ -40,12 +45,12 @@ local md_scratch_ops = function(md_name)
         vim.g.m_todo=""
         F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md")
       end,
-      desc = "Archive done",
+      desc = "Sav done",
       mode = {"n", },
     }
     keys["link"] = {
       "<C-l>",  M.md_create_link,
-      desc = "Create md link",
+      desc = "MD link",
       mode = {"n", },
     }
     keys["doit"] = {
@@ -337,7 +342,7 @@ local m_snacks = {
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
       "<C-`>", function()
-        Snacks.scratch(md_scratch_ops("working_notes.md"))
+        Snacks.scratch(md_scratch_ops("capture_notes.md"))
       end,
       desc="snack scrach reminder notes"
     },

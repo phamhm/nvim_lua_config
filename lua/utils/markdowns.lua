@@ -9,7 +9,6 @@ local function get_time(current_line)
   return capture_time , start_time , finished_time
 end
 
-
 local function format_duration(diff_seconds)
   if diff_seconds >= 86400 then
     local days = diff_seconds / 86400
