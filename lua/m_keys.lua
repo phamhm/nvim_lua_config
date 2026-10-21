@@ -76,6 +76,10 @@ map("n", "<leader>gy", function()
   vim.ui.input( { prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
 end, {desc="query youtube"})
 
+map("n", "<leader>gr", function()
+  vim.ui.input( { prompt = "Googling Reddit:", default="reddit "}, query("https://www.google.com/search?q="))
+end, {desc="query youtube"})
+
 map({"n","v" }, "<leader>gg", function()
   local current_mode = vim.fn.mode(1)
   local selected_text = ""
