@@ -61,11 +61,11 @@ if ok then
 end
 
 -- Create the autocommand
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  desc = "Delete all scratch before leaving",
-  pattern = "*",
-  callback = function()
-    local scratch_dir = vim.fn.expand(vim.fn.stdpath("data") .. "/scratch")
-    vim.fn.delete(scratch_dir, "rf")
-  end,
-})
+-- vim.api.nvim_create_autocmd("VimLeavePre", {
+--   desc = "Delete all scratch before leaving",
+--   pattern = "*",
+--   callback = function()
+--     local scratch_dir = vim.fn.expand(vim.fn.stdpath("data") .. "/scratch")
+--     vim.fn.delete(scratch_dir, "rf")
+--   end,
+-- })

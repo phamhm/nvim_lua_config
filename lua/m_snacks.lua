@@ -55,6 +55,7 @@ local m_snacks = {
   ---@type snacks.Config
   opts = {
     scratch = {
+      root = "/tmp", -- os will clear it.
       win = {
         width = 0.7,
         height = 0.8,
@@ -81,7 +82,7 @@ local m_snacks = {
         position = "float",
         keys = {
           -- Overrides the double-escape behavior to exit instantly
-          term_normal = { "<esc>", "<cmd>stopinsert<CR>", mode = "t", desc = "Escape to normal mode" },
+          term_normal = { "<C-q>", "<cmd>stopinsert<CR>", mode = "t", desc = "Escape to normal mode" },
         },
       }
     },
