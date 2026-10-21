@@ -29,7 +29,13 @@ map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
 map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
 map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>', "<Esc>:w<CR>",{silent = true, desc="save buffer"})
+map({'n', 'i', 'v'}, '<C-s>', function()
+  vim.cmd("normal! mz")     -- mark into z
+  vim.cmd("normal! gg=G")   -- indent
+  vim.cmd("normal! `z")     -- go back to z mark
+  vim.cmd("normal! zz")     -- center
+  vim.cmd("write")
+end,{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
 
 -- end key maps
@@ -171,9 +177,7 @@ map('n', '<leader>gf', function()
   end
 end, { desc = "Open MiniFiles in directory of file under cursor" })
 
-
-
-vim.keymap.set('n', '<leader>o', function()
+vim.keymap.set('n', '<leader><leader>o', function()
   vim.ui.open(vim.fn.expand('%'))
 end, { desc = 'Open current buffer with system handler' })
 
@@ -185,11 +189,3 @@ map('n', "j", 'jzz', { desc = "up, centered" })
 map('n', "k", 'kzz', { desc = "up, centered" })
 
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
-
-map('n', "<leader>=", function()
-  vim.cmd("normal! mz") -- mark into z
-  vim.cmd("normal! vii") -- select in indent
-  vim.cmd("normal! =")   -- indent
-  vim.cmd("normal! `z")  -- go back to z mark
-  vim.cmd("normal! zz")  -- center
-end, { desc = "align the whole buffer" })
