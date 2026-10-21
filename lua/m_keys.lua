@@ -105,7 +105,7 @@ end, { desc = 'Capture text and apped to working_notes.md' })
 map('n', '<leader>bb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
   if reg_p == "" or not vim.startswith(reg_p, "http") then
-    vim.notify("Register @* isn't an url:'"..reg_p.."'")
+    vim.notify("Register @* isn't an url:'"..reg_p.."'", vim.log.levels.ERROR)
     return
   end
   vim.notify("Bookmarking:" .. reg_p)
