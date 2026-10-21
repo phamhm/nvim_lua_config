@@ -84,12 +84,12 @@ return {
           lualine_x = {
           },
           lualine_y = {
-            get_lsp_client
-          }, -- saved 'progress'
-          lualine_z = {
+            get_lsp_client,
             function()
               return " " .. os.date("%R") -- Displays HH:MM (e.g., 16:12)
             end,
+          }, -- saved 'progress'
+          lualine_z = {
           }
         },
         inactive_sections = {
