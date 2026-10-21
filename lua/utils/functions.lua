@@ -97,10 +97,10 @@ function F.move_lines_select_file()
 end
 
 function F.move_line_to_file(target_path, l_formatter)
-  local choice = vim.fn.confirm("Proceed to refile to ".. target_path.."?", "&Yes\n&No", 2)
-  if choice ~= 1 then
-    return
-  end
+  -- local choice = vim.fn.confirm("Proceed to refile to ".. target_path.."?", "&Yes\n&No", 2)
+  -- if choice ~= 1 then
+  --   return
+  -- end
 
   l_formatter = l_formatter or function(x) return x end
 

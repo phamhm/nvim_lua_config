@@ -14,8 +14,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local md_scratch_ops = function(md_name)
-  local keys = {
-  }
+  local keys = { }
 
   if md_name == "capture_notes.md" then
     keys["todo"] = {
@@ -35,11 +34,13 @@ local md_scratch_ops = function(md_name)
       desc = "Discard",
       mode = {"n", },
     }
+
     keys["advance"] = {
       "<C-t>", M.advance_todo_time,
       desc = "Adv time",
       mode = {"n"},
     }
+
     keys["archive"] = {
       "<C-a>", function()
         vim.g.m_todo=""

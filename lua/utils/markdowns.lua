@@ -75,7 +75,7 @@ local function match_single_link(str, suppressed_notify)
   -- Iterate through all markdown links in the string
   for text, url in str:gmatch("%[([^%]]+)%]%(([^)]+)%)") do
     count = count + 1
-    first_text, first_url = text, url
+    first_text, first_url = vim.trim(text), vim.trim(url)
   end
 
   if count == 1 then
