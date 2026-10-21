@@ -36,8 +36,8 @@ local md_scratch_ops = function(md_name)
       mode = {"n"},
     }
     keys["archive"] = {
-      "aa", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks") end,
-      desc = "Archive idea",
+      "aa", function() F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md") end,
+      desc = "Archive done",
       mode = {"n", },
     }
   end
