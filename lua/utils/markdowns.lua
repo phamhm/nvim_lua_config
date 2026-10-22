@@ -158,6 +158,7 @@ function M.set_todo()
     return
   end
   vim.g.m_todo = text
+  vim.notify("Doing now:" .. text)
 end
 
 return M

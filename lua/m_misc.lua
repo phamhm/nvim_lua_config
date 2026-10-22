@@ -71,6 +71,15 @@ return {
                 return utils.set_title(true)
               end
             },
+            {
+              function()
+                if vim.g.m_todo ~="" then return " " .. vim.g.m_todo
+                else return ""
+                end
+              end,
+              color = { fg = '#ff9e64', gui = 'bold' },
+
+            }
           },
           lualine_x = {
             'diagnostics',
@@ -78,11 +87,6 @@ return {
             'diff',
           },
           lualine_y = {
-            function()
-              if vim.g.m_todo ~="" then return " " .. vim.g.m_todo
-              else return ""
-              end
-            end,
             function()
               return " " .. os.date("%I:%M%p")
             end,
