@@ -60,8 +60,8 @@ function F.move_lines_select_file()
   end
 
 
-  local _, start_row,start_col, _ = unpack(v_pos)
-  local _, end_row, end_col, _ = unpack(d_pos)
+  local _, start_row,_, _ = unpack(v_pos)
+  local _, end_row, _, _ = unpack(d_pos)
 
   local bufnr = vim.api.nvim_get_current_buf()
 
@@ -383,11 +383,12 @@ function F.set_title(include_session)
     return "[no file]"
   end
   local icon = MiniIcons.get('file', fname).. ' '
-  fname = vim.fn.expand('%:p:h:t')..'/' .. fname .. ' ' .. icon
+
+  fname = vim.fn.expand('%:p:h:t')..'/' .. fname
 
   local session = vim.trim(vim.v.this_session)
   if include_session and session and session~="" then
-    session = vim.fs.basename(vim.v.this_session)
+    session = ' ' .. vim.fs.basename(vim.v.this_session)
   else
     session = ""
   end
@@ -395,8 +396,7 @@ function F.set_title(include_session)
   local modified = vim.bo[0].modified and "[+] " or ""
   local readonly = vim.bo[0].readonly and "[-]" or ""
 
-  return string.format("%s%s%s %s", fname, readonly, modified, session)
-
+  return string.format("%s%s%s%s %s",icon, fname, readonly, modified, session)
 end
 
 return F

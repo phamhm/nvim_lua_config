@@ -71,11 +71,11 @@ return {
                 return utils.set_title(true)
               end
             },
+          },
+          lualine_x = {
             'diagnostics',
             'branch',
             'diff',
-          },
-          lualine_x = {
           },
           lualine_y = {
             function()
