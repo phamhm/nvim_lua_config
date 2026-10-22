@@ -383,7 +383,7 @@ function F.set_title(include_session)
     return "[no file]"
   end
   local icon = MiniIcons.get('file', fname).. ' '
-  fname = icon .. vim.fn.expand('%:p:h:t')..'/' .. fname
+  fname = vim.fn.expand('%:p:h:t')..'/' .. fname .. ' ' .. icon
 
   local session = vim.trim(vim.v.this_session)
   if include_session and session and session~="" then
@@ -395,7 +395,7 @@ function F.set_title(include_session)
   local modified = vim.bo[0].modified and "[+] " or ""
   local readonly = vim.bo[0].readonly and "[-]" or ""
 
-  return string.format("%s %s%s%s", session, fname, readonly, modified)
+  return string.format("%s%s%s %s", fname, readonly, modified, session)
 
 end
 

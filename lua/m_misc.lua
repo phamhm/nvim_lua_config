@@ -63,16 +63,14 @@ return {
           lualine_a = {
           },
           lualine_b = {
+            'location',
           },
           lualine_c = {
-            -- {'filetype', separator="", icon_only=true},
-            -- {"filename", separator="", path = 1},
             {
               function()
                 return utils.set_title(true)
               end
             },
-            'location',
             'diagnostics',
             'branch',
             'diff',
