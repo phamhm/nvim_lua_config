@@ -73,7 +73,7 @@ return {
             },
             {
               function()
-                if vim.g.m_todo ~="" then return " " .. vim.g.m_todo
+                if vim.g.m_todo ~="" then return MiniIcons.get("file", "TODO") .. " " .. vim.g.m_todo
                 else return ""
                 end
               end,
@@ -97,7 +97,11 @@ return {
         inactive_sections = {
           lualine_c = {
             'location',
-            'filename'
+            {
+              function()
+                return F.set_title(true)
+              end
+            },
           },
           lualine_x = { },
         },
