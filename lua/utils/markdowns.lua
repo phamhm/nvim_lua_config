@@ -47,7 +47,7 @@ function M.advance_todo_time()
   elseif finished_time == nil then
     finished_time = os.date(date_time_format)
     local elapsed_time = calc_time(start_time, finished_time)
-    current_line = current_line:gsub("^%- %[ %]", "- [x]")
+    current_line = current_line:gsub("^%- %[ %]", "- [] ")
 
     local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
     vim.api.nvim_set_current_line(new_line)

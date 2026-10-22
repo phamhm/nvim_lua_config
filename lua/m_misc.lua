@@ -1,4 +1,4 @@
-local utils = require('utils.functions')
+local F = require('utils.functions')
 
 return {
   {'easymotion/vim-easymotion'},
@@ -63,12 +63,12 @@ return {
           lualine_a = {
           },
           lualine_b = {
-            'location',
           },
           lualine_c = {
+            'location',
             {
               function()
-                return utils.set_title(true)
+                return F.set_title(true)
               end
             },
             {
@@ -77,7 +77,7 @@ return {
                 else return ""
                 end
               end,
-              color = { fg = '#ff9e64', gui = 'bold' },
+              color = { fg = '#ff9e64'},
 
             }
           },
@@ -95,8 +95,11 @@ return {
           }
         },
         inactive_sections = {
-          lualine_c = {'filename'},
-          lualine_x = {'location'},
+          lualine_c = {
+            'location',
+            'filename'
+          },
+          lualine_x = { },
         },
       }
     end
