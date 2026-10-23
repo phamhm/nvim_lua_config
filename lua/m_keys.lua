@@ -111,7 +111,7 @@ map('n', '<leader>bb', function()
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
     local note_text = "[" .. input .. "](" .. reg_p .. ")"
-    utils.write_note(note_text)
+    utils.write_note(note_text, vim.g.m_notes_path .. "/bookmarks.md")
   end)
 end, {silent = true, desc = 'Capture url/bookmarking to working_notes.md' })
 
@@ -145,7 +145,7 @@ map("v", "Y", function()
   vim.notify("@+="..reg)
 end, {desc = "yank virtual into system clipboard"})
 
-map("n", "<leader>p", '"*p', {desc="paste @* clipboard", remap=false})
+map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
 
 -- use Mini.Files locate the file under cursor.
 map('n', '<leader>gf', function()

@@ -18,10 +18,11 @@ function F.get_keys()
   return MiniAlign.align_strings(custom_key_maps, {split_pattern=':'})
 end
 
-function F.write_note(note_text)
+function F.write_note(note_text, destination)
+  destination = destination or  vim.g.m_notes_path .. "/capture_notes.md"
   if note_text and note_text ~= "" then
     local today_date = os.date('%Y-%m-%d %H:%M')
-    vim.fn.writefile({ "- ".. note_text .. " @c(".. today_date ..") " }, vim.fn.expand(vim.g.m_notes_path .. "/capture_notes.md"), "a")
+    vim.fn.writefile({ "- ".. note_text .. " @c(".. today_date ..") " }, vim.fn.expand(destination), "a")
   end
 end
 
