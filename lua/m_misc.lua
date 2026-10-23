@@ -82,6 +82,16 @@ return {
             }
           },
           lualine_x = {
+            {
+              function()
+                if vim.g.global_status ~= "" then
+                  return vim.g.global_status
+                else
+                  return ""
+                end
+              end,
+              color = { fg = '#ff9e64'},
+            },
             'diagnostics',
             'branch',
             'diff',

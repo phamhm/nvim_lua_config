@@ -9,7 +9,7 @@ local m_mini = {
     config = function()
       local ai = require('mini.ai')
       ai.setup({
-        n_lines = 50, -- Extend search scope for larger textobjects. 50 is fine
+        n_lines = 200, -- Extend search scope for larger textobjects. 50 is fine
         custom_textobjects = {
           -- Function definitions
           -- h = ai.gen_spec.treesitter({

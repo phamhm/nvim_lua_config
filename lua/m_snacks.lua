@@ -18,7 +18,7 @@ local md_scratch_ops = function(md_name)
 
   if md_name == "capture_notes.md" then
     keys["todo"] = {
-      "<C-t>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
+      "<C-m>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
       desc = "Move to Todo",
       mode = {"n"},
     }
@@ -37,7 +37,7 @@ local md_scratch_ops = function(md_name)
     }
   elseif md_name == "TODO.md" then
     keys["discard"] = {
-      alt_key("<C-%s-D>"), function()
+      "<C-d>", function()
         local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
         if choice ~= 1 then
           return
@@ -50,27 +50,28 @@ local md_scratch_ops = function(md_name)
     }
 
     keys["advance"] = {
-      "<C-t>", M.advance_todo_time,
+      "<C-a>", M.advance_todo_time,
       desc = "Adv time",
       mode = {"n"},
     }
 
     keys["archive"] = {
-      "<C-a>", function()
+      "<C-c>", function()
         vim.g.m_todo=""
         F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md")
       end,
-      desc = "Sav done",
+      desc = "Save Complete",
       mode = {"n", },
     }
     keys["link"] = {
-      "<C-l>",  M.md_create_link,
+      "<C-l>",  function() M.md_create_link(true) end,
       desc = "MD link",
       mode = {"n", },
     }
+
     keys["doit"] = {
-      "<C-d>",  M.set_todo,
-      desc = "Do it",
+      "<C-s>",  M.set_todo,
+      desc = "Set statusline",
       mode = {"n", },
     }
   end
@@ -134,6 +135,21 @@ local m_snacks = {
       enabled = true ,
       hidden=true,
       sources = {
+        select = {
+          -- Set the layout preset (e.g., "select", "dropdown", "ivy", "vscode", "telescope")
+          layout = {
+            hidden = {"preview", "input"},
+            layout = {
+              min_width = 0,
+              width = 0.3,
+              height = 0.4,
+            }
+          },
+          focus = 'list',
+        },
+
+
+
         explorer = {
           auto_close = false,
           layout = {

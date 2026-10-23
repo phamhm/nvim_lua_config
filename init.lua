@@ -7,6 +7,7 @@ vim.g.maplocalleader = " "
 vim.g.m_notes_path = "~/Documents/notes"
 vim.g.m_scripts = "~/Documents/configs/scripts/"
 vim.g.m_todo = ""
+vim.g.global_status = ""
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 local uv = vim.uv or vim.loop

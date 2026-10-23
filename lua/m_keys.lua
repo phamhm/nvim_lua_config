@@ -181,3 +181,9 @@ map('n', "<C-d>", '<C-d>zz', { desc = "half page down, centered" })
 map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
 
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
+
+
+map('n', alt_key("<leader>cl"), function()
+  vim.g.m_todo = ""
+  vim.g.global_status = ""
+end, {desc = " clear global vim.g"})

@@ -389,7 +389,7 @@ function F.set_title(include_session)
 
   local session = vim.trim(vim.v.this_session)
   if include_session and session and session~="" then
-    session = '' .. vim.fs.basename(vim.v.this_session)
+    session = ' ' .. vim.fs.basename(vim.v.this_session)
   else
     session = ""
   end

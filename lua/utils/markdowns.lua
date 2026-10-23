@@ -59,6 +59,7 @@ function M.advance_todo_time()
 end
 
 function M.todo_line_check(todo_line)
+  vim.notify("forattming todo line:"..todo_line)
   todo_line = vim.trim(todo_line)
   if string.match(todo_line, "^%-.*@c") then
     return todo_line:gsub("^%-", "- [ ]")
