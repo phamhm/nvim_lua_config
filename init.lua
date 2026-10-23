@@ -57,6 +57,3 @@ require('m_keys')
 
 
 local ok, my_module = pcall(require, "m_load_poweron")
-if ok then
-  vim.notify("loaded poweron install app")
-end

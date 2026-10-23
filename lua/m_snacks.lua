@@ -356,13 +356,13 @@ local m_snacks = {
     { "<leader><leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
-      "<C-`>", function()
+      alt_key("<C-%s-`>"), function()
         Snacks.scratch(md_scratch_ops("capture_notes.md"))
       end,
       desc="snack scrach reminder notes"
     },
     {
-      alt_key("<C-%s-`>"), function()
+      "<C-`>", function()
         Snacks.scratch(md_scratch_ops("TODO.md"))
       end,
       desc="snack scrach todo notes"
