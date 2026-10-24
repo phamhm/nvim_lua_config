@@ -325,6 +325,9 @@ local function update_picker_preview(buf, preview)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, preview)
 end
 
+-- this function will read from the notes/bookmarkds.md
+-- AND the scripts in Documents/scripts
+-- build a list of {text, link}
 function F.open_markdown_links_picker()
   vim.cmd("fclose")
   local items = {} -- must be first line
@@ -352,6 +355,20 @@ function F.open_markdown_links_picker()
     vim.notify("No valid Markdown links found in the file", vim.log.levels.WARN)
     return
   end
+  F.m_picker(items, open_item)
+end
+
+-- my custom Snacks.picker.pick for multiple selections
+-- User can do multiple selection, and executes all at once
+function F.m_picker(items, fn_item_handler)
+  if not items or #items==0 then
+    vim.notify("No item to pick")
+    return
+  end
+  if not fn_item_handler  then
+    vim.notify("m_picker needs a fn_item_handler function")
+    return
+  end
 
   local picker_items = {}
   Snacks.picker.pick({
@@ -360,7 +377,6 @@ function F.open_markdown_links_picker()
     title = "Select Link to Open",
     format = "text", -- Display only the title in the list
     layout = m_layout,
-
     actions = {
       add_item_to_list = function(picker, item)
         --1. activate the preview if not
@@ -410,8 +426,8 @@ function F.open_markdown_links_picker()
 
       open_list= function(picker, item)
         picker:close()
-        for i, selected in ipairs(picker_items) do
-          open_item(selected)
+        for i, item in ipairs(picker_items) do
+          fn_item_handler(item)
         end
       end,
     },
@@ -447,7 +463,7 @@ function F.open_markdown_links_picker()
     end,
     confirm = function(picker, item)
       picker:close()
-      open_item(item)
+      fn_item_handler(item)
     end,
   })
 end
