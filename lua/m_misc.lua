@@ -5,13 +5,14 @@ return {
   {'nvim-tree/nvim-web-devicons'},
   -- {'metalelf0/jellybeans-nvim'},
   -- {"catppuccin/nvim", name = "catppuccin",
-  {"vague-theme/vague.nvim",
+  --"vague-theme/vague.nvim",
+  { "rebelot/kanagawa.nvim",
     config = function()
-      vim.cmd.colorscheme("vague")
+      vim.cmd.colorscheme("kanagawa-wave")
 
       -- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
       -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
-      vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
+      -- vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
       -- local border_color = "grey"
       -- local border_list = {
       --   "SnacksPickerInputBorder",
@@ -35,14 +36,9 @@ return {
 
       -- 2. Modify background (bg) colors for specific modes and sections
       -- Sections are structured as: theme.[mode].[section].[attribute]
-      --
-      --
-      --
-      --
       local hl = vim.api.nvim_get_hl(0, { name = "Normal" })
       local bg_dec = hl.bg
 
-      --
       -- get colorscheme bg color, then set it to the statusline.
       -- this blends the statusline and the bg
       if bg_dec then

@@ -277,6 +277,53 @@ local function picker_list_files(m_path)
   return items
 end
 
+local function open_item(item)
+  -- item must contain item.link and item.text
+  if not (item and item.link and item.text) then
+    vim.notify("Item elements are missing")
+    return
+  end
+  local cmd
+  if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
+    vim.ui.open(item.link) -- Open the link using your system's default handler
+    return
+  elseif  vim.endswith(item.link, ".applescript") then
+    cmd = {"osascript", vim.fn.expand( item.link )}
+  elseif  vim.endswith(item.text, ".zsh") then
+    cmd = {
+      'kitten',
+      '@',
+      '--to',
+      os.getenv("KITTY_LISTEN_ON"),
+      'launch',
+      '--type=tab',
+      'zsh',
+      '-f',
+      vim.fn.expand( item.link ),
+    }
+  elseif item.link == "edit" then
+    vim.cmd.edit(bookmark_file_path)
+    return
+  else
+    vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
+    return
+  end
+  if type(cmd) == "table" and next(cmd) ~= nil then
+    vim.system(cmd, { detach = true}, function(err)
+      if err and err.code ~= 0 then
+        vim.schedule(function()
+          vim.notify("Failed to run:" .. vim.inspect(err), vim.log.levels.ERROR)
+        end)
+      end
+    end)
+  end
+end
+
+local function update_picker_preview(buf, preview)
+  vim.bo[buf].modifiable = true
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, preview)
+end
+
 function F.open_markdown_links_picker()
   vim.cmd("fclose")
   local items = {} -- must be first line
@@ -305,50 +352,65 @@ function F.open_markdown_links_picker()
     return
   end
 
+  local picker_items = {}
   Snacks.picker.pick({
     source = "markdown_links",
     items = items,
     title = "Select Link to Open",
     format = "text", -- Display only the title in the list
     layout = m_layout,
-    confirm = function(picker, item)
-      picker:close()
-      if item and item.link then
-        local cmd
-        if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
-          vim.ui.open(item.link) -- Open the link using your system's default handler
-          return
-        elseif  vim.endswith(item.link, ".applescript") then
-          cmd = {"osascript", vim.fn.expand( item.link )}
-        elseif  vim.endswith(item.text, ".zsh") then
-          cmd = {
-            'kitten',
-            '@',
-            '--to',
-            os.getenv("KITTY_LISTEN_ON"),
-            'launch',
-            '--type=tab',
-            'zsh',
-            '-f',
-            vim.fn.expand( item.link ),
-          }
-        elseif item.link == "edit" then
-          vim.cmd.edit(bookmark_file_path)
-          return
-        else
-          vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
-          return
+
+    actions = {
+      add_item_to_list = function(picker, item)
+        --1. activate the preview if not
+        --2. add item to a picker_items in scope.
+        --3. refresh the preview buffer with the list
+        if picker.preview.win.enabled == false then
+          -- using hte key shortcut M-p to open the preview mendu
+          local keys = vim.api.nvim_replace_termcodes("<M-p>", true, false, true)
+          vim.api.nvim_feedkeys(keys, "m", false)
         end
-        if type(cmd) == "table" and next(cmd) ~= nil then
-          vim.system(cmd, { detach = true}, function(err)
-            if err and err.code ~= 0 then
-              vim.schedule(function()
-                vim.notify("Failed to run:" .. vim.inspect(err), vim.log.levels.ERROR)
-              end)
-            end
-          end)
+        table.insert(picker_items, {text = item.text, link = item.link})
+        if picker and picker.preview then
+          picker.preview:refresh(picker)
+        end
+      end,
+      open_list= function(picker, item)
+        picker:close()
+        for i, selected in ipairs(picker_items) do
+          open_item(selected)
+        end
+      end,
+    },
+    win = {
+      input = {
+        keys = {
+          ["<C-space>"] = { "add_item_to_list", mode = { "i", "n" } },
+          ["<C-Enter>"] = { "open_list", mode = { "i", "n" } },
+        },
+      },
+    },
+
+    preview = function(picker)
+      local preview = {
+        "Viewing Item:",
+        string.format("%s:%s", picker.item.text, picker.item.link)
+      }
+
+      if #picker_items>0 then
+        table.insert(preview,"")
+        table.insert(preview,"Multiple Executions with C-Enter:")
+        for i, selected in ipairs(picker_items) do
+          local item = string.format("%s %s : %s", i, selected.text, selected.link)
+          table.insert(preview, item)
         end
       end
+
+      update_picker_preview(picker.buf, preview)
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      open_item(item)
     end,
   })
 end
