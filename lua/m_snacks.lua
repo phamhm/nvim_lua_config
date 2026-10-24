@@ -61,7 +61,7 @@ local md_scratch_ops = function(md_name)
       mode = {"n", },
     }
     keys["link"] = {
-      "<C-l>",  function() M.md_create_link(true) end,
+      "<C-l>",  M.md_create_link,
       desc = "MD link",
       mode = {"n", },
     }
