@@ -357,30 +357,35 @@ end
 
 function F.generate_todo_picker()
   vim.cmd("fclose")
-  local items = F.process_md_link_file(vim.g.m_notes_path .. "/todo.md")
+  local file_path = vim.fn.expand(vim.g.m_notes_path .. "/todo.md")
+  local items = F.process_md_link_file(file_path)
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
     vim.notify("No todo item", vim.log.levels.WARN)
     return
   end
 
-  local fn_items_handler = function(bookmarks)
-    for _, bookmark in ipairs(bookmarks) do
-      open_md_link(bookmark)
-    end
-  end
+  local actions = {
+    picker_items = {}
+  }
 
-  local actions, keys = F.gen_default_picker_actions(fn_items_handler)
+  local actions, keys = F.gen_picker_actions(fn_items_handler, actions)
   F.m_picker(items, "Select TODO item(s)", actions, keys)
 end
 
 -- generate a keys and actions to handle multiple items.
 -- if you pass in anything that need access to the list, user must provide that object with the m_actions.
 -- otherwise, m_actions methods won't be able to access the same picker_items list from this scope
-function F.gen_default_picker_actions(fn_items_handler, m_actions, m_keys)
+function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
   if m_actions and not m_actions.picker_items then
     vim.notify("Passing in m_actions withou an picker_items", vim.log.levels.ERROR)
     return
+  end
+
+  local fn_items_handler = fn_items_handler or function(bookmarks)
+    for _, bookmark in ipairs(bookmarks) do
+      open_md_link(bookmark)
+    end
   end
 
   local keys ={
@@ -393,10 +398,13 @@ function F.gen_default_picker_actions(fn_items_handler, m_actions, m_keys)
   local picker_items = m_actions and m_actions.picker_items or {}
 
   local actions = {
-    picker_items = picker_items,
     open_list = function(picker, item)
-      picker:close()
-      fn_items_handler(picker_items)
+      if #picker_items>0 then
+        picker:close()
+        fn_items_handler(picker_items)
+      else
+        vim.notify("Empty List. No executation", vim.log.levels.ERROR)
+      end
     end,
 
     fn_confirm = function(picker, item)
@@ -505,13 +513,7 @@ function F.generate_bookmarks_picker()
     return
   end
 
-  local fn_items_handler = function(bookmarks)
-    for _, bookmark in ipairs(bookmarks) do
-      open_md_link(bookmark)
-    end
-  end
-
-  local actions, keys = F.gen_default_picker_actions(fn_items_handler)
+  local actions, keys = F.gen_picker_actions()
 
   F.m_picker(items, "Select Bookmark(s) to open",actions, keys)
 end
