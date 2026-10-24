@@ -289,7 +289,7 @@ local function open_item(item)
     return
   elseif  vim.endswith(item.link, ".applescript") then
     cmd = {"osascript", vim.fn.expand( item.link )}
-  elseif  vim.endswith(item.text, ".zsh") then
+  elseif  vim.endswith(item.link, ".zsh") then
     cmd = {
       'kitten',
       '@',
