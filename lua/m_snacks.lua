@@ -145,8 +145,6 @@ local m_snacks = {
           focus = 'list',
         },
 
-
-
         explorer = {
           auto_close = false,
           layout = {
@@ -175,11 +173,13 @@ local m_snacks = {
       win = {
         input = {
           keys = {
-            ["<C-t>"] = { "toggle_preview", mode = { "i", "n" } },
+            [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
+            ["<C-c>"] = { "close", mode = { "i", "n" } },
           }
         },
         list = {
           keys = {
+            ["<C-c>"] = { "close", mode = { "i", "n" } },
           }
         },
       },
@@ -223,9 +223,6 @@ local m_snacks = {
         -- relative = "editor",
         -- position = "center",
         row = vim.o.lines/2-10,
-        keys = {
-          ["<C-c>"] = { "close", mode = { "i", "n" } },
-        },
       },
     },
 

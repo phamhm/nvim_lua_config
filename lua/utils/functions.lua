@@ -281,21 +281,21 @@ end
 -- if applescript, call osascript to execute
 -- .zsh, then open a new kitty tab to execute the code there
 -- if text contains the word "edit" and the link is a readable file, then open it.
-local function open_item(item)
+local function open_bookmark(bookmark)
   -- item must contain item.link and item.text
-  if not (item and item.link and item.text) then
+  if not (bookmark and bookmark.link and bookmark.text) then
     vim.notify("Item elements are missing")
     return
   end
   local cmd
-  if type(item.link) == "function" then
-    item.link()
-  elseif vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
-    vim.ui.open(item.link) -- Open the link using your system's default handler
+  if type(bookmark.link) == "function" then
+    bookmark.link()
+  elseif vim.startswith(bookmark.link, "http") or vim.endswith(bookmark.link, ".rdp") then
+    vim.ui.open(bookmark.link) -- Open the link using your system's default handler
     return
-  elseif  vim.endswith(item.link, ".applescript") then
-    cmd = {"osascript", vim.fn.expand( item.link )}
-  elseif  vim.endswith(item.link, ".zsh") then
+  elseif  vim.endswith(bookmark.link, ".applescript") then
+    cmd = {"osascript", vim.fn.expand( bookmark.link )}
+  elseif  vim.endswith(bookmark.link, ".zsh") then
     cmd = {
       'kitten',
       '@',
@@ -305,14 +305,14 @@ local function open_item(item)
       '--type=tab',
       'zsh',
       '-f',
-      vim.fn.expand( item.link ),
+      vim.fn.expand( bookmark.link ),
     }
-  elseif string.find(item.text, "edit") and vim.fn.filereadable(vim.fn.expand(item.link)) == 1 then
-    local file_path = vim.fn.expand(item.link)
+  elseif string.find(bookmark.text, "edit") and vim.fn.filereadable(vim.fn.expand(bookmark.link)) == 1 then
+    local file_path = vim.fn.expand(bookmark.link)
     vim.cmd.edit(file_path)
     return
   else
-    vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
+    vim.notify("Unexpected format " .. bookmark.text .. ":" .. bookmark.link, vim.log.levels.ERROR)
     return
   end
   if type(cmd) == "table" and next(cmd) ~= nil then
@@ -361,25 +361,33 @@ function F.open_markdown_links_picker()
     vim.notify("No valid Markdown links found in the file", vim.log.levels.WARN)
     return
   end
-  F.m_picker(items)
+
+  F.m_picker(items, "Select Bookmark(s) to open", function(bookmarks)
+      for _, bookmark in ipairs(bookmarks) do
+        open_bookmark(bookmark)
+      end
+  end)
 end
 
 -- my custom Snacks.picker.pick for multiple selections
 -- User can do multiple selection, and executes all at once
 -- default fn_item_handler is the open_item function
-function F.m_picker(items, fn_item_handler)
+function F.m_picker(items, title, fn_items_handler)
   if not items or #items==0 then
     vim.notify("No item to pick")
     return
   end
 
-  fn_item_handler = fn_item_handler or open_item
+  if fn_items_handler==nil then
+    vim.notify("F.m_picker missing params")
+    return
+  end
 
   local picker_items = {}
   Snacks.picker.pick({
     source = "markdown_links",
     items = items,
-    title = "Select Link to Open",
+    title = title or "select to run",
     format = "text", -- Display only the title in the list
     layout = m_layout,
     actions = {
@@ -440,11 +448,9 @@ function F.m_picker(items, fn_item_handler)
         end
       end,
 
-      open_list= function(picker, item)
+      open_list = function(picker, item)
         picker:close()
-        for i, item in ipairs(picker_items) do
-          fn_item_handler(item)
-        end
+        fn_items_handler(picker_items)
       end,
     },
     win = {
@@ -480,7 +486,7 @@ function F.m_picker(items, fn_item_handler)
     end,
     confirm = function(picker, item)
       picker:close()
-      fn_item_handler(item)
+      fn_items_handler({item})
     end,
   })
 end
