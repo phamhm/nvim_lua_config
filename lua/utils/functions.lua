@@ -288,7 +288,9 @@ local function open_item(item)
     return
   end
   local cmd
-  if vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
+  if type(item.link) == "function" then
+    item.link()
+  elseif vim.startswith(item.link, "http") or vim.endswith(item.link, ".rdp") then
     vim.ui.open(item.link) -- Open the link using your system's default handler
     return
   elseif  vim.endswith(item.link, ".applescript") then
@@ -359,20 +361,19 @@ function F.open_markdown_links_picker()
     vim.notify("No valid Markdown links found in the file", vim.log.levels.WARN)
     return
   end
-  F.m_picker(items, open_item)
+  F.m_picker(items)
 end
 
 -- my custom Snacks.picker.pick for multiple selections
 -- User can do multiple selection, and executes all at once
+-- default fn_item_handler is the open_item function
 function F.m_picker(items, fn_item_handler)
   if not items or #items==0 then
     vim.notify("No item to pick")
     return
   end
-  if not fn_item_handler  then
-    vim.notify("m_picker needs a fn_item_handler function")
-    return
-  end
+
+  fn_item_handler = fn_item_handler or open_item
 
   local picker_items = {}
   Snacks.picker.pick({
@@ -387,9 +388,7 @@ function F.m_picker(items, fn_item_handler)
         --2. add item to a picker_items in scope.
         --3. refresh the preview buffer with the list
         if picker.preview.win.enabled == false then
-          -- using hte key shortcut M-p to open the preview mendu
-          local keys = vim.api.nvim_replace_termcodes("<M-p>", true, false, true)
-          vim.api.nvim_feedkeys(keys, "m", false)
+          picker:toggle("preview")
         end
         local dup_found = false
         for i, val in ipairs(picker_items) do
@@ -412,9 +411,7 @@ function F.m_picker(items, fn_item_handler)
         --2. remove item from picker_items in scope.
         --3. refresh the preview buffer with the list
         if picker.preview.win.enabled == false then
-          -- using hte key shortcut M-p to open the preview mendu
-          local keys = vim.api.nvim_replace_termcodes("<M-p>", true, false, true)
-          vim.api.nvim_feedkeys(keys, "m", false)
+          picker:toggle("preview")
         end
 
         for i, val in ipairs(picker_items) do
@@ -422,6 +419,21 @@ function F.m_picker(items, fn_item_handler)
             table.remove(picker_items, i)
           end
         end
+
+        if picker and picker.preview then
+          picker.preview:refresh(picker)
+        end
+      end,
+
+      clear_list = function(picker, item)
+        --1. activate the preview if not
+        --2. remove item from picker_items in scope.
+        --3. refresh the preview buffer with the list
+        if picker.preview.win.enabled == false then
+          picker:toggle("preview")
+        end
+
+        picker_items = {}
 
         if picker and picker.preview then
           picker.preview:refresh(picker)
@@ -440,6 +452,7 @@ function F.m_picker(items, fn_item_handler)
         keys = {
           ["<C-space>"] = { "add_item_to_list", mode = { "i", "n" } },
           ["<C-d>"] = { "rm_item_from_list", mode = { "i", "n" } },
+          ["<C-l>"] = { "clear_list", mode = { "i", "n" } },
           ["<C-Enter>"] = { "open_list", mode = { "i", "n" } },
         },
       },
@@ -447,11 +460,11 @@ function F.m_picker(items, fn_item_handler)
 
     preview = function(picker)
       local preview = {
-        "Viewing Item:",
-        string.format("%s:%s", picker.item.text, picker.item.link),
+        string.format("Action: %s", picker.item.link),
         "",
         "<C-space> to add an item",
         "<C-d> to remove an item",
+        "<C-l> clear the list",
         "<C-Enter> to open the added items",
       }
 

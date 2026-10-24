@@ -73,17 +73,19 @@ local function query(query_url)
 end
 
 map("n", "<leader>gy", function()
-  vim.ui.input( { prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
+  vim.ui.input( { icon=" ",prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
 end, {desc="query youtube"})
 
 local function google(prompt, default)
   vim.ui.input({
+    icon = "󰊭 ",
     prompt = prompt,
     default = default .. ' ',
   }, query("https://www.google.com/search?q="))
 end
 
-map("n", "<leader>gr", function()  google("Goog Reddit", "reddit") end, {desc="query youtube"})
+map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
+map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
 
 map({"n","v" }, "<leader>gg", function()
   local current_mode = vim.fn.mode(1)
@@ -93,7 +95,7 @@ map({"n","v" }, "<leader>gg", function()
     selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
   end
 
-  google("Google", selected_text)
+  google(" oogle", selected_text)
 end, {desc="googling google"})
 -- end googling, }
 
