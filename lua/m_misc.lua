@@ -63,10 +63,11 @@ return {
           lualine_c = {
             'location',
             {
-              function()
-                return F.set_title(true)
-              end
+              F.set_title,
             },
+            'diagnostics',
+            'branch',
+            'diff',
             {
               function()
                 if vim.g.m_todo ~="" then return MiniIcons.get("file", "TODO") .. " " .. vim.g.m_todo
@@ -88,9 +89,6 @@ return {
               end,
               color = { fg = '#ff9e64'},
             },
-            'diagnostics',
-            'branch',
-            'diff',
           },
           lualine_y = {
             function()

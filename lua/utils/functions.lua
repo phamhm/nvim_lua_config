@@ -514,9 +514,7 @@ local function prompt_and_run_lua(prompt, cmp_type)
 end
 
 
-function F.set_title(include_session)
-  include_session = include_session or false
-
+function F.set_title()
   local fname = vim.fn.expand('%:t')
   if not (fname and fname~="") then
     return "[no file]"
@@ -526,8 +524,8 @@ function F.set_title(include_session)
   fname = vim.fn.expand('%:p:h:t')..'/' .. fname
 
   local session = vim.trim(vim.v.this_session)
-  if include_session and session and session~="" then
-    session = ' ' .. vim.fs.basename(vim.v.this_session)
+  if session~="" then
+    session = vim.fs.basename(vim.v.this_session).."::"
   else
     session = ""
   end
@@ -535,7 +533,7 @@ function F.set_title(include_session)
   local readonly = vim.bo[0].readonly and " " or " "
   local modified = vim.bo[0].modified and " " or icon
 
-  return string.format("%s%s%s %s", readonly, modified, fname, session)
+  return string.format("%s%s%s %s", session, fname, readonly, modified )
 end
 
 return F

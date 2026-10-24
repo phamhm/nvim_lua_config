@@ -223,6 +223,9 @@ local m_snacks = {
         -- relative = "editor",
         -- position = "center",
         row = vim.o.lines/2-10,
+        keys = {
+          ["<C-c>"] = { "close", mode = { "i", "n" } },
+        }
       },
     },
 

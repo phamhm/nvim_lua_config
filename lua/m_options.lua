@@ -88,4 +88,4 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-_G.get_custom_title = function() return utils.set_title() end
+_G.get_custom_title = utils.set_title
