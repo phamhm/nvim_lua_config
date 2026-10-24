@@ -2,7 +2,7 @@
 local M = {}
 local date_time_format ='%Y-%m-%d %H:%M'
 
-local function get_time(current_line)
+function M.get_time(current_line)
   local capture_time = current_line:match('@c%(([^)]+)%)')
   local start_time = current_line:match('@s%(([^)]+)%)')
   local finished_time = current_line:match('@f%(([^)]+)%)')
@@ -36,7 +36,7 @@ function M.advance_todo_time()
     return
   end
 
-  local capture_time, start_time, finished_time = get_time(current_line)
+  local capture_time, start_time, finished_time = M.get_time(current_line)
   if capture_time == nil then
     vim.notify("There is no capture time", vim.log.levels.ERROR)
     return
@@ -130,22 +130,21 @@ function M.md_follow_link()
   end
 end
 
-function M.md_create_link()
-  local current_line = vim.api.nvim_get_current_line()
+function M.md_create_link(current_line)
+  -- local current_line = vim.api.nvim_get_current_line()
   local text, url = match_single_link(current_line)
   if text and url then
     vim.notify("Link exists. Can't create new one", vim.log.levels.WARN)
     return
   end
-  local m_str = current_line:match("%- %[ %] (.-)@c")
+  local m_str = current_line:match("%- (.-)@c")
   local uuid = vim.fn.system('uuidgen'):gsub('%s+', '')
   local new_file_name = string.format(vim.g.m_notes_path.."/todo_notes/%s.md", uuid)
-  local new_md_link = string.format(" [%s](%s) ", m_str, new_file_name)
+  local new_md_link = string.format("[%s](%s)", m_str, new_file_name)
 
-  local updated_line = current_line:gsub("(%- %[ %] ).- (@c)", "%1" .. new_md_link .. "%2")
-  if create_file(new_file_name, m_str) then
-    vim.api.nvim_set_current_line(updated_line)
-  end
+  local updated_line = current_line:gsub(".- (@c)", new_md_link .. "%1")
+  create_file(new_file_name, m_str)
+  return updated_line
 end
 
 function M.set_todo()

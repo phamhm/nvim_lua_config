@@ -11,17 +11,14 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local md_scratch_ops = function(md_name)
-  local keys = { }
-
-  if md_name == "capture_notes.md" then
-    keys["todo"] = {
-      "<C-m>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.todo_line_check) end,
+  local keys = {
+    ["todo"] = {
+      "<C-m>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.md_create_link) end,
       desc = "Move to Todo",
       mode = {"n"},
-    }
-
-    keys["discard"] = {
-      alt_key("<C-%s-D>"), function()
+    },
+    ["discard"] = {
+      ("<C-D>"), function()
 
         local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
         if choice ~= 1 then
@@ -31,47 +28,50 @@ local md_scratch_ops = function(md_name)
         F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
       desc = "Discard",
       mode = {"n", },
-    }
-  elseif md_name == "TODO.md" then
-    keys["discard"] = {
-      "<C-d>", function()
-        local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
-        if choice ~= 1 then
-          return
-        end
+    },
+  }
 
-        F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md")
-      end,
-      desc = "Discard",
-      mode = {"n", },
-    }
-
-    keys["advance"] = {
-      "<C-a>", M.advance_todo_time,
-      desc = "Adv time",
-      mode = {"n"},
-    }
-
-    keys["archive"] = {
-      "<C-c>", function()
-        vim.g.m_todo=""
-        F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md")
-      end,
-      desc = "Save Complete",
-      mode = {"n", },
-    }
-    keys["link"] = {
-      "<C-l>",  M.md_create_link,
-      desc = "MD link",
-      mode = {"n", },
-    }
-
-    keys["doit"] = {
-      "<C-s>",  M.set_todo,
-      desc = "Set statusline",
-      mode = {"n", },
-    }
-  end
+  -- if md_name == "capture_notes.md" then
+  -- elseif md_name == "TODO.md" then
+  --   keys["discard"] = {
+  --     "<C-d>", function()
+  --       local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
+  --       if choice ~= 1 then
+  --         return
+  --       end
+  --
+  --       F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md")
+  --     end,
+  --     desc = "Discard",
+  --     mode = {"n", },
+  --   }
+  --
+  --   keys["advance"] = {
+  --     "<C-a>", M.advance_todo_time,
+  --     desc = "Adv time",
+  --     mode = {"n"},
+  --   }
+  --
+  --   keys["archive"] = {
+  --     "<C-c>", function()
+  --       vim.g.m_todo=""
+  --       F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md")
+  --     end,
+  --     desc = "Save Complete",
+  --     mode = {"n", },
+  --   }
+  --   keys["link"] = {
+  --     "<C-l>",  M.md_create_link,
+  --     desc = "MD link",
+  --     mode = {"n", },
+  --   }
+  --
+  --   keys["doit"] = {
+  --     "<C-s>",  M.set_todo,
+  --     desc = "Set statusline",
+  --     mode = {"n", },
+  --   }
+  -- end
 
   return {
     file = vim.fn.expand(vim.g.m_notes_path .. "/" .. md_name),
@@ -374,13 +374,7 @@ local m_snacks = {
       end,
       desc="snack scrach reminder notes"
     },
-    {
-      "<C-`>", function()
-        Snacks.scratch(md_scratch_ops("TODO.md"))
-      end,
-      desc="snack scrach todo notes"
-    },
-
+    { "<C-`>", F.generate_todo_picker, desc="snack picker todo notes" },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     {
       "<leader>q",
@@ -398,7 +392,7 @@ local m_snacks = {
     { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
-    { "<leader>`", function() F.open_markdown_links_picker() end, desc = "Open Link Picker" }
+    { "<leader>`",  F.generate_bookmarks_picker, desc = "Open Link Picker" }
   },
   init = function()
     -- 6. Create a user command or keymap to run it

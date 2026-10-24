@@ -1,3 +1,4 @@
+local M = require('markdowns')
 local F = {}
 
 local custom_key_maps = {}
@@ -281,21 +282,22 @@ end
 -- if applescript, call osascript to execute
 -- .zsh, then open a new kitty tab to execute the code there
 -- if text contains the word "edit" and the link is a readable file, then open it.
-local function open_bookmark(bookmark)
+local function open_md_link(md_link_item)
   -- item must contain item.link and item.text
-  if not (bookmark and bookmark.link and bookmark.text) then
+  if not (md_link_item and md_link_item.link and md_link_item.text) then
     vim.notify("Item elements are missing")
     return
   end
+
   local cmd
-  if type(bookmark.link) == "function" then
-    bookmark.link()
-  elseif vim.startswith(bookmark.link, "http") or vim.endswith(bookmark.link, ".rdp") then
-    vim.ui.open(bookmark.link) -- Open the link using your system's default handler
+  if type(md_link_item.link) == "function" then
+    md_link_item.link()
+  elseif vim.startswith(md_link_item.link, "http") or vim.endswith(md_link_item.link, ".rdp") then
+    vim.ui.open(md_link_item.link) -- Open the link using your system's default handler
     return
-  elseif  vim.endswith(bookmark.link, ".applescript") then
-    cmd = {"osascript", vim.fn.expand( bookmark.link )}
-  elseif  vim.endswith(bookmark.link, ".zsh") then
+  elseif  vim.endswith(md_link_item.link, ".applescript") then
+    cmd = {"osascript", vim.fn.expand( md_link_item.link )}
+  elseif  vim.endswith(md_link_item.link, ".zsh") then
     cmd = {
       'kitten',
       '@',
@@ -305,14 +307,14 @@ local function open_bookmark(bookmark)
       '--type=tab',
       'zsh',
       '-f',
-      vim.fn.expand( bookmark.link ),
+      vim.fn.expand( md_link_item.link ),
     }
-  elseif string.find(bookmark.text, "edit") and vim.fn.filereadable(vim.fn.expand(bookmark.link)) == 1 then
-    local file_path = vim.fn.expand(bookmark.link)
+  elseif vim.fn.filereadable(vim.fn.expand(md_link_item.link)) == 1 then
+    local file_path = vim.fn.expand(md_link_item.link)
     vim.cmd.edit(file_path)
     return
   else
-    vim.notify("Unexpected format " .. bookmark.text .. ":" .. bookmark.link, vim.log.levels.ERROR)
+    vim.notify("Unexpected format " .. md_link_item.text .. ":" .. md_link_item.link, vim.log.levels.ERROR)
     return
   end
   if type(cmd) == "table" and next(cmd) ~= nil then
@@ -331,15 +333,11 @@ local function update_picker_preview(buf, preview)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, preview)
 end
 
--- this function will read from the notes/bookmarkds.md
--- AND the scripts in Documents/scripts
--- build a list of {text, link}
-function F.open_markdown_links_picker()
-  vim.cmd("fclose")
+function F.process_md_link_file(filepath)
   local items = {} -- must be first line
 
   -- 1. Define the path to your file
-  local bookmark_file_path = vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md") -- Change this to your file path
+  local bookmark_file_path = vim.fn.expand(filepath) -- Change this to your file path
   -- 2. Read lines from the file
   local lines = vim.fn.readfile(bookmark_file_path)
 
@@ -350,130 +348,69 @@ function F.open_markdown_links_picker()
       table.insert(items, {
         text = vim.trim(title),    -- What shows up and is searchable in the picker
         link = vim.trim(link),     -- Store the URL to use on confirmation
+        raw  = line
       })
     end
   end
-
-  vim.list_extend(items, picker_list_files(vim.g.m_scripts))
-
-  -- 4. Open the Snacks picker if we found any links
-  if #items == 0 then
-    vim.notify("No valid Markdown links found in the file", vim.log.levels.WARN)
-    return
-  end
-
-  F.m_picker(items, "Select Bookmark(s) to open", function(bookmarks)
-      for _, bookmark in ipairs(bookmarks) do
-        open_bookmark(bookmark)
-      end
-  end)
+  return items
 end
 
--- my custom Snacks.picker.pick for multiple selections
--- User can do multiple selection, and executes all at once
--- default fn_item_handler is the open_item function
-function F.m_picker(items, title, fn_items_handler)
-  if not items or #items==0 then
-    vim.notify("No item to pick")
+function F.generate_todo_picker()
+  vim.cmd("fclose")
+  local items = F.process_md_link_file(vim.g.m_notes_path .. "/todo.md")
+  -- 4. Open the Snacks picker if we found any links
+  if #items == 0 then
+    vim.notify("No todo item", vim.log.levels.WARN)
     return
   end
 
-  if fn_items_handler==nil then
-    vim.notify("F.m_picker missing params")
+  local fn_items_handler = function(bookmarks)
+    for _, bookmark in ipairs(bookmarks) do
+      open_md_link(bookmark)
+    end
+  end
+
+  local actions, keys = F.gen_default_picker_actions(fn_items_handler)
+  F.m_picker(items, "Select TODO item(s)", actions, keys)
+end
+
+-- generate a keys and actions to handle multiple items.
+-- if you pass in anything that need access to the list, user must provide that object with the m_actions.
+-- otherwise, m_actions methods won't be able to access the same picker_items list from this scope
+function F.gen_default_picker_actions(fn_items_handler, m_actions, m_keys)
+  if m_actions and not m_actions.picker_items then
+    vim.notify("Passing in m_actions withou an picker_items", vim.log.levels.ERROR)
     return
   end
 
-  local picker_items = {}
-  Snacks.picker.pick({
-    source = "markdown_links",
-    items = items,
-    title = title or "select to run",
-    format = "text", -- Display only the title in the list
-    layout = m_layout,
-    actions = {
-      add_item_to_list = function(picker, item)
-        --1. activate the preview if not
-        --2. add item to a picker_items in scope.
-        --3. refresh the preview buffer with the list
-        if picker.preview.win.enabled == false then
-          picker:toggle("preview")
-        end
-        local dup_found = false
-        for i, val in ipairs(picker_items) do
-          if val.text == item.text and val.link == item.link then
-            dup_found=true
-          end
-        end
+  local keys ={
+    ["<C-d>"]     = { "rm_item_from_list", mode = { "i", "n" } },
+    ["<C-l>"]     = { "clear_list", mode        = { "i", "n" } },
+    ["<C-space>"] = { "add_item_to_list", mode  = { "i", "n" } },
+    ["<C-Enter>"] = { "open_list", mode         = { "i", "n" } },
+  }
 
-        if not dup_found then
-          table.insert(picker_items, {text = item.text, link = item.link})
-        end
+  local picker_items = m_actions and m_actions.picker_items or {}
 
-        if picker and picker.preview then
-          picker.preview:refresh(picker)
-        end
-      end,
+  local actions = {
+    picker_items = picker_items,
+    open_list = function(picker, item)
+      picker:close()
+      fn_items_handler(picker_items)
+    end,
 
-      rm_item_from_list = function(picker, item)
-        --1. activate the preview if not
-        --2. remove item from picker_items in scope.
-        --3. refresh the preview buffer with the list
-        if picker.preview.win.enabled == false then
-          picker:toggle("preview")
-        end
+    fn_confirm = function(picker, item)
+      picker:close()
+      fn_items_handler({item})
+    end,
 
-        for i, val in ipairs(picker_items) do
-          if val.text == item.text and val.link == item.link then
-            table.remove(picker_items, i)
-          end
-        end
-
-        if picker and picker.preview then
-          picker.preview:refresh(picker)
-        end
-      end,
-
-      clear_list = function(picker, item)
-        --1. activate the preview if not
-        --2. remove item from picker_items in scope.
-        --3. refresh the preview buffer with the list
-        if picker.preview.win.enabled == false then
-          picker:toggle("preview")
-        end
-
-        picker_items = {}
-
-        if picker and picker.preview then
-          picker.preview:refresh(picker)
-        end
-      end,
-
-      open_list = function(picker, item)
-        picker:close()
-        fn_items_handler(picker_items)
-      end,
-    },
-    win = {
-      input = {
-        keys = {
-          ["<C-space>"] = { "add_item_to_list", mode = { "i", "n" } },
-          ["<C-d>"] = { "rm_item_from_list", mode = { "i", "n" } },
-          ["<C-l>"] = { "clear_list", mode = { "i", "n" } },
-          ["<C-Enter>"] = { "open_list", mode = { "i", "n" } },
-        },
-      },
-    },
-
-    preview = function(picker)
+    fn_preview = function(picker)
       local preview = {
         string.format("Action: %s", picker.item.link),
         "",
-        "<C-space> to add an item",
-        "<C-d> to remove an item",
-        "<C-l> clear the list",
-        "<C-Enter> to open the added items",
+        "<C-d> remove <C-l> clear",
+        "<C-space> add <C-Enter> execute"
       }
-
       if #picker_items>0 then
         table.insert(preview,"")
         for i, selected in ipairs(picker_items) do
@@ -484,10 +421,131 @@ function F.m_picker(items, title, fn_items_handler)
 
       update_picker_preview(picker.buf, preview)
     end,
-    confirm = function(picker, item)
-      picker:close()
-      fn_items_handler({item})
+
+    add_item_to_list = function(picker, item)
+      --1. activate the preview if not
+      --2. add item to a picker_items in scope.
+      --3. refresh the preview buffer with the list
+      if picker.preview.win.enabled == false then
+        picker:toggle("preview")
+      end
+      local dup_found = false
+      for i, val in ipairs(picker_items) do
+        if val.text == item.text and val.link == item.link then
+          dup_found=true
+        end
+      end
+
+      if not dup_found then
+        table.insert(picker_items, item)
+      end
+
+      if picker and picker.preview then
+        picker.preview:refresh(picker)
+      end
     end,
+
+    rm_item_from_list = function(picker, item)
+      --1. activate the preview if not
+      --2. remove item from picker_items in scope.
+      --3. refresh the preview buffer with the list
+      if picker.preview.win.enabled == false then
+        picker:toggle("preview")
+      end
+
+      for i, val in ipairs(picker_items) do
+        if val.idx == item.idx then
+          table.remove(picker_items, i)
+        end
+      end
+
+      if picker and picker.preview then
+        picker.preview:refresh(picker)
+      end
+    end,
+
+    clear_list = function(picker, item)
+      --1. activate the preview if not
+      --2. remove item from picker_items in scope.
+      --3. refresh the preview buffer with the list
+      if picker.preview.win.enabled == false then
+        picker:toggle("preview")
+      end
+
+      picker_items = {}
+
+      if picker and picker.preview then
+        picker.preview:refresh(picker)
+      end
+    end,
+
+  }
+  if m_actions then
+    actions = vim.tbl_deep_extend("force", actions, m_actions)
+  end
+  if m_keys then
+    keys = vim.tbl_deep_extend("force", keys, m_keys)
+  end
+
+  return actions, keys
+end
+
+-- this function will read from the notes/bookmarkds.md
+-- AND the scripts in Documents/scripts
+-- build a list of {text, link}
+function F.generate_bookmarks_picker()
+  vim.cmd("fclose")
+  local items = F.process_md_link_file(vim.g.m_notes_path .. "/bookmarks.md")
+
+  vim.list_extend(items, picker_list_files(vim.g.m_scripts))
+
+  -- 4. Open the Snacks picker if we found any links
+  if #items == 0 then
+    vim.notify("No valid Markdown links found in the file", vim.log.levels.WARN)
+    return
+  end
+
+  local fn_items_handler = function(bookmarks)
+    for _, bookmark in ipairs(bookmarks) do
+      open_md_link(bookmark)
+    end
+  end
+
+  local actions, keys = F.gen_default_picker_actions(fn_items_handler)
+
+  F.m_picker(items, "Select Bookmark(s) to open",actions, keys)
+end
+
+
+
+-- my custom Snacks.picker.pick for multiple selections
+-- User can do multiple selection, and executes all at once
+-- default fn_item_handler is the open_item function
+function F.m_picker(items, title, actions, keys)
+  if not actions then
+    vim.notify("No actions for picker", vim.log.levels.ERROR)
+    return
+  end
+
+  if not items or #items==0 then
+    vim.notify("No item to pick")
+    return
+  end
+
+  Snacks.picker.pick({
+    source = "markdown_links",
+    items = items,
+    title = title or "select to run",
+    format = "text", -- Display only the title in the list
+    layout = m_layout,
+    actions = actions,
+    win = {
+      input = {
+        keys = keys,
+      },
+    },
+    preview = actions.fn_preview,
+    confirm = actions.fn_confirm,
   })
 end
 
