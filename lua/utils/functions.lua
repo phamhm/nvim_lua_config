@@ -277,6 +277,10 @@ local function picker_list_files(m_path)
   return items
 end
 
+-- if item is an .com, then open it.
+-- if applescript, call osascript to execute
+-- .zsh, then open a new kitty tab to execute the code there
+-- if text contains the word "edit" and the link is a readable file, then open it.
 local function open_item(item)
   -- item must contain item.link and item.text
   if not (item and item.link and item.text) then

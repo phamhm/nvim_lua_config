@@ -1,8 +1,5 @@
 local F = require("utils.functions")
 local M = require("utils.markdowns")
-local move_lines_select_file = F.move_lines_select_file
-local menu_commands = F.menu_commands
-local open_markdown_links_picker = F.open_markdown_links_picker
 local alt_key = F.format_os_altkey
 
 -- disable autocompletion in the windows. will work on vim.ui.open
@@ -308,7 +305,7 @@ local m_snacks = {
     { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
     {"<leader>mc",
       function()
-        menu_commands({
+        F.menu_commands({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },
           { text = "Log", fn = function() Snacks.picker.git_log() end },
           { text = "Log Line", fn = function() Snacks.picker.git_log_line() end },
@@ -401,7 +398,7 @@ local m_snacks = {
     { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
-    { "<leader>`", function() open_markdown_links_picker() end, desc = "Open Link Picker" }
+    { "<leader>`", function() F.open_markdown_links_picker() end, desc = "Open Link Picker" }
   },
   init = function()
     -- 6. Create a user command or keymap to run it
