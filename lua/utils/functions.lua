@@ -301,8 +301,9 @@ local function open_item(item)
       '-f',
       vim.fn.expand( item.link ),
     }
-  elseif item.link == "edit" then
-    vim.cmd.edit(bookmark_file_path)
+  elseif string.find(item.text, "edit") and vim.fn.filereadable(vim.fn.expand(item.link)) == 1 then
+    local file_path = vim.fn.expand(item.link)
+    vim.cmd.edit(file_path)
     return
   else
     vim.notify("Unexpected format " .. item.text .. ":" .. item.link, vim.log.levels.ERROR)
@@ -370,11 +371,43 @@ function F.open_markdown_links_picker()
           local keys = vim.api.nvim_replace_termcodes("<M-p>", true, false, true)
           vim.api.nvim_feedkeys(keys, "m", false)
         end
-        table.insert(picker_items, {text = item.text, link = item.link})
+        local dup_found = false
+        for i, val in ipairs(picker_items) do
+          if val.text == item.text and val.link == item.link then
+            dup_found=true
+          end
+        end
+
+        if not dup_found then
+          table.insert(picker_items, {text = item.text, link = item.link})
+        end
+
         if picker and picker.preview then
           picker.preview:refresh(picker)
         end
       end,
+
+      rm_item_from_list = function(picker, item)
+        --1. activate the preview if not
+        --2. remove item from picker_items in scope.
+        --3. refresh the preview buffer with the list
+        if picker.preview.win.enabled == false then
+          -- using hte key shortcut M-p to open the preview mendu
+          local keys = vim.api.nvim_replace_termcodes("<M-p>", true, false, true)
+          vim.api.nvim_feedkeys(keys, "m", false)
+        end
+
+        for i, val in ipairs(picker_items) do
+          if val.text == item.text and val.link == item.link then
+            table.remove(picker_items, i)
+          end
+        end
+
+        if picker and picker.preview then
+          picker.preview:refresh(picker)
+        end
+      end,
+
       open_list= function(picker, item)
         picker:close()
         for i, selected in ipairs(picker_items) do
@@ -386,6 +419,7 @@ function F.open_markdown_links_picker()
       input = {
         keys = {
           ["<C-space>"] = { "add_item_to_list", mode = { "i", "n" } },
+          ["<C-d>"] = { "rm_item_from_list", mode = { "i", "n" } },
           ["<C-Enter>"] = { "open_list", mode = { "i", "n" } },
         },
       },
@@ -394,12 +428,15 @@ function F.open_markdown_links_picker()
     preview = function(picker)
       local preview = {
         "Viewing Item:",
-        string.format("%s:%s", picker.item.text, picker.item.link)
+        string.format("%s:%s", picker.item.text, picker.item.link),
+        "",
+        "<C-space> to add an item",
+        "<C-d> to remove an item",
+        "<C-Enter> to open the added items",
       }
 
       if #picker_items>0 then
         table.insert(preview,"")
-        table.insert(preview,"Multiple Executions with C-Enter:")
         for i, selected in ipairs(picker_items) do
           local item = string.format("%s %s : %s", i, selected.text, selected.link)
           table.insert(preview, item)
