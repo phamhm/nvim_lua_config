@@ -1,4 +1,4 @@
-local utils = require("utils.functions")
+local F = require("utils.functions")
 
 local options = {
   backup         = false,                          -- creates a backup file
@@ -88,4 +88,4 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-_G.get_custom_title = utils.set_title
+_G.get_custom_title = F.set_title

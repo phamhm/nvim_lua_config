@@ -29,42 +29,33 @@ local function calc_time(m_date1, m_date2)
   return format_duration(t2 - t1)
 end
 
-function M.advance_todo_time()
-  local current_line = vim.api.nvim_get_current_line()
-  if M.todo_line_check(current_line) == "" then
-    vim.notify("Not a well-formed todo line", vim.log.levels.ERROR)
-    return
-  end
-
+function M.advance_todo_time(current_line)
   local capture_time, start_time, finished_time = M.get_time(current_line)
+
   if capture_time == nil then
     vim.notify("There is no capture time", vim.log.levels.ERROR)
-    return
+    return ""
   elseif start_time == nil then
-    local new_line = string.format("%s @s(%s)",current_line, os.date(date_time_format))
-    vim.api.nvim_set_current_line(new_line)
-    return
+    return string.format("%s @s(%s)",current_line, os.date(date_time_format))
   elseif finished_time == nil then
     finished_time = os.date(date_time_format)
     local elapsed_time = calc_time(start_time, finished_time)
-    current_line = current_line:gsub("^%- %[ %]", "- [] ")
+    current_line = current_line:gsub("^", "[] ")
 
     local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
-    vim.api.nvim_set_current_line(new_line)
     vim.g.m_todo=""
-    return
+    return new_line
   else
     vim.notify("Task is DONE")
+    return current_line
   end
 end
 
 function M.todo_line_check(todo_line)
-  vim.notify("forattming todo line:"..todo_line)
-  todo_line = vim.trim(todo_line)
-  if string.match(todo_line, "^%-.*@c") then
-    return todo_line:gsub("^%-", "- [ ]")
+  if string.match(vim.trim(todo_line), "^%-.*@c") then
+    return true
   else
-    return ""
+    return false
   end
 end
 
@@ -132,7 +123,7 @@ end
 
 function M.md_create_link(current_line)
   -- local current_line = vim.api.nvim_get_current_line()
-  local text, url = match_single_link(current_line)
+  local text, url = match_single_link(current_line, true)
   if text and url then
     vim.notify("Link exists. Can't create new one", vim.log.levels.WARN)
     return
@@ -142,7 +133,7 @@ function M.md_create_link(current_line)
   local new_file_name = string.format(vim.g.m_notes_path.."/todo_notes/%s.md", uuid)
   local new_md_link = string.format("[%s](%s)", m_str, new_file_name)
 
-  local updated_line = current_line:gsub(".- (@c)", new_md_link .. "%1")
+  local updated_line = current_line:gsub(".- (@c)", new_md_link .. " %1")
   create_file(new_file_name, m_str)
   return updated_line
 end

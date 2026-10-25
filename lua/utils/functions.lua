@@ -1,4 +1,5 @@
--- local M = require('markdowns')
+local M = require('utils.markdowns')
+
 local F = {}
 
 local custom_key_maps = {}
@@ -60,7 +61,6 @@ function F.move_lines_select_file()
     d_pos = v_pos
     v_pos = tmp
   end
-
 
   local _, start_row,_, _ = unpack(v_pos)
   local _, end_row, _, _ = unpack(d_pos)
@@ -134,6 +134,21 @@ function F.move_line_to_file(target_path, l_formatter)
   vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
 end
 
+local function append_line_to_file(line, file_path)
+  file_path = vim.fn.expand(file_path)
+  -- Open the file in append mode
+  local file = io.open(file_path, "a")
+
+  if file then
+    -- Write the line followed by a newline character
+    file:write(line .. "\n")
+    -- Always close the file to flush changes and free system resources
+    file:close()
+  else
+    error("Could not open file: " .. filepath)
+  end
+end
+
 function F.bookmark_line(target_path)
   -- 1. Expand the target path (handles ~ or relative paths safely)
   local expanded_path = vim.fn.expand(target_path)
@@ -145,7 +160,7 @@ function F.bookmark_line(target_path)
   local bracket_match, paren_match = string.match(current_line_content, pattern)
 
   if not (bracket_match and paren_match) then
-    vim.notify("No Markdown link found on this line.", vim.log.levels.WARN)
+    -- vim.notify("No Markdown link found on this line.", vim.log.levels.WARN)
     return
   end
 
@@ -355,9 +370,59 @@ function F.process_md_link_file(filepath)
   return items
 end
 
+local function replace_line_in_file(filepath, old_line, new_line)
+  -- 1. Open the file in read mode
+  --
+  filepath = vim.fn.expand(filepath)
+  local file = io.open(filepath, "r")
+  if not file then
+    error("Could not open file for reading: " .. filepath)
+  end
+
+  -- 2. Read all lines into a table
+  local lines = {}
+  for line in file:lines() do
+    if line == old_line then
+      if new_line ~= nil then
+        table.insert(lines, new_line)
+      end
+    else
+      table.insert(lines, line)
+    end
+  end
+  file:close()
+
+  -- 3. Open the file in write mode to overwrite it with the modified content
+  file = io.open(filepath, "w")
+  if not file then
+    error("Could not open file for writing: " .. filepath)
+  end
+
+  -- 4. Write the lines back to the file
+  for _, line in ipairs(lines) do
+    file:write(line .. "\n")
+  end
+  file:close()
+
+  return true
+end
+
+function F.set_status(msg)
+  vim.g.global_status = msg
+end
+
+function F.clear_status()
+  vim.g.global_status = ""
+end
+
+local function _discard(file_path, current_line)
+  replace_line_in_file(file_path, current_line, nil)
+  append_line_to_file(current_line, vim.g.m_notes_path .. "/archive/discarded_ideas.md")
+end
+
 function F.generate_todo_picker()
   vim.cmd("fclose")
-  local file_path = vim.fn.expand(vim.g.m_notes_path .. "/todo.md")
+  local file_path = vim.g.m_notes_path .. "/TODO.md"
   local items = F.process_md_link_file(file_path)
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
@@ -365,11 +430,77 @@ function F.generate_todo_picker()
     return
   end
 
-  local actions = {
-    picker_items = {}
+  local picker_items = {}
+  local m_actions = {
+    picker_items = picker_items,
+    advance_time = function(picker, item)
+      local current_line = item.raw
+      local new_line = M.advance_todo_time(current_line)
+      local _, s_time, f_time = M.get_time(new_line)
+      if s_time and not f_time then
+        F.set_status("Todo:" .. item.text)
+        replace_line_in_file(file_path, current_line, new_line)
+      elseif f_time then
+        replace_line_in_file(file_path, current_line, nil)
+        append_line_to_file(new_line, vim.g.m_notes_path .. "/archive/done_tasks.md")
+      end
+      picker:close()
+    end,
+    discard_task = function(picker, item)
+      if #picker_items>0 then
+        local choices = { 'Multiple', 'Selected', 'Cancel' }
+        vim.ui.select(choices, {
+          prompt = 'Discard Multiples or Selected Item',
+        }, function(choice)
+            if choice == 'Multiple' then
+              for i, item in ipairs(picker_items) do
+                vim.notify("Discarded:" .. item.text)
+                _discard(file_path, item.raw)
+              end
+              picker:close()
+            elseif choice == 'Selected' then
+              vim.notify("Discarded:" .. item.text)
+              _discard(file_path, item.raw)
+              picker:close()
+            else
+              vim.notify("Discard Cancelled!")
+            end
+          end)
+      else
+        vim.notify("Discarded:" .. item.text)
+        _discard(file_path, item.raw)
+        picker:close()
+      end
+    end,
+    fn_preview = function(picker)
+      local preview = {
+        string.format("TODO: %s", picker.item.text),
+        "",
+      }
+      if #picker_items>0 then
+        table.insert(preview,"")
+        table.insert(preview,"Selected to open:")
+        for i, selected in ipairs(picker_items) do
+          local item = string.format("%s %s : %s", i, selected.text, selected.link)
+          table.insert(preview, item)
+        end
+      end
+
+      table.insert(preview,"")
+      table.insert(preview,"Content of current todo:")
+      local lines = vim.fn.readfile(vim.fn.expand(picker.item.link))
+      vim.list_extend(preview, lines)
+
+      update_picker_preview(picker.buf, preview)
+    end,
   }
 
-  local actions, keys = F.gen_picker_actions(fn_items_handler, actions)
+  local m_keys = {
+    ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
+    ["<C-d>"] = { "discard_task", mode = {"i", "n"}},
+  }
+
+  local actions, keys = F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
   F.m_picker(items, "Select TODO item(s)", actions, keys)
 end
 
@@ -389,7 +520,7 @@ function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
   end
 
   local keys ={
-    ["<C-d>"]     = { "rm_item_from_list", mode = { "i", "n" } },
+    ["<C-r>"]     = { "rm_item_from_list", mode = { "i", "n" } },
     ["<C-l>"]     = { "clear_list", mode        = { "i", "n" } },
     ["<C-space>"] = { "add_item_to_list", mode  = { "i", "n" } },
     ["<C-Enter>"] = { "open_list", mode         = { "i", "n" } },
