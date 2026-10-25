@@ -6,6 +6,34 @@ return {
   -- {'metalelf0/jellybeans-nvim'},
   -- {"catppuccin/nvim", name = "catppuccin",
   -- { "rebelot/kanagawa.nvim",
+  {
+    "nendix/zen.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("zen").setup({
+        variant = "dark",     -- "dark", "light", or "auto" (follows vim.o.background)
+        undercurl = true,
+        transparent = false,
+        dimInactive = false,
+        terminalColors = true,
+        commentStyle = { italic = false },
+        functionStyle = {},
+        keywordStyle = { italic = false },
+        statementStyle = {},
+        typeStyle = {},
+        compile = false,
+        colors = {
+          palette = {},  -- override palette colors
+          theme = {},    -- override theme colors
+        },
+        overrides = function(colors)
+          return {}
+        end,
+      })
+
+    end
+  },
   {"vague-theme/vague.nvim",
     config = function()
 
@@ -17,7 +45,7 @@ return {
 
       -- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
       -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
-      vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
+      -- vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
       -- local border_color = "grey"
       -- local border_list = {
       --   "SnacksPickerInputBorder",

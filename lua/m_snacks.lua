@@ -31,48 +31,6 @@ local md_scratch_ops = function(md_name)
     },
   }
 
-  -- if md_name == "capture_notes.md" then
-  -- elseif md_name == "TODO.md" then
-  --   keys["discard"] = {
-  --     "<C-d>", function()
-  --       local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
-  --       if choice ~= 1 then
-  --         return
-  --       end
-  --
-  --       F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md")
-  --     end,
-  --     desc = "Discard",
-  --     mode = {"n", },
-  --   }
-  --
-  --   keys["advance"] = {
-  --     "<C-a>", M.advance_todo_time,
-  --     desc = "Adv time",
-  --     mode = {"n"},
-  --   }
-  --
-  --   keys["archive"] = {
-  --     "<C-c>", function()
-  --       vim.g.m_todo=""
-  --       F.move_line_to_file(vim.g.m_notes_path .. "/archive/done_tasks.md")
-  --     end,
-  --     desc = "Save Complete",
-  --     mode = {"n", },
-  --   }
-  --   keys["link"] = {
-  --     "<C-l>",  M.md_create_link,
-  --     desc = "MD link",
-  --     mode = {"n", },
-  --   }
-  --
-  --   keys["doit"] = {
-  --     "<C-s>",  M.set_todo,
-  --     desc = "Set statusline",
-  --     mode = {"n", },
-  --   }
-  -- end
-
   return {
     file = vim.fn.expand(vim.g.m_notes_path .. "/" .. md_name),
     enter = true,

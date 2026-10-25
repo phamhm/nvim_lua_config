@@ -582,6 +582,8 @@ function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
     end
   end
 
+  -- keep this empty for now.
+  -- not deleting in case I want to have a default keys in the future
   local keys ={}
 
   local actions = {
