@@ -282,7 +282,6 @@ local m_snacks = {
           { text = "Projects", fn = function() Snacks.picker.projects() end },
           { text = "Rename File", fn = function() Snacks.rename.rename_file() end },
           { text = "Buffer Lines" , fn = function() Snacks.picker.grep() end},
-          { text = "Grep Open Buffers" , fn = function() Snacks.picker.grep_buffers() end},
           { text = "Visual selection or word", fn = function() Snacks.picker.grep_word() end, },
           { text = "Search History" , fn = function() Snacks.picker.search_history() end},
           { text = "Autocmds" , fn = function() Snacks.picker.autocmds() end},
@@ -301,8 +300,9 @@ local m_snacks = {
         },"Snacks menu" )
       end
     },
-    -- search
+    -- seabch
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
+    { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
     -- search
     -- { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
     { '<leader>r', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
