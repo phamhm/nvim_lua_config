@@ -36,10 +36,10 @@ vim.api.nvim_create_autocmd("FileType", {
 
     -- 6. Punctuation undo sequences (Mimics vim-pencil's granular undo)
     -- Creates an undo point every time you hit a punctuation mark or Space
-    local punctuations = { ",", ".", "!", "?", ";", " " }
-    for _, char in ipairs(punctuations) do
-      vim.keymap.set("i", char, char .. "<c-g>u", opts("Punctuation undo sequences (Mimics vim-pencil's granular undo)"))
-    end
+    -- local punctuations = { ",", ".", "!", "?", ";", " " }
+    -- for _, char in ipairs(punctuations) do
+    --   vim.keymap.set("i", char, char .. "<c-g>u", opts("Punctuation undo sequences (Mimics vim-pencil's granular undo)"))
+    -- end
   end,
 })
 

@@ -8,6 +8,11 @@ return {
   -- { "rebelot/kanagawa.nvim",
   {"vague-theme/vague.nvim",
     config = function()
+
+      require('vague').setup({
+        bold = false, -- Disable bold globally
+        italic = false, -- Disable italic globally
+      })
       vim.cmd.colorscheme("vague")
 
       -- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })

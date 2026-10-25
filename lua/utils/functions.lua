@@ -430,61 +430,71 @@ function F.generate_todo_picker()
     return
   end
 
-  local picker_items = {}
   local m_actions = {
-    picker_items = picker_items,
     advance_time = function(picker, item)
+      local items = picker:selected({ fallback = true })
+      if #items>1 then
+        vim.notify("Can't advance time on multiple items")
+        return
+      end
       local current_line = item.raw
       local new_line = M.advance_todo_time(current_line)
       local _, s_time, f_time = M.get_time(new_line)
       if s_time and not f_time then
         F.set_status("Todo:" .. item.text)
         replace_line_in_file(file_path, current_line, new_line)
+        vim.notify("Doing task:" .. item.text)
       elseif f_time then
         replace_line_in_file(file_path, current_line, nil)
         append_line_to_file(new_line, vim.g.m_notes_path .. "/archive/done_tasks.md")
+        vim.notify("Completed task:" .. item.text)
+        F.clear_status()
       end
       picker:close()
     end,
+
     discard_task = function(picker, item)
-      if #picker_items>0 then
-        local choices = { 'Multiple', 'Selected', 'Cancel' }
-        vim.ui.select(choices, {
-          prompt = 'Discard Multiples or Selected Item',
-        }, function(choice)
-            if choice == 'Multiple' then
-              for i, item in ipairs(picker_items) do
-                vim.notify("Discarded:" .. item.text)
-                _discard(file_path, item.raw)
-              end
-              picker:close()
-            elseif choice == 'Selected' then
-              vim.notify("Discarded:" .. item.text)
-              _discard(file_path, item.raw)
-              picker:close()
-            else
-              vim.notify("Discard Cancelled!")
-            end
-          end)
+      local items = picker:selected({ fallback = true })
+
+      local choices
+      if #items>1 then
+        choices = { 'Multiple', 'Selected', 'Cancel' }
+      elseif #items == 1 then
+        choices = { 'Selected', 'Cancel' }
       else
+        return
+      end
+
+      local _d = function(item)
         vim.notify("Discarded:" .. item.text)
         _discard(file_path, item.raw)
-        picker:close()
+        picker.list.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
       end
+
+      vim.ui.select(choices, {
+        prompt = 'Discard Multiples or Selected Item',
+      }, function(choice)
+          if choice == 'Multiple' then
+            for i, m_item in ipairs(items) do
+              _d(m_item)
+            end
+          elseif choice == 'Selected' then
+              _d(m_item)
+          else
+            vim.notify("Discard Cancelled!")
+            return
+          end
+          picker.list:update({ force = true })
+        end)
     end,
     fn_preview = function(picker)
+      local c_time, s_time, f_time = M.get_time(picker.item.raw)
       local preview = {
         string.format("TODO: %s", picker.item.text),
-        "",
+        string.format("@c:%s", c_time),
+        string.format("@s:%s", s_time),
+        string.format("@f:%s", f_time),
       }
-      if #picker_items>0 then
-        table.insert(preview,"")
-        table.insert(preview,"Selected to open:")
-        for i, selected in ipairs(picker_items) do
-          local item = string.format("%s %s : %s", i, selected.text, selected.link)
-          table.insert(preview, item)
-        end
-      end
 
       table.insert(preview,"")
       table.insert(preview,"Content of current todo:")
@@ -497,10 +507,10 @@ function F.generate_todo_picker()
 
   local m_keys = {
     ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
-    ["<C-d>"] = { "discard_task", mode = {"i", "n"}},
+    ["<C-x>"] = { "discard_task", mode = {"i", "n"}},
   }
 
-  local actions, keys = F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
+  local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   F.m_picker(items, "Select TODO item(s)", actions, keys)
 end
 
@@ -508,117 +518,32 @@ end
 -- if you pass in anything that need access to the list, user must provide that object with the m_actions.
 -- otherwise, m_actions methods won't be able to access the same picker_items list from this scope
 function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
-  if m_actions and not m_actions.picker_items then
-    vim.notify("Passing in m_actions withou an picker_items", vim.log.levels.ERROR)
-    return
-  end
-
   local fn_items_handler = fn_items_handler or function(bookmarks)
     for _, bookmark in ipairs(bookmarks) do
       open_md_link(bookmark)
     end
   end
 
-  local keys ={
-    ["<C-r>"]     = { "rm_item_from_list", mode = { "i", "n" } },
-    ["<C-l>"]     = { "clear_list", mode        = { "i", "n" } },
-    ["<C-space>"] = { "add_item_to_list", mode  = { "i", "n" } },
-    ["<C-Enter>"] = { "open_list", mode         = { "i", "n" } },
-  }
-
-  local picker_items = m_actions and m_actions.picker_items or {}
+  local keys ={}
 
   local actions = {
-    open_list = function(picker, item)
-      if #picker_items>0 then
-        picker:close()
-        fn_items_handler(picker_items)
-      else
-        vim.notify("Empty List. No executation", vim.log.levels.ERROR)
-      end
-    end,
-
     fn_confirm = function(picker, item)
       picker:close()
-      fn_items_handler({item})
+      local items = picker:selected({ fallback = true })
+      fn_items_handler(items)
     end,
 
     fn_preview = function(picker)
       local preview = {
         string.format("Action: %s", picker.item.link),
         "",
-        "<C-d> remove <C-l> clear",
-        "<C-space> add <C-Enter> execute"
       }
-      if #picker_items>0 then
-        table.insert(preview,"")
-        for i, selected in ipairs(picker_items) do
-          local item = string.format("%s %s : %s", i, selected.text, selected.link)
-          table.insert(preview, item)
-        end
-      end
 
       update_picker_preview(picker.buf, preview)
     end,
-
-    add_item_to_list = function(picker, item)
-      --1. activate the preview if not
-      --2. add item to a picker_items in scope.
-      --3. refresh the preview buffer with the list
-      if picker.preview.win.enabled == false then
-        picker:toggle("preview")
-      end
-      local dup_found = false
-      for i, val in ipairs(picker_items) do
-        if val.text == item.text and val.link == item.link then
-          dup_found=true
-        end
-      end
-
-      if not dup_found then
-        table.insert(picker_items, item)
-      end
-
-      if picker and picker.preview then
-        picker.preview:refresh(picker)
-      end
-    end,
-
-    rm_item_from_list = function(picker, item)
-      --1. activate the preview if not
-      --2. remove item from picker_items in scope.
-      --3. refresh the preview buffer with the list
-      if picker.preview.win.enabled == false then
-        picker:toggle("preview")
-      end
-
-      for i, val in ipairs(picker_items) do
-        if val.idx == item.idx then
-          table.remove(picker_items, i)
-        end
-      end
-
-      if picker and picker.preview then
-        picker.preview:refresh(picker)
-      end
-    end,
-
-    clear_list = function(picker, item)
-      --1. activate the preview if not
-      --2. remove item from picker_items in scope.
-      --3. refresh the preview buffer with the list
-      if picker.preview.win.enabled == false then
-        picker:toggle("preview")
-      end
-
-      picker_items = {}
-
-      if picker and picker.preview then
-        picker.preview:refresh(picker)
-      end
-    end,
-
   }
+
+  -- if key collision like same function name, m_actions will override actions
   if m_actions then
     actions = vim.tbl_deep_extend("force", actions, m_actions)
   end

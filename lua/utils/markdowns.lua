@@ -89,7 +89,6 @@ local function create_file(filepath, first_line)
   if fd then
     vim.uv.fs_write(fd, "# "..first_line, 0)
     vim.uv.fs_close(fd)
-    vim.notify("File created: " .. vim.fn.fnamemodify(filepath, ":t"))
     return true
   else
     vim.notify("Error: Could not create file:" .. filepath, vim.log.levels.ERROR)

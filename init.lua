@@ -37,6 +37,7 @@ require('lazy').setup({
   require('m_autopair'),
   require('m_surround'),
   require('m_misc'),
+  require('m_navic')
 })
 
 -- setup must be called before loading
