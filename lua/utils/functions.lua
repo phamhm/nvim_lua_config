@@ -28,10 +28,6 @@ function F.write_note(note_text, destination)
   end
 end
 
---[[
--- take m_text and append to the end of target_path
---
---]]
 function F.append_text_to_file(m_text, target_path)
   m_text = vim.trim(m_text)
   if m_text=="" then
@@ -50,54 +46,55 @@ function F.append_text_to_file(m_text, target_path)
   file:close()
 end
 
-function F.move_lines_select_file()
-  local winid = vim.api.nvim_get_current_win()
+-- function F.move_lines_select_file()
+--   local winid = vim.api.nvim_get_current_win()
+--
+--   local v_pos = vim.fn.getpos "v"
+--   local d_pos = vim.fn.getpos "."
+--
+--   if v_pos[2] > d_pos[2] then
+--     local tmp = d_pos
+--     d_pos = v_pos
+--     v_pos = tmp
+--   end
+--
+--   local _, start_row,_, _ = unpack(v_pos)
+--   local _, end_row, _, _ = unpack(d_pos)
+--
+--   local bufnr = vim.api.nvim_get_current_buf()
+--
+--   local m_lines
+--   local mode = vim.api.nvim_get_mode().mode
+--   if mode == "v" or mode == "V" or mode == "\22" then
+--     m_lines = vim.fn.getregion(v_pos, d_pos, {type=mode})
+--   else
+--     m_lines = {vim.trim(vim.api.nvim_get_current_line())}
+--   end
+--
+--   for i, val in ipairs(m_lines) do
+--     -- ^- matches a literal hyphen at the very beginning of the string
+--     m_lines[i] = string.gsub(val, "^%-", "\n#")
+--   end
+--
+--   m_lines = table.concat(m_lines, "\n")
+--
+--   Snacks.picker.files({
+--     cwd = "~/Documents/notes/",
+--     actions = {
+--       confirm = function(picker, item)
+--         if item then
+--           picker:close()
+--           append_line_to_file(m_lines, item._path)
+--
+--           vim.api.nvim_set_current_win(winid)
+--           vim.api.nvim_buf_set_lines(bufnr, start_row-1, end_row, false, {})
+--         end
+--       end
+--     }
+--   })
+-- end
 
-  local v_pos = vim.fn.getpos "v"
-  local d_pos = vim.fn.getpos "."
-
-  if v_pos[2] > d_pos[2] then
-    local tmp = d_pos
-    d_pos = v_pos
-    v_pos = tmp
-  end
-
-  local _, start_row,_, _ = unpack(v_pos)
-  local _, end_row, _, _ = unpack(d_pos)
-
-  local bufnr = vim.api.nvim_get_current_buf()
-
-  local m_lines
-  local mode = vim.api.nvim_get_mode().mode
-  if mode == "v" or mode == "V" or mode == "\22" then
-    m_lines = vim.fn.getregion(v_pos, d_pos, {type=mode})
-  else
-    m_lines = {vim.trim(vim.api.nvim_get_current_line())}
-  end
-
-  for i, val in ipairs(m_lines) do
-    -- ^- matches a literal hyphen at the very beginning of the string
-    m_lines[i] = string.gsub(val, "^%-", "\n#")
-  end
-
-  m_lines = table.concat(m_lines, "\n")
-
-  Snacks.picker.files({
-    cwd = "~/Documents/notes/",
-    actions = {
-      confirm = function(picker, item)
-        if item then
-          picker:close()
-          F.append_text_to_file(m_lines, item._path)
-
-          vim.api.nvim_set_current_win(winid)
-          vim.api.nvim_buf_set_lines(bufnr, start_row-1, end_row, false, {})
-        end
-      end
-    }
-  })
-end
-
+-- this get the current line in the buffer
 function F.move_line_to_file(target_path, l_formatter)
   -- local choice = vim.fn.confirm("Proceed to refile to ".. target_path.."?", "&Yes\n&No", 2)
   -- if choice ~= 1 then
@@ -230,13 +227,6 @@ function F.copy_dated_lines(filepath, pattern)
   vim.notify(string.format("Copied %d lines to the * register!", #matched_lines), vim.log.levels.INFO)
 end
 
-local m_layout = {
-  preview = false,
-  layout = {
-    width = 0.3,
-    height = 0.5,
-  }
-}
 
 function F.menu_commands(items, title)
   Snacks.picker.pick({
@@ -244,7 +234,13 @@ function F.menu_commands(items, title)
     items = items,
     title = title,
     format = "text",
-    layout = m_layout,
+    layout = {
+      preview = false,
+      layout = {
+        width = 0.3,
+        height = 0.5,
+      }
+    },
     confirm = function(picker, item)
       picker:close()
       if item and item.fn then
@@ -370,6 +366,7 @@ function F.process_md_link_file(filepath)
   return items
 end
 
+-- pass nil to new_line and that line will be removed
 local function replace_line_in_file(filepath, old_line, new_line)
   -- 1. Open the file in read mode
   --
@@ -415,15 +412,27 @@ function F.clear_status()
   vim.g.global_status = ""
 end
 
-local function _discard(file_path, current_line)
-  replace_line_in_file(file_path, current_line, nil)
-  append_line_to_file(current_line, vim.g.m_notes_path .. "/archive/discarded_ideas.md")
+-- "/archive/discarded_ideas.md"
+local function _move_todo(from_file_path, current_line, to_file_path)
+  replace_line_in_file(from_file_path, current_line, nil)
+  append_line_to_file(current_line, vim.g.m_notes_path .. to_file_path)
 end
 
 function F.generate_todo_picker()
   vim.cmd("fclose")
-  local file_path = vim.g.m_notes_path .. "/TODO.md"
-  local items = F.process_md_link_file(file_path)
+  local todo_file_path = vim.g.m_notes_path .. "/TODO.md"
+  local items = F.process_md_link_file(todo_file_path)
+
+  for _, item in ipairs(items) do
+    local raw = item.raw
+    local _, s_time, f_time = M.get_times(raw)
+    if f_time then
+      item.text = " "..item.text
+    elseif s_time then
+      item.text = " "..item.text
+    end
+  end
+
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
     vim.notify("No todo item", vim.log.levels.WARN)
@@ -431,6 +440,26 @@ function F.generate_todo_picker()
   end
 
   local m_actions = {
+    hidden = {"input"},
+    archive_done = function(picker, item)
+      local items = picker:selected({ fallback = true })
+      if #items>1 then
+        vim.notify("Can't archive multiple items")
+        return
+      end
+
+      local current_line = item.raw
+      local f_time = M.get_timestamp(current_line, "f")
+      if f_time == nil then
+        vim.notify("Cant archive unfinished task. Use Discard")
+        return
+      end
+      -- delete the current line in the todo.md, and append it to done_tasks.md
+      _move_todo(todo_file_path, current_line, "/archive/done_tasks.md")
+      -- update the picker items. list
+      picker.list.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
+      picker.list:update({ force = true })
+    end,
     advance_time = function(picker, item)
       local items = picker:selected({ fallback = true })
       if #items>1 then
@@ -439,18 +468,45 @@ function F.generate_todo_picker()
       end
       local current_line = item.raw
       local new_line = M.advance_todo_time(current_line)
-      local _, s_time, f_time = M.get_time(new_line)
-      if s_time and not f_time then
-        F.set_status("Todo:" .. item.text)
-        replace_line_in_file(file_path, current_line, new_line)
-        vim.notify("Doing task:" .. item.text)
-      elseif f_time then
-        replace_line_in_file(file_path, current_line, nil)
-        append_line_to_file(new_line, vim.g.m_notes_path .. "/archive/done_tasks.md")
+      local _, s_time, f_time = M.get_times(new_line)
+
+      if f_time then
+        replace_line_in_file(todo_file_path, current_line, new_line)
+        -- append_line_to_file(new_line, vim.g.m_notes_path .. "/archive/done_tasks.md")
         vim.notify("Completed task:" .. item.text)
         F.clear_status()
+
+        local items = F.process_md_link_file(todo_file_path)
+        for _, item in ipairs(items) do
+          local raw = item.raw
+          local _, s_time, f_time = M.get_times(raw)
+          if f_time then
+            item.text = " "..item.text
+          elseif s_time then
+            item.text = " "..item.text
+          end
+        end
+
+        picker.list.items = items
+        picker.list:update({ force = true })
+      elseif s_time then
+        F.set_status("Todo:" .. item.text)
+        replace_line_in_file(todo_file_path, current_line, new_line)
+        vim.notify("Doing task:" .. item.text)
+        local items = F.process_md_link_file(todo_file_path)
+        for _, item in ipairs(items) do
+          local raw = item.raw
+          local _, s_time, f_time = M.get_times(raw)
+          if f_time then
+            item.text = " "..item.text
+          elseif s_time then
+            item.text = " "..item.text
+          end
+        end
+
+        picker.list.items = items
+        picker.list:update({ force = true })
       end
-      picker:close()
     end,
 
     discard_task = function(picker, item)
@@ -465,10 +521,11 @@ function F.generate_todo_picker()
         return
       end
 
-      local _d = function(item)
+      local _discard = function(item)
         vim.notify("Discarded:" .. item.text)
-        _discard(file_path, item.raw)
+        _move_todo(todo_file_path, item.raw, "/archive/discarded_ideas.md")
         picker.list.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
+        picker.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
       end
 
       vim.ui.select(choices, {
@@ -476,10 +533,10 @@ function F.generate_todo_picker()
       }, function(choice)
           if choice == 'Multiple' then
             for i, m_item in ipairs(items) do
-              _d(m_item)
+              _discard(m_item)
             end
           elseif choice == 'Selected' then
-              _d(m_item)
+            _discard(item)
           else
             vim.notify("Discard Cancelled!")
             return
@@ -488,7 +545,7 @@ function F.generate_todo_picker()
         end)
     end,
     fn_preview = function(picker)
-      local c_time, s_time, f_time = M.get_time(picker.item.raw)
+      local c_time, s_time, f_time = M.get_times(picker.item.raw)
       local preview = {
         string.format("TODO: %s", picker.item.text),
         string.format("@c:%s", c_time),
@@ -507,6 +564,7 @@ function F.generate_todo_picker()
 
   local m_keys = {
     ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
+    ["<C-s>"] = { "archive_done", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_task", mode = {"i", "n"}},
   }
 
@@ -595,9 +653,18 @@ function F.m_picker(items, title, actions, keys)
     items = items,
     title = title or "select to run",
     format = "text", -- Display only the title in the list
-    layout = m_layout,
+    layout = {
+      hidden = actions.hidden or {"preview"},
+      layout = {
+        width = actions.width or 0.3,
+        height = actions.height or 0.5,
+      }
+    },
     actions = actions,
     win = {
+      list = {
+        keys = keys,
+      },
       input = {
         keys = keys,
       },
@@ -628,7 +695,6 @@ local function prompt_and_run_lua(prompt, cmp_type)
     end
   end)
 end
-
 
 function F.set_title()
   local fname = vim.fn.expand('%:t')

@@ -2,10 +2,24 @@
 local M = {}
 local date_time_format ='%Y-%m-%d %H:%M'
 
-function M.get_time(current_line)
-  local capture_time = current_line:match('@c%(([^)]+)%)')
-  local start_time = current_line:match('@s%(([^)]+)%)')
-  local finished_time = current_line:match('@f%(([^)]+)%)')
+function M.get_timestamp(line, letter)
+  if line == "" or line == nil then
+    vim.notify("line can't be blank", vim.log.levels.ERROR)
+    return
+  end
+
+  if letter=="" or letter == nil then
+    vim.notify("param letter can't be blank", vim.log.levels.ERROR)
+    return
+  end
+  local pattern = "@"..letter.."%(([^)]+)%)"
+  return line:match(pattern)
+end
+
+function M.get_times(str)
+  local capture_time =  M.get_timestamp(str, "c")
+  local start_time =    M.get_timestamp(str, "s")
+  local finished_time = M.get_timestamp(str, "f")
   return capture_time , start_time , finished_time
 end
 
@@ -30,7 +44,7 @@ local function calc_time(m_date1, m_date2)
 end
 
 function M.advance_todo_time(current_line)
-  local capture_time, start_time, finished_time = M.get_time(current_line)
+  local capture_time, start_time, finished_time = M.get_times(current_line)
 
   if capture_time == nil then
     vim.notify("There is no capture time", vim.log.levels.ERROR)
@@ -40,8 +54,6 @@ function M.advance_todo_time(current_line)
   elseif finished_time == nil then
     finished_time = os.date(date_time_format)
     local elapsed_time = calc_time(start_time, finished_time)
-    current_line = current_line:gsub("^", "[] ")
-
     local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
     vim.g.m_todo=""
     return new_line

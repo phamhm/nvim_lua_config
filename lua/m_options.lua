@@ -89,5 +89,3 @@ autocmd("FileType", {
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
 _G.get_custom_title = F.set_title
-
-vim.o.winbar = nil
