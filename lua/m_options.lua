@@ -88,4 +88,11 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-_G.get_custom_title = function() return F.set_title().. " "..vim.g.m_todo end
+_G.get_custom_title = function()
+  local title = F.set_title()
+  if vim.g.m_todo ~= "" then
+    title = title .." "..vim.g.m_todo
+  end
+
+  return title
+end

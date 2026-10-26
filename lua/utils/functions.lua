@@ -414,6 +414,7 @@ function F.get_todo()
 end
 
 function F.clear_todo()
+  vim.notify("Clear todo:" .. vim.g.m_todo)
   vim.g.m_todo = ""
 end
 
@@ -479,7 +480,11 @@ function F.generate_todo_picker()
         vim.notify("Can't set todo from multiple items")
         return
       end
-      F.set_todo(item.text)
+      if F.get_todo() == item.text then
+        F.clear_todo()
+      else
+        F.set_todo(item.text)
+      end
     end,
     advance_time = function(picker, item)
       local items = picker:selected({ fallback = true })
@@ -513,7 +518,7 @@ function F.generate_todo_picker()
         picker.list.items = items
         picker.list:update({ force = true })
       elseif s_time then
-        F.set_todo("Todo:" .. item.text)
+        F.set_todo(item.text)
         replace_line_in_file(todo_file_path, current_line, new_line)
         vim.notify("Doing task:" .. item.text)
         local items = F.process_md_link_file(todo_file_path)
