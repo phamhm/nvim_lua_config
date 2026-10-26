@@ -8,6 +8,19 @@ local function opts(desc_text)
   return {desc=desc_text, buffer = true, noremap = false, silent = true}
 end
 
+local function ensure_checkbox()
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+
+  -- Check if the line starts with "- [ ]"
+  if not vim.startswith(line, "- [ ]") then
+    local new_line = "- [ ] " .. line
+    vim.api.nvim_buf_set_lines(0, row - 1, row, false, { new_line })
+  end
+end
+
+-- Example keymap binding to <leader>c in normal mode
+
 vim.api.nvim_create_autocmd("FileType", {
   group = prose_group,
   -- Target text-focused filetypes (mimicking vim-pencil's default targets)
@@ -21,6 +34,11 @@ vim.api.nvim_create_autocmd("FileType", {
     map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
     map('n', '<Cr>', function() M.md_follow_link() end, opts("Markdown task toggle"))
+
+    map('n', '<C-.>', "<cmd>.s/^/#/<cr><cmd>noh<cr>", opts("promote markdown heading"))
+    map('n', '<C-,>', "<cmd>.s/^#//<cr><cmd>noh<cr>", opts("demote markdown heading"))
+
+    map('n', '<leader>mc', ensure_checkbox, opts("make check box"))
 
     -- Enable soft wrapping
     vim.opt_local.wrap = true
