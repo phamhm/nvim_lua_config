@@ -257,7 +257,8 @@ local function open_md_link(md_link_item)
     md_link_item.link()
   elseif vim.startswith(md_link_item.link, "http") or
          vim.endswith(md_link_item.link, ".rdp") or
-         vim.startswith(md_link_item.link,"msteams:/") then
+         vim.startswith(md_link_item.link,"msteams:/") or
+         vim.startswith(md_link_item.link,"slack:/") then
     vim.ui.open(md_link_item.link) -- Open the link using your system's default handler
     return
   elseif  vim.endswith(md_link_item.link, ".applescript") then
