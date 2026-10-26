@@ -2,4 +2,4 @@ sessions/*
 .gitconfig
 spell/*
 *lock.json
-lua/m__poweron.lua
+lua/m_poweron.lua
