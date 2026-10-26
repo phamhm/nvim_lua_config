@@ -404,6 +404,19 @@ local function replace_line_in_file(filepath, old_line, new_line)
   return true
 end
 
+function F.set_todo(todo)
+  vim.notify("Doing:" .. todo)
+  vim.g.m_todo = todo
+end
+
+function F.get_todo()
+  return vim.g.m_todo
+end
+
+function F.clear_todo()
+  vim.g.m_todo = ""
+end
+
 function F.set_status(msg)
   vim.g.global_status = msg
 end
@@ -460,6 +473,14 @@ function F.generate_todo_picker()
       picker.list.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
       picker.list:update({ force = true })
     end,
+    set_todo = function(picker, item)
+      local items = picker:selected({ fallback = true })
+      if #items>1 then
+        vim.notify("Can't set todo from multiple items")
+        return
+      end
+      F.set_todo(item.text)
+    end,
     advance_time = function(picker, item)
       local items = picker:selected({ fallback = true })
       if #items>1 then
@@ -474,7 +495,9 @@ function F.generate_todo_picker()
         replace_line_in_file(todo_file_path, current_line, new_line)
         -- append_line_to_file(new_line, vim.g.m_notes_path .. "/archive/done_tasks.md")
         vim.notify("Completed task:" .. item.text)
-        F.clear_status()
+        if current_line == F.get_todo then
+          F.clear_todo()
+        end
 
         local items = F.process_md_link_file(todo_file_path)
         for _, item in ipairs(items) do
@@ -490,7 +513,7 @@ function F.generate_todo_picker()
         picker.list.items = items
         picker.list:update({ force = true })
       elseif s_time then
-        F.set_status("Todo:" .. item.text)
+        F.set_todo("Todo:" .. item.text)
         replace_line_in_file(todo_file_path, current_line, new_line)
         vim.notify("Doing task:" .. item.text)
         local items = F.process_md_link_file(todo_file_path)
@@ -564,6 +587,7 @@ function F.generate_todo_picker()
 
   local m_keys = {
     ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
+    ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
     ["<C-s>"] = { "archive_done", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_task", mode = {"i", "n"}},
   }

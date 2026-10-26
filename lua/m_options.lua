@@ -71,7 +71,7 @@ vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
 -- JavaScript: 2 spaces
-local augroup = vim.api.nvim_create_augroup
+-- local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 autocmd("FileType", {
@@ -88,4 +88,4 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-_G.get_custom_title = F.set_title
+_G.get_custom_title = function() return F.set_title().. " "..vim.g.m_todo end
