@@ -245,7 +245,7 @@ end
 -- if applescript, call osascript to execute
 -- .zsh, then open a new kitty tab to execute the code there
 -- if text contains the word "edit" and the link is a readable file, then open it.
-local function open_md_link(md_link_item)
+function F.open_md_link(md_link_item)
   -- item must contain item.link and item.text
   if not (md_link_item and md_link_item.link and md_link_item.text) then
     vim.notify("Item elements are missing")
@@ -255,12 +255,13 @@ local function open_md_link(md_link_item)
   local cmd
   if type(md_link_item.link) == "function" then
     md_link_item.link()
+    return true
   elseif vim.startswith(md_link_item.link, "http") or
          vim.endswith(md_link_item.link, ".rdp") or
          vim.startswith(md_link_item.link,"msteams:/") or
          vim.startswith(md_link_item.link,"slack:/") then
     vim.ui.open(md_link_item.link) -- Open the link using your system's default handler
-    return
+    return true
   elseif  vim.endswith(md_link_item.link, ".applescript") then
     cmd = {"osascript", vim.fn.expand( md_link_item.link )}
   elseif  vim.endswith(md_link_item.link, ".zsh") then
@@ -278,10 +279,10 @@ local function open_md_link(md_link_item)
   elseif vim.fn.filereadable(vim.fn.expand(md_link_item.link)) == 1 then
     local file_path = vim.fn.expand(md_link_item.link)
     vim.cmd.edit(file_path)
-    return
+    return true
   else
     vim.notify("Unexpected format " .. md_link_item.text .. ":" .. md_link_item.link, vim.log.levels.ERROR)
-    return
+    return nil
   end
   if type(cmd) == "table" and next(cmd) ~= nil then
     vim.system(cmd, { detach = true}, function(err)
@@ -291,7 +292,9 @@ local function open_md_link(md_link_item)
         end)
       end
     end)
+    return true
   end
+  return nil
 end
 
 local function update_picker_preview(buf, preview)
@@ -360,7 +363,6 @@ local function replace_line_in_file(filepath, old_line, new_line)
 end
 
 function F.set_todo(todo)
-  vim.notify("Doing:" .. todo)
   vim.g.m_todo = todo
 end
 
@@ -475,7 +477,6 @@ function F.generate_todo_picker()
       elseif s_time then
         F.set_todo(item.text)
         replace_line_in_file(todo_file_path, current_line, new_line)
-        vim.notify("Doing task:" .. item.text)
         local items = F.process_md_link_file(todo_file_path)
         for _, item in ipairs(items) do
           local raw = item.raw
@@ -562,7 +563,7 @@ end
 function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
   local fn_items_handler = fn_items_handler or function(bookmarks)
     for _, bookmark in ipairs(bookmarks) do
-      open_md_link(bookmark)
+      F.open_md_link(bookmark)
     end
   end
 

@@ -1,4 +1,5 @@
 local M = require("utils.markdowns")
+local F = require("utils.functions")
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
 -- Create an augroup to ensure autocommands don't duplicate on reload
@@ -33,7 +34,18 @@ vim.api.nvim_create_autocmd("FileType", {
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
     map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
-    map('n', '<Cr>', function() M.md_follow_link() end, opts("Markdown task toggle"))
+    map('n', '<Cr>', function()
+      local current_line = vim.api.nvim_get_current_line()
+      local text, link = M.match_single_link(current_line)
+      if text~=nil and link~=nil then
+        local res = F.open_md_link({text=text, link=link})
+        if not res then
+          vim.lsp.buf.definition()
+        end
+      else
+        vim.lsp.buf.definition()
+      end
+    end, opts("Markdown task toggle"))
 
     map('n', '<C-.>', "<cmd>.s/^/#/<cr><cmd>noh<cr>", opts("promote markdown heading"))
     map('n', '<C-,>', "<cmd>.s/^#//<cr><cmd>noh<cr>", opts("demote markdown heading"))

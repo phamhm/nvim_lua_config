@@ -71,7 +71,7 @@ function M.todo_line_check(todo_line)
   end
 end
 
-local function match_single_link(str, suppressed_notify)
+function M.match_single_link(str, suppressed_notify)
   suppressed_notify = suppressed_notify or false
   local count = 0
   local first_text, first_url
@@ -109,32 +109,12 @@ local function create_file(filepath, first_line)
 end
 
 function M.md_follow_link()
-  local current_line = vim.api.nvim_get_current_line()
-  local text, url =match_single_link(current_line)
-  if text~=nil and url~=nil then
-    if vim.startswith(url, "http") then
-      vim.cmd("fclose!")
-      vim.ui.open(url)
-      return
-    else
-      local path = vim.fn.expand(url)
-      local stat =vim.uv.fs_stat(path)
-      if stat and stat.type=="file" then
-        vim.cmd.edit(path)
-        vim.cmd("fclose!")
-        return
-      else
-        vim.lsp.buf.definition()
-      end
-    end
-  else
-    vim.lsp.buf.definition()
-  end
+
 end
 
 function M.md_create_link(current_line)
   -- local current_line = vim.api.nvim_get_current_line()
-  local text, url = match_single_link(current_line, true)
+  local text, url = M.match_single_link(current_line, true)
   if text and url then
     vim.notify("Link exists. Can't create new one", vim.log.levels.WARN)
     return
@@ -151,7 +131,7 @@ end
 
 function M.set_todo()
   local current_line = vim.api.nvim_get_current_line()
-  local text, url = match_single_link(current_line, true)
+  local text, url = M.match_single_link(current_line, true)
   if text==nil and url==nil then
     text = current_line:match("%- %[ %] (.-)@c")
   end
@@ -160,7 +140,6 @@ function M.set_todo()
     return
   end
   vim.g.m_todo = text
-  vim.notify("Doing now:" .. text)
 end
 
 return M
