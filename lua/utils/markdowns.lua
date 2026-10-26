@@ -119,16 +119,16 @@ function M.md_follow_link()
     else
       local path = vim.fn.expand(url)
       local stat =vim.uv.fs_stat(path)
-      if stat == nil then
-        vim.notify("Invalid path:" .. path, vim.log.levels.ERROR)
-        return
-      end
       if stat and stat.type=="file" then
         vim.cmd.edit(path)
         vim.cmd("fclose!")
         return
+      else
+        vim.lsp.buf.definition()
       end
     end
+  else
+    vim.lsp.buf.definition()
   end
 end
 

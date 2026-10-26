@@ -12,7 +12,8 @@ return {
         "pyright", -- Python LSP
         "ts_ls",        -- JavaScript/TypeScript LSP
         "lua_ls", -- Lua/Neovim
-        "bashls"
+        "bashls",
+        "marksman",
       } -- your desired servers
     })
 

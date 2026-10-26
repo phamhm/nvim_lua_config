@@ -125,6 +125,7 @@ local m_snacks = {
             "*env*",
             "*pycache*",
             "*backup*",
+            "todo_notes"
           }
         }
       },
@@ -251,7 +252,7 @@ local m_snacks = {
 
         Snacks.picker.files({
           title = "Notes files",
-          exclude = {"backups", "sessions", "assets", "archive", },
+          exclude = {"backups", "sessions", "assets", "archive", "todo_notes" },
           cwd = vim.fn.expand(vim.g.m_notes_path),
         })
       end,desc = "Help Page" },
