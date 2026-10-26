@@ -11,7 +11,15 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
-      require('kanso').setup()
+      require('kanso').setup({
+        italic = false,
+        bold = false,
+        commentStyle = { italic = false, bold = false },
+        functionStyle = { bold = false },
+        keywordStyle = { italic = false, bold = false },
+        statementStyle = { bold = false },
+        typeStyle = { italic = false, bold = false },
+      })
       vim.cmd.colorscheme("kanso-ink")
     end
   },

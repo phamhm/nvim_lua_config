@@ -29,7 +29,7 @@ map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
 map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
 map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>', "<cmd>w<cr>",{silent = true, desc="save buffer"})
+map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>w<cr>",{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
 
 -- end key maps
@@ -189,3 +189,32 @@ map('n', alt_key("<leader>cl"), function()
   vim.g.m_todo = ""
   vim.g.global_status = ""
 end, {desc = " clear global vim.g"})
+
+map('i', "<C-v>", function()
+  local code=1
+
+  if vim.fn.expand('%:p:h') == vim.fn.expand(vim.g.m_notes_path) then
+    local clip_board_zsh_path = vim.g.m_scripts .. '/get_clipboard_type.zsh'
+    local result = vim.system({ "zsh", vim.fn.expand(clip_board_zsh_path) }, {
+      text = true, -- Automatically decode stdout/stderr as strings
+    }):wait()
+   code = result.code
+  end
+
+  if code == 1 then
+    local clipboard_content = vim.fn.getreg('+')
+
+    -- Split the string into a list of lines (required by nvim_put)
+    local lines = vim.split(clipboard_content, '\n')
+
+    -- Insert text at the cursor position
+    -- 'p' means after the cursor, true for follow cursor, true for lifestyle format
+    vim.api.nvim_put(lines, 'c', false, true)
+  else
+    vim.cmd("PasteImage")
+  end
+end, {
+  desc="paste from @*. When markdown, check whether system clipboard is an image",
+  silent = true,
+  noremap =true
+})
