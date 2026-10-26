@@ -11,6 +11,7 @@ vim.keymap.set(
       name = "keys from utils.lua"
     })
     vim.api.nvim_buf_set_lines(0, 0, -1, false, utils.get_keys())
+    vim.cmd("sort")
   end,
   {desc = "utils.keys"}
 )
