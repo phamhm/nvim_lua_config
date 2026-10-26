@@ -62,21 +62,21 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
-  callback = function()
-    -- Option A: Switch to an entirely different colorscheme for markdown
-    vim.cmd.colorscheme("zen")
-  end,
-})
-
-vim.api.nvim_create_autocmd("BufLeave", {
-  pattern = "*.md",
-  callback = function()
-    -- Option A (cont.): Switch back to your default colorscheme when leaving markdown files
-    vim.cmd.colorscheme("vague")
-  end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "markdown",
+--   callback = function()
+--     -- Option A: Switch to an entirely different colorscheme for markdown
+--     vim.cmd.colorscheme("zen")
+--   end,
+-- })
+--
+-- vim.api.nvim_create_autocmd("BufLeave", {
+--   pattern = "*.md",
+--   callback = function()
+--     -- Option A (cont.): Switch back to your default colorscheme when leaving markdown files
+--     vim.cmd.colorscheme("vague")
+--   end,
+-- })
 
 return {
   {

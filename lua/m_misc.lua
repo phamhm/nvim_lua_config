@@ -7,57 +7,38 @@ return {
   -- {"catppuccin/nvim", name = "catppuccin",
   -- { "rebelot/kanagawa.nvim",
   {
-    "nendix/zen.nvim",
+    "webhooked/kanso.nvim",
     lazy = false,
     priority = 1000,
     config = function()
-      require("zen").setup({
-        variant = "dark",     -- "dark", "light", or "auto" (follows vim.o.background)
-        undercurl = true,
-        transparent = false,
-        dimInactive = false,
-        terminalColors = true,
-        commentStyle = { italic = false },
-        functionStyle = {},
-        keywordStyle = { italic = false },
-        statementStyle = {},
-        typeStyle = {},
-        compile = false,
-        colors = {
-          palette = {},  -- override palette colors
-          theme = {},    -- override theme colors
-        },
-        overrides = function(colors)
-          return {}
-        end,
-      })
-
+      require('kanso').setup()
+      vim.cmd.colorscheme("kanso-ink")
     end
   },
-  {"vague-theme/vague.nvim",
-    config = function()
-
-      require('vague').setup({
-        bold = false, -- Disable bold globally
-        italic = false, -- Disable italic globally
-      })
-      vim.cmd.colorscheme("vague")
-
-      -- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
-      -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
-      -- vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
-      -- local border_color = "grey"
-      -- local border_list = {
-      --   "SnacksPickerInputBorder",
-      --   "SnacksPickerBoxBorder",
-      --   "SnacksInputBorder",
-      --   "FloatBorder"
-      -- }
-      -- for _, border in ipairs(border_list) do
-      --   vim.api.nvim_set_hl(0, border, { fg= border_color})
-      -- end
-    end
-  },
+  -- {"vague-theme/vague.nvim",
+  --   config = function()
+  --
+  --     require('vague').setup({
+  --       bold = false, -- Disable bold globally
+  --       italic = false, -- Disable italic globally
+  --     })
+  --     vim.cmd.colorscheme("vague")
+  --
+  --     -- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
+  --     -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
+  --     -- vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
+  --     -- local border_color = "grey"
+  --     -- local border_list = {
+  --     --   "SnacksPickerInputBorder",
+  --     --   "SnacksPickerBoxBorder",
+  --     --   "SnacksInputBorder",
+  --     --   "FloatBorder"
+  --     -- }
+  --     -- for _, border in ipairs(border_list) do
+  --     --   vim.api.nvim_set_hl(0, border, { fg= border_color})
+  --     -- end
+  --   end
+  -- },
   {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-mini/mini.icons' },
