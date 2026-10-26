@@ -10,23 +10,34 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- this set actions for snacks.scrach
 local md_scratch_ops = function(md_name)
   local keys = {
     ["todo"] = {
-      "<C-m>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.md_create_link) end,
-      desc = "Move to Todo",
+      "<C-t>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.md_create_link) end,
+      desc = "Todo",
       mode = {"n"},
     },
     ["discard"] = {
-      ("<C-D>"), function()
-
-        local choice = vim.fn.confirm("Proceed to discard?", "&Yes\n&No", 2)
-        if choice ~= 1 then
-          return
-        end
-
-        F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md") end,
+      ("<C-x>"), function()
+        vim.ui.select({"yes", "no"}, { prompt = "Discard this item?" },
+          function(choice)
+            if choice == "yes" then
+              F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md")
+            end
+          end
+        )
+      end,
       desc = "Discard",
+      mode = {"n", },
+    },
+    ["index"] = {
+      ("<C-i>"), function()
+        local m_formatter = function(line)
+          return string.gsub(line, "^-", "\n#")
+        end
+        F.move_line_to_file(vim.g.m_notes_path .. "/index.md", m_formatter) end,
+      desc = "Index",
       mode = {"n", },
     },
   }
@@ -245,6 +256,7 @@ local m_snacks = {
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fk",function() Snacks.picker.keymaps() end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
+    { "<leader>fp",function() Snacks.picker.projects() end,desc = "projects" },
     -- this won't close any current floating windows.
     { "<leader>ww",
       function()
@@ -280,7 +292,6 @@ local m_snacks = {
           -- { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
           { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
           { text = "Git Files", fn = function() Snacks.picker.git_files() end },
-          { text = "Projects", fn = function() Snacks.picker.projects() end },
           { text = "Rename File", fn = function() Snacks.rename.rename_file() end },
           { text = "Buffer Lines" , fn = function() Snacks.picker.grep() end},
           { text = "Visual selection or word", fn = function() Snacks.picker.grep_word() end, },
