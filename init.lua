@@ -57,4 +57,4 @@ vim.diagnostic.config({
 require('m_keys')
 
 
-local ok, my_module = pcall(require, "m_load_poweron")
+local ok, my_module = pcall(require, "m_poweron")
