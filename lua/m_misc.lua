@@ -32,8 +32,8 @@ return {
       for _, border in ipairs(border_list) do
         vim.api.nvim_set_hl(0, border, { fg= hl.fg})
       end
-      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#BF40BF", bold = false })
-      -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#AA98A9", bold = false })
+      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#DAB1DA", bold = false })
+      -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#DAB1DA", bold = false })
     end
   },
   -- {"vague-theme/vague.nvim",
