@@ -31,12 +31,19 @@ function F.get_keys()
   return MiniAlign.align_strings(custom_key_maps, {split_pattern=':'})
 end
 
-function F.write_note(note_text, destination)
-  destination = destination or  vim.g.m_notes_path .. "/capture_notes.md"
-  if note_text and note_text ~= "" then
-    local today_date = os.date('%Y-%m-%d %H:%M')
-    vim.fn.writefile({ "- ".. note_text .. " @c(".. today_date ..") " }, vim.fn.expand(destination), "a")
+-- take note_text and write to destination with @c capture time
+function F.append_text_to_file(text, destination)
+  -- destination = destination or  vim.g.m_notes_path .. "/capture_notes.md"
+  if not destination then
+    vim.notify("Desination is missing", vim.log.levels.ERROR)
+    return
   end
+  if not text then
+    vim.notify("Text is missing", vim.log.levels.ERROR)
+    return
+  end
+
+  vim.fn.writefile(text, vim.fn.expand(destination), "a")
 end
 
 -- this get the current line in the buffer
@@ -193,12 +200,13 @@ function F.open_md_link(md_link_item)
   return nil
 end
 
-local function update_picker_preview(buf, preview)
+function F.update_picker_preview(buf, preview)
   vim.bo[buf].modifiable = true
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, preview)
 end
 
-function F.process_md_link_file(filepath)
+
+function F.get_mdlink_lines(filepath)
   local items = {} -- must be first line
 
   -- 1. Define the path to your file
@@ -287,172 +295,7 @@ local function _move_todo(from_file_path, current_line, to_file_path)
   end
 end
 
-function F.generate_todo_picker()
-  vim.cmd("fclose")
-  local todo_file_path = vim.g.m_notes_path .. "/TODO.md"
-  local items = F.process_md_link_file(todo_file_path)
 
-  for _, item in ipairs(items) do
-    local raw = item.raw
-    local _, s_time, f_time = M.get_times(raw)
-    if f_time then
-      item.text = " "..item.text
-    elseif s_time then
-      item.text = " "..item.text
-    end
-  end
-
-  -- 4. Open the Snacks picker if we found any links
-  if #items == 0 then
-    vim.notify("No todo item", vim.log.levels.WARN)
-    return
-  end
-
-  local m_actions = {
-    hidden = {"input"},
-    archive_done = function(picker, item)
-      local items = picker:selected({ fallback = true })
-      if #items>1 then
-        vim.notify("Can't archive multiple items")
-        return
-      end
-
-      local current_line = item.raw
-      local f_time = M.get_timestamp(current_line, "f")
-      if f_time == nil then
-        vim.notify("Cant archive unfinished task. Use Discard")
-        return
-      end
-      -- delete the current line in the todo.md, and append it to done_tasks.md
-      _move_todo(todo_file_path, current_line, "/archive/done_tasks.md")
-      -- update the picker items. list
-      picker.list.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
-      picker.list:update({ force = true })
-    end,
-    set_todo = function(picker, item)
-      local items = picker:selected({ fallback = true })
-      if #items>1 then
-        vim.notify("Can't set todo from multiple items")
-        return
-      end
-      if F.get_todo() == item.text then
-        F.clear_todo()
-      else
-        F.set_todo(item.text)
-      end
-    end,
-    advance_time = function(picker, item)
-      local items = picker:selected({ fallback = true })
-      if #items>1 then
-        vim.notify("Can't advance time on multiple items")
-        return
-      end
-      local current_line = item.raw
-      local new_line = M.advance_todo_time(current_line)
-      local _, s_time, f_time = M.get_times(new_line)
-
-      if f_time then
-        replace_line_in_file(todo_file_path, current_line, new_line)
-        vim.notify("Completed task:" .. item.text)
-        if current_line == F.get_todo then
-          F.clear_todo()
-        end
-
-        local items = F.process_md_link_file(todo_file_path)
-        for _, item in ipairs(items) do
-          local raw = item.raw
-          local _, s_time, f_time = M.get_times(raw)
-          if f_time then
-            item.text = " "..item.text
-          elseif s_time then
-            item.text = " "..item.text
-          end
-        end
-
-        picker.list.items = items
-        picker.list:update({ force = true })
-      elseif s_time then
-        F.set_todo(item.text)
-        replace_line_in_file(todo_file_path, current_line, new_line)
-        local items = F.process_md_link_file(todo_file_path)
-        for _, item in ipairs(items) do
-          local raw = item.raw
-          local _, s_time, f_time = M.get_times(raw)
-          if f_time then
-            item.text = " "..item.text
-          elseif s_time then
-            item.text = " "..item.text
-          end
-        end
-
-        picker.list.items = items
-        picker.list:update({ force = true })
-      end
-    end,
-
-    discard_task = function(picker, item)
-      local items = picker:selected({ fallback = true })
-
-      local choices
-      if #items>1 then
-        choices = { 'Multiple', 'Selected', 'Cancel' }
-      elseif #items == 1 then
-        choices = { 'Selected', 'Cancel' }
-      else
-        return
-      end
-
-      local _discard = function(item)
-        vim.notify("Discarded:" .. item.text)
-        _move_todo(todo_file_path, item.raw, "/archive/discarded_ideas.md")
-        picker.list.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
-        picker.items = vim.tbl_filter(function(i) return i.raw~=item.raw end, picker.list.items)
-      end
-
-      vim.ui.select(choices, {
-        prompt = 'Discard Multiples or Selected Item',
-      }, function(choice)
-          if choice == 'Multiple' then
-            for i, m_item in ipairs(items) do
-              _discard(m_item)
-            end
-          elseif choice == 'Selected' then
-            _discard(item)
-          else
-            vim.notify("Discard Cancelled!")
-            return
-          end
-          picker.list:update({ force = true })
-        end)
-    end,
-    fn_preview = function(picker)
-      local c_time, s_time, f_time = M.get_times(picker.item.raw)
-      local preview = {
-        string.format("TODO: %s", picker.item.text),
-        string.format("@c:%s", c_time),
-        string.format("@s:%s", s_time),
-        string.format("@f:%s", f_time),
-      }
-
-      table.insert(preview,"")
-      table.insert(preview,"Content of current todo:")
-      local lines = vim.fn.readfile(vim.fn.expand(picker.item.link))
-      vim.list_extend(preview, lines)
-
-      update_picker_preview(picker.buf, preview)
-    end,
-  }
-
-  local m_keys = {
-    ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
-    ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
-    ["<C-s>"] = { "archive_done", mode = {"i", "n"}},
-    ["<C-x>"] = { "discard_task", mode = {"i", "n"}},
-  }
-
-  local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
-  F.m_picker(items, "Select TODO item(s)", actions, keys)
-end
 
 -- generate a keys and actions to handle multiple items.
 -- if you pass in anything that need access to the list, user must provide that object with the m_actions.
@@ -481,7 +324,7 @@ function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
         "",
       }
 
-      update_picker_preview(picker.buf, preview)
+      F.update_picker_preview(picker.buf, preview)
     end,
   }
 
@@ -501,7 +344,7 @@ end
 -- build a list of {text, link}
 function F.generate_bookmarks_picker()
   vim.cmd("fclose")
-  local items = F.process_md_link_file(vim.g.m_notes_path .. "/bookmarks.md")
+  local items = F.get_mdlink_lines(vim.g.m_notes_path .. "/bookmarks.md")
 
   vim.list_extend(items, picker_list_files(vim.g.m_scripts))
 
@@ -585,7 +428,7 @@ function F.set_title()
   if not (fname and fname~="") then
     return "[no file]"
   end
-  local icon = MiniIcons.get('file', fname).. ' '
+  -- local icon = MiniIcons.get('file', fname).. ' '
 
   fname = vim.fn.expand('%:p:h:t')..'/' .. fname
 
@@ -597,9 +440,9 @@ function F.set_title()
   end
 
   local readonly = vim.bo[0].readonly and " " or " "
-  local modified = vim.bo[0].modified and " " or icon
+  local modified = vim.bo[0].modified and " " or " "
 
-  return string.format("%s%s%s %s", session, fname, readonly, modified )
+  return string.format("%s%s%s%s", session, fname, readonly, modified )
 end
 
 return F

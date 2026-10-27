@@ -1,7 +1,8 @@
 local M = require('markdowns')
+local F = require('functions')
 
-function note_hl(picker, item)
-  local items = picker:selected({ fallback = true })
+function move_block_of_text(picker, item)
+  -- local items = picker:selected({ fallback = true })
 
   choices = {"Yes", "No"}
   vim.ui.select(choices, {prompt = "Move Line(s) to " .. item.text},
@@ -31,11 +32,72 @@ function note_hl(picker, item)
     end)
 end
 
-Snacks.picker.files({
-  cwd = vim.g.m_notes_path,
-  exclude = {
-    "archive",
-    "todo_notes",
-  },
-  confirm = note_hl
-})
+function picker_block_move(path)
+  Snacks.picker.files({
+    cwd = vim.g.m_notes_path,
+    exclude = {
+      "archive",
+      "todo_notes",
+    },
+    confirm = move_block_of_text
+  })
+end
+
+
+-- select heading 1 and all its content
+--
+--
+
+function get_h1_sections(bufnr, filter)
+  local query_string = [[
+  (section
+    (atx_heading
+      (atx_h1_marker)
+    ) @h1_marker
+  ) @h1_section
+]]
+
+  bufnr = bufnr or 0
+  local parser = vim.treesitter.get_parser(bufnr, 'markdown')
+  local tree = parser:parse()[1]
+  local root = tree:root()
+
+  local query = vim.treesitter.query.parse('markdown', query_string)
+  local results = {}
+
+  for id, node, _ in query:iter_captures(root, bufnr, 0, -1) do
+    local capture_name = query.captures[id]
+    if capture_name == 'h1_section' then
+      local start_row, _, end_row, _ = node:range()
+      local text = vim.treesitter.get_node_text(node, bufnr)
+      text = vim.split(text, "\r?\n", { plain = false })
+
+      local h1 = text[1]
+
+      local result = {
+        node = node,
+        range = {
+          start_row = start_row,
+          end_row   = end_row,
+        },
+        h1_block = text
+      }
+      if vim.trim(h1) == vim.trim(filter) then
+        return {result}
+      end
+      table.insert(results, result)
+    end
+  end
+
+  -- vim.notify(vim.inspect(results))
+  return results
+end
+
+F.map(
+  "n",
+  "<leader>mt",
+  function()
+    local res = get_h1_sections(nil, "# Headers")
+    vim.notify(vim.inspect(res))
+  end
+)

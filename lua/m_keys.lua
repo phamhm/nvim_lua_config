@@ -101,9 +101,22 @@ end, {desc="googling google"})
 -- end googling, }
 
 -- capture
-map('n', '<leader>cc', function()
-  vim.ui.input({ prompt = 'Capture: ' }, F.write_note )
-end, { desc = 'Capture text and apped to capture_notes.md' })
+map(
+  'n',
+  '<leader>cc',
+  function()
+    vim.ui.input({ prompt = 'Capture: ' },
+      function(input)
+        local note_text = {
+          "",
+          "# "..input,
+          string.format("+@c(%s)", os.date('%Y-%m-%d %H:%M'))
+        }
+        F.append_text_to_file(note_text, vim.g.m_notes_path .. "/TODO.md" )
+      end)
+  end,
+  { desc = 'Capture text and apped to capture_notes.md' }
+)
 
 map('n', '<leader>bb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
@@ -114,7 +127,7 @@ map('n', '<leader>bb', function()
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
     local note_text = "[" .. input .. "](" .. reg_p .. ")"
-    F.write_note(note_text, vim.g.m_notes_path .. "/bookmarks.md")
+    F.append_text_to_file(note_text, vim.g.m_notes_path .. "/bookmarks.md")
   end)
 end, {silent = true, desc = 'Capture url/bookmarking to bookmarks.md' })
 
@@ -221,5 +234,5 @@ end, {
 })
 
 
-map('n', 'q', '<nop>', { desc = 'Disable macro recording on q' })
+map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
 map('n', '<leader>Q', 'q', { desc = 'Remap macro recoring to C-Q' })

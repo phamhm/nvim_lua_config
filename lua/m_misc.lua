@@ -110,12 +110,12 @@ return {
           },
           lualine_c = {
             'location',
+            'branch',
             {
               F.set_title,
             },
-            'diagnostics',
-            'branch',
-            'diff',
+            -- 'diagnostics',
+            -- 'diff',
             {
               function()
                 if vim.g.m_todo ~="" then return MiniIcons.get("file", "TODO") .. " " .. vim.g.m_todo

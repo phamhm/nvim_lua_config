@@ -4,12 +4,12 @@ local date_time_format ='%Y-%m-%d %H:%M'
 
 function M.get_timestamp(line, letter)
   if line == "" or line == nil then
-    vim.notify("line can't be blank", vim.log.levels.ERROR)
+    vim.notify("get_timestamp line can't be blank", vim.log.levels.ERROR)
     return
   end
 
   if letter=="" or letter == nil then
-    vim.notify("param letter can't be blank", vim.log.levels.ERROR)
+    vim.notify("get_time_stamp param letter can't be blank", vim.log.levels.ERROR)
     return
   end
   local pattern = "@"..letter.."%(([^)]+)%)"
