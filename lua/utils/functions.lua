@@ -383,20 +383,8 @@ function F.m_picker(items, title, actions, keys)
     layout = {
       hidden = actions.hidden or {"preview"},
       layout = {
-        width = actions.width or 0.9,
-        height = actions.height or 0.9,
-        box = "horizontal",
-        {
-          box = "vertical",
-          { win = "input", height = 1, border = "rounded" },
-          { win = "list", border = "rounded" },
-        },
-        {
-          win = "preview",
-          title = "{preview}",
-          width = 0.8, -- 70% of the picker width goes to the preview window
-          border = "rounded"
-        },
+        width = actions.width or 0.3,
+        height = actions.height or 0.5,
       }
     },
     actions = actions,
@@ -406,15 +394,6 @@ function F.m_picker(items, title, actions, keys)
       },
       input = {
         keys = keys,
-      },
-      preview = {
-        keys = {
-          ["<C-h>"] = { "focus_list", mode = {"n"}},
-          ["<C-s>"] = { "save_preview", mode = {"i", "n"}},
-          ["i"] = {function() vim.cmd("startinsert") end , mode = {"n"}} -- have to define it here, default value enter input window
-        },
-        wo = {
-        }
       },
     },
     preview = actions.fn_preview,

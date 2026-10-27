@@ -14,6 +14,64 @@ local function flatten_picker_items(items)
     :flatten():totable()
 end
 
+local function todo_picker(items, title, actions, keys)
+  if not actions then
+    vim.notify("No actions for picker", vim.log.levels.ERROR)
+    return
+  end
+
+  if not items or #items==0 then
+    vim.notify("No item to pick")
+    return
+  end
+
+  Snacks.picker.pick({
+    source = "markdown_links",
+    items = items,
+    title = title or "select to run",
+    format = "text", -- Display only the title in the list
+    layout = {
+      hidden = actions.hidden or {"preview"},
+      layout = {
+        width = actions.width or 0.9,
+        height = actions.height or 0.9,
+        box = "horizontal",
+        {
+          box = "vertical",
+          { win = "input", height = 1, border = "rounded" },
+          { win = "list", border = "rounded" },
+        },
+        {
+          win = "preview",
+          title = "{preview}",
+          width = 0.8, -- 70% of the picker width goes to the preview window
+          border = "rounded"
+        },
+      }
+    },
+    actions = actions,
+    win = {
+      list = {
+        keys = keys,
+      },
+      input = {
+        keys = keys,
+      },
+      preview = {
+        keys = {
+          ["<C-h>"] = { "focus_list", mode = {"n"}},
+          ["<C-s>"] = { "save_preview", mode = {"i", "n"}},
+          ["i"] = {function() vim.cmd("startinsert") end , mode = {"n"}} -- have to define it here, default value enter input window
+        },
+        wo = {
+        }
+      },
+    },
+    preview = actions.fn_preview,
+    confirm = actions.fn_confirm,
+  })
+end
+
 local function _move_code(moving_indices, items, from_path, to_path)
   local move_lines = vim.iter(items)
     :filter(function(item) return vim.list_contains(moving_indices, item.idx) end)
@@ -239,7 +297,7 @@ function TODO.todo()
     ["<C-l>"] = { "focus_preview", mode = {"n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
-  F.m_picker(items, "Select TODO item(s)", actions, keys)
+  todo_picker(items, "Select TODO item(s)", actions, keys)
 end
 
 F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
