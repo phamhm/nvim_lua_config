@@ -1,13 +1,11 @@
 local F = require('utils.functions')
 local M = require('utils.markdowns')
 
-local TODO = {}
-
 local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO.md")
 local DISCARD_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/archive/discarded_notes.md")
 local SAVE_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/archive/save_notes.md")
 
--- take items that has the item.raws, and flatten it
+-- take items that has the item.content, and flatten it
 local function flatten_picker_items(items)
   return vim.iter(items)
     :map(function(item) return item.content end)
@@ -130,7 +128,7 @@ local function get_heading(bufnr, heading)
   return results
 end
 
-function TODO.todo()
+function todo()
   vim.cmd("fclose")
   -- opening a headless buffer
   local bufnr = vim.fn.bufadd(TODO_FILE_PATH)
@@ -300,6 +298,4 @@ function TODO.todo()
   todo_picker(items, "Select TODO item(s)", actions, keys)
 end
 
-F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
-
-return TODO
+F.map("n", "<C-`>", todo, {desc = "calling todo"})
