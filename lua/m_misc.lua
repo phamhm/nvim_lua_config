@@ -21,6 +21,19 @@ return {
         typeStyle = { italic = false, bold = false },
       })
       vim.cmd.colorscheme("kanso-zen")
+      local border_list = {
+        "SnacksPickerInputBorder",
+        "SnacksPickerBoxBorder",
+        "SnacksInputBorder",
+        "FloatBorder",
+        "SnacksInputTitle"
+      }
+      local hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
+      for _, border in ipairs(border_list) do
+        vim.api.nvim_set_hl(0, border, { fg= hl.fg})
+      end
+      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#BF40BF", bold = false })
+      -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#AA98A9", bold = false })
     end
   },
   -- {"vague-theme/vague.nvim",
