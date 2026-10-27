@@ -30,11 +30,6 @@ end
 
 -- this get the current line in the buffer
 function F.move_line_to_file(target_path, l_formatter)
-  -- local choice = vim.fn.confirm("Proceed to refile to ".. target_path.."?", "&Yes\n&No", 2)
-  -- if choice ~= 1 then
-  --   return
-  -- end
-
   l_formatter = l_formatter or function(x) return x end
 
   -- 1. Expand the target path (handles ~ or relative paths safely)
@@ -44,18 +39,14 @@ function F.move_line_to_file(target_path, l_formatter)
   local current_line = vim.api.nvim_get_current_line()
   current_line = l_formatter(current_line)
   if current_line == "" then
-    vim.notify("Can't move line")
+    vim.notify("Can't move empty line")
     return
   end
 
-  local file, err = io.open(expanded_path, "a")
-  if not file then
-    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
+  local res = vim.fn.writefile(current_line, expanded_path, "a")
+  if res == -1 then
     return
   end
-
-  file:write(current_line.. "\n")
-  file:close()
 
   -- 5. Delete the line from the active Neovim buffer
   -- nvim_buf_set_lines replaces a range of lines. Passing an empty table {} deletes them.
@@ -84,14 +75,11 @@ function F.bookmark_line(target_path)
   local link_text = vim.trim(string.sub(bracket_match, 2, -2))
   local url = vim.trim(string.sub(paren_match, 2, -2))
 
-  local file, err = io.open(expanded_path, "a")
-  if not file then
-    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
+  local line = string.format("[%s](%s)", link_text, url)
+  local res = vim.fn.writefile(line, expanded_path, "a")
+  if res == -1 then
     return
   end
-
-  file:write(string.format("[%s](%s)", link_text, url).. "\n")
-  file:close()
 
   -- 5. Delete the line from the active Neovim buffer
   -- nvim_buf_set_lines replaces a range of lines. Passing an empty table {} deletes them.
@@ -110,42 +98,6 @@ function F.format_os_altkey(key_formatter, repeat_n)
 
   return string.rep(key, repeat_n)
 end
-
-function F.copy_dated_lines(filepath, pattern)
-  -- Expand the file path (handles ~ for home directory, etc.)
-  local expanded_path = vim.fn.expand(filepath)
-
-  -- Open the file in read mode
-  local file = io.open(expanded_path, "r")
-  if not file then
-    vim.notify("Could not open file: " .. expanded_path, vim.log.levels.ERROR)
-    return
-  end
-
-  local matched_lines = {}
-  -- Lua pattern matching line start '^', literal bracket '%[',
-  -- 4 digits '%d%d%d%d', dash '%-', 2 digits, dash, 2 digits, literal bracket '%]'
-  -- Read file line by line
-  for line in file:lines() do
-    if vim.startswith(line, pattern) then
-      table.insert(matched_lines, line)
-    end
-  end
-  file:close()
-
-  -- Check if any lines matched
-  if #matched_lines == 0 then
-    vim.notify("No matching lines found starting with [yyyy-mm-dd]", vim.log.levels.WARN)
-    return
-  end
-
-  -- Join lines with newlines and set the '*' register (system clipboard)
-  local content = table.concat(matched_lines, "\n")
-  vim.fn.setreg('*', content)
-
-  vim.notify(string.format("Copied %d lines to the * register!", #matched_lines), vim.log.levels.INFO)
-end
-
 
 function F.menu_commands(items, title)
   Snacks.picker.pick({
