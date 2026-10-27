@@ -1,6 +1,5 @@
 local F = require("utils.functions")
 local M = require("utils.markdowns")
-local TODO = require("m_todo")
 local alt_key = F.format_os_altkey
 
 -- disable autocompletion in the windows. will work on vim.ui.open
@@ -383,7 +382,6 @@ local m_snacks = {
       end,
       desc="snack scrach reminder notes"
     },
-    { "<C-`>", TODO.todo, desc="snack picker todo notes" },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     {
       "<leader>q",

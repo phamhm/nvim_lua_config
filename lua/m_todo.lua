@@ -9,8 +9,9 @@ local SAVE_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/archive/save_notes.
 
 -- take items that has the item.raws, and flatten it
 local function flatten_picker_items(items)
-  local raws = vim.iter(items):map(function(item) return item.content end):totable()
-  return vim.iter(raws):flatten():totable()
+  return vim.iter(items)
+    :map(function(item) return item.content end)
+    :flatten():totable()
 end
 
 local function _move_code(moving_indices, items, from_path, to_path)
@@ -24,6 +25,7 @@ local function _move_code(moving_indices, items, from_path, to_path)
     :map(function(item) return item.content end) -- create a list of content without the meta data
     :flatten():totable() -- turn a list of lists into a list of strings
 
+
   -- update the the from file with the saved lines
   if vim.fn.writefile(save_lines, vim.fn.expand(from_path)) ~= 0 then
     vim.notify("Failed to write to file:"..from_path)
@@ -35,6 +37,7 @@ local function _move_code(moving_indices, items, from_path, to_path)
     vim.notify("Failed to write to file:" .. to_path)
     return
   end
+  vim.notify("Item moved to "..to_path)
 end
 
 local function get_heading(bufnr, heading)
@@ -106,7 +109,36 @@ function TODO.todo()
   local m_actions = {
     hidden = {"input"},
 
-    save_notes = function(picker, item)
+    save_preview = function(picker, item)
+      if picker.preview and picker.preview.win and picker.preview.win:valid() then
+        local win_id = picker.preview.win.win
+        local preview_bufnr = vim.api.nvim_win_get_buf(win_id)
+
+        -- 2. Check if the buffer is valid
+        if vim.api.nvim_buf_is_valid(preview_bufnr) then
+          -- 3. Read all lines from the preview buffer (0 to -1 means everything)
+          local new_content = vim.api.nvim_buf_get_lines(preview_bufnr, 0, -1, false)
+
+          if not vim.deep_equal(new_content, item.content) then
+            picker.list.items[item.idx].content = new_content
+            picker.list:update({ force = true })
+
+            local file_lines = flatten_picker_items(picker.list.items)
+            if vim.fn.writefile(file_lines, vim.fn.expand(TODO_FILE_PATH)) == 0 then
+              vim.notify("Saved preview content")
+            else
+              vim.notify("Failed to write new preview to ".. TODO_FILE_PATH)
+            end
+          else
+            vim.notify("Same content. Not saved")
+          end
+        end
+      else
+        vim.notify("Preview window is not open or active.", vim.log.levels.WARN)
+      end
+    end,
+
+    move_notes = function(picker, item)
       local items = picker:selected({ fallback = true })
       local moving_indices = vim.iter(items):map(function(i) return i.idx end):totable()
       _move_code(moving_indices, picker.list.items, TODO_FILE_PATH, SAVE_FILE_PATH)
@@ -202,11 +234,14 @@ function TODO.todo()
   local m_keys = {
     ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
     ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
-    ["<C-s>"] = { "save_notes", mode = {"i", "n"}},
+    ["<C-m>"] = { "move_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
+    ["<C-l>"] = { "focus_preview", mode = {"n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   F.m_picker(items, "Select TODO item(s)", actions, keys)
 end
+
+F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
 
 return TODO
