@@ -61,6 +61,13 @@ local m_snacks = {
   lazy = false,
   ---@type snacks.Config
   opts = {
+     lazygit = {
+      -- Override default theme colors mapped from Neovim highlights
+      theme = {
+        activeBorderColor = { fg = "MatchParen", bold = false },
+        inactiveBorderColor = { fg = "Comment" },
+      },
+    },
     scratch = {
       root = "/tmp", -- os will clear it.
       win = {

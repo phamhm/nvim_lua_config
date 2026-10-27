@@ -20,7 +20,7 @@ return {
         statementStyle = { bold = false },
         typeStyle = { italic = false, bold = false },
       })
-      vim.cmd.colorscheme("kanso-ink")
+      vim.cmd.colorscheme("kanso-zen")
     end
   },
   -- {"vague-theme/vague.nvim",
