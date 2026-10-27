@@ -1,7 +1,20 @@
 local F = require('utils.functions')
 
 return {
-  {'easymotion/vim-easymotion'},
+  -- {'easymotion/vim-easymotion'},
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = { },
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      -- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
+  },
   {'nvim-tree/nvim-web-devicons'},
   -- {'metalelf0/jellybeans-nvim'},
   -- {"catppuccin/nvim", name = "catppuccin",
@@ -32,8 +45,8 @@ return {
       for _, border in ipairs(border_list) do
         vim.api.nvim_set_hl(0, border, { fg= hl.fg})
       end
-      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#DAB1DA", bold = false })
-      -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#DAB1DA", bold = false })
+      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#93C572", bold = false })
+      vim.api.nvim_set_hl(0,  "LineNr", { fg = "#8A9A5B", bold = false })
     end
   },
   -- {"vague-theme/vague.nvim",
