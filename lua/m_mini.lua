@@ -145,7 +145,7 @@ local m_mini = {
           end
         end)
       end, desc = 'Save named session'},
-      {'<leader>sv',
+      {'<leader>sn',
         function()
           local session_name = vim.fs.basename( vim.v.this_session )
           if session_name ~= "" then

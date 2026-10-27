@@ -103,7 +103,7 @@ end, {desc="googling google"})
 -- capture
 map('n', '<leader>cc', function()
   vim.ui.input({ prompt = 'Capture: ' }, F.write_note )
-end, { desc = 'Capture text and apped to working_notes.md' })
+end, { desc = 'Capture text and apped to capture_notes.md' })
 
 map('n', '<leader>bb', function()
   local reg_p = vim.trim(vim.fn.getreg('*'))
@@ -116,7 +116,7 @@ map('n', '<leader>bb', function()
     local note_text = "[" .. input .. "](" .. reg_p .. ")"
     F.write_note(note_text, vim.g.m_notes_path .. "/bookmarks.md")
   end)
-end, {silent = true, desc = 'Capture url/bookmarking to working_notes.md' })
+end, {silent = true, desc = 'Capture url/bookmarking to bookmarks.md' })
 
 map('n', '<leader>vd',
   function()

@@ -10,10 +10,21 @@ function F.save_keys(key)
   end
 end
 
-function F.map(mode, lhs, rhs, opt)
-  local key = lhs ..":".. (opt.desc or "no description")
+function F.map(mode, lhs, rhs, opts)
+  if opts == nil then
+    opts = {silent = true, noremap = true}
+  else
+    if opts.silent == nil then
+      opts.silent = true
+    end
+    if opts.noremap == nil then
+      opts.noremap = true
+    end
+  end
+
+  local key = lhs ..":".. (opts and opts.desc or "no description")
   F.save_keys(key)
-  vim.keymap.set(mode, lhs, rhs, opt)
+  vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 function F.get_keys()

@@ -13,7 +13,7 @@ return {
         "ts_ls",        -- JavaScript/TypeScript LSP
         "lua_ls", -- Lua/Neovim
         "bashls",
-        "marksman",
+        -- "marksman",  <- this broke MiniFiles
       } -- your desired servers
     })
 

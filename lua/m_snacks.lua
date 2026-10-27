@@ -10,9 +10,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- this set actions for snacks.scrach
-local md_scratch_ops = function(md_name)
-  local keys = {
+local md_capture_keys ={
     ["todo"] = {
       "<C-t>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.md_create_link) end,
       desc = "Todo",
@@ -42,17 +40,56 @@ local md_scratch_ops = function(md_name)
     },
   }
 
+-- this set actions for snacks.scrach
+local function md_scratch_opts (md_name, keys)
+  local m_keys = {
+    ["buffer"] = {
+      "<C-b>",
+      function()
+        local full_path = vim.api.nvim_buf_get_name(0)
+        vim.cmd("fclose")
+        vim.cmd.edit(full_path)
+      end,
+      desc = "buffer",
+      mode = "n"
+    },
+  }
+
+  if keys then
+    m_keys = vim.tbl_deep_extend("force", m_keys, keys)
+  end
+
   return {
-    file = vim.fn.expand(vim.g.m_notes_path .. "/" .. md_name),
+    file = md_name,
     enter = true,
     name = md_name,
     ft = "markdown",
     win_by_ft = {
       markdown = {
-        keys = keys
+        keys = m_keys,
       },
+    },
+    win = {
+      width = 0.9,
+      height = 0.9
     }
   }
+end
+
+local fn_confirm = function(picker, item)
+  picker:close()
+  Snacks.scratch(md_scratch_opts(item._path))
+end
+
+local function m_picker_files(cwd, fn_confirm)
+  Snacks.picker.files({
+    cwd = cwd,
+    exclude = {
+      "archive",
+      "todo_notes",
+    },
+    confirm = fn_confirm
+  })
 end
 
 local m_snacks = {
@@ -267,13 +304,7 @@ local m_snacks = {
     -- this won't close any current floating windows.
     { "<leader>ww",
       function()
-        vim.cmd("fclose")
-
-        Snacks.picker.files({
-          title = "Notes files",
-          exclude = {"backups", "sessions", "assets", "archive", "todo_notes" },
-          cwd = vim.fn.expand(vim.g.m_notes_path),
-        })
+        m_picker_files(vim.g.m_notes_path, fn_confirm)
       end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
@@ -347,7 +378,7 @@ local m_snacks = {
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {
       alt_key("<C-%s-`>"), function()
-        Snacks.scratch(md_scratch_ops("capture_notes.md"))
+        Snacks.scratch(md_scratch_opts(vim.fn.expand(vim.g.m_notes_path .. "/capture_notes.md"), md_capture_keys))
       end,
       desc="snack scrach reminder notes"
     },
