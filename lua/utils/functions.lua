@@ -28,24 +28,6 @@ function F.write_note(note_text, destination)
   end
 end
 
-function F.append_text_to_file(m_text, target_path)
-  m_text = vim.trim(m_text)
-  if m_text=="" then
-    vim.notify("Text is blank. Can't append to file")
-    return
-  end
-  local expanded_path = vim.fn.expand(target_path)
-
-  local file, err = io.open(expanded_path, "a")
-  if not file then
-    vim.notify("Failed to open file: " .. tostring(err), vim.log.levels.ERROR)
-    return
-  end
-
-  file:write("\n" .. m_text)
-  file:close()
-end
-
 -- this get the current line in the buffer
 function F.move_line_to_file(target_path, l_formatter)
   -- local choice = vim.fn.confirm("Proceed to refile to ".. target_path.."?", "&Yes\n&No", 2)
@@ -81,21 +63,6 @@ function F.move_line_to_file(target_path, l_formatter)
   vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
 
   vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
-end
-
-local function append_line_to_file(line, file_path)
-  file_path = vim.fn.expand(file_path)
-  -- Open the file in append mode
-  local file = io.open(file_path, "a")
-
-  if file then
-    -- Write the line followed by a newline character
-    file:write(line .. "\n")
-    -- Always close the file to flush changes and free system resources
-    file:close()
-  else
-    error("Could not open file: " .. filepath)
-  end
 end
 
 function F.bookmark_line(target_path)
@@ -385,8 +352,10 @@ end
 
 -- "/archive/discarded_ideas.md"
 local function _move_todo(from_file_path, current_line, to_file_path)
-  replace_line_in_file(from_file_path, current_line, nil)
-  append_line_to_file(current_line, vim.g.m_notes_path .. to_file_path)
+  local res = vim.fn.writefile(current_line, vim.fn.expand(vim.g.m_notes_path .. to_file_path), "a")
+  if res ~= -1 then
+    replace_line_in_file(from_file_path, current_line, nil)
+  end
 end
 
 function F.generate_todo_picker()
@@ -455,7 +424,6 @@ function F.generate_todo_picker()
 
       if f_time then
         replace_line_in_file(todo_file_path, current_line, new_line)
-        -- append_line_to_file(new_line, vim.g.m_notes_path .. "/archive/done_tasks.md")
         vim.notify("Completed task:" .. item.text)
         if current_line == F.get_todo then
           F.clear_todo()
