@@ -1,6 +1,6 @@
-local utils = require("utils.functions")
-local alt_key = utils.format_os_altkey
-local map = utils.map
+local F = require("utils.functions")
+local alt_key = F.format_os_altkey
+local map = F.map
 
 vim.keymap.set(
   'n',
@@ -10,7 +10,7 @@ vim.keymap.set(
       ft = "text",
       name = "keys from utils.lua"
     })
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, utils.get_keys())
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, F.get_keys())
     vim.cmd("sort")
   end,
   {desc = "utils.keys"}
@@ -102,7 +102,7 @@ end, {desc="googling google"})
 
 -- capture
 map('n', '<leader>cc', function()
-  vim.ui.input({ prompt = 'Capture: ' }, utils.write_note )
+  vim.ui.input({ prompt = 'Capture: ' }, F.write_note )
 end, { desc = 'Capture text and apped to working_notes.md' })
 
 map('n', '<leader>bb', function()
@@ -114,7 +114,7 @@ map('n', '<leader>bb', function()
   vim.notify("Bookmarking:" .. reg_p)
   vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
     local note_text = "[" .. input .. "](" .. reg_p .. ")"
-    utils.write_note(note_text, vim.g.m_notes_path .. "/bookmarks.md")
+    F.write_note(note_text, vim.g.m_notes_path .. "/bookmarks.md")
   end)
 end, {silent = true, desc = 'Capture url/bookmarking to working_notes.md' })
 
@@ -219,3 +219,7 @@ end, {
   silent = true,
   noremap =true
 })
+
+
+map('n', 'q', '<nop>', { desc = 'Disable macro recording on q' })
+map('n', '<leader>Q', 'q', { desc = 'Remap macro recoring to C-Q' })
