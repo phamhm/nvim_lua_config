@@ -34,6 +34,13 @@ return {
         typeStyle = { italic = false, bold = false },
       })
       vim.cmd.colorscheme("kanso-zen")
+
+      vim.api.nvim_set_hl(0, "SnacksPickerSelected", {
+        fg = "#A3E635", -- Bright lime/green text
+        bg = "#27272A", -- Dark gray background tint
+        bold = true
+      })
+
       local border_list = {
         "SnacksPickerInputBorder",
         "SnacksPickerBoxBorder",
