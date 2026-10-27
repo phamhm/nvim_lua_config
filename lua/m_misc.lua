@@ -138,7 +138,7 @@ return {
             'location',
             {
               function()
-                return F.set_title(true)
+                return F.set_title()
               end
             },
           },
