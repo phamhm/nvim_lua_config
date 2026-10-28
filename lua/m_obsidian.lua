@@ -8,6 +8,11 @@ return {
       legacy_commands = false, -- this will be removed in 4.0.0
       link = { auto_update = true },
       note_id_func = require("obsidian.builtin").title_id,
+      templates = {
+        folder = "templates",
+        date_format = "%Y-%m-%d",
+        time_format = "%H%M",
+      },
       workspaces = {
         {
           name = "personal",

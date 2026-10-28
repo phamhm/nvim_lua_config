@@ -90,6 +90,7 @@ local function m_picker_files(cwd, fn_confirm)
       "assets",
       ".git",
       "node_modules",
+      "TODO", "DISCARDED",
     },
     confirm = fn_confirm
   })
