@@ -107,12 +107,16 @@ map(
   function()
     vim.ui.input({ prompt = 'Capture: ' },
       function(input)
-        local note_text = {
-          "",
-          "# "..input,
-          string.format("+@c(%s)", os.date('%Y-%m-%d %H:%M'))
-        }
-        F.append_text_to_file(note_text, vim.g.m_notes_path .. "/TODO.md" )
+        -- Obsidian new will open the new note.
+        -- this will save my current buffer then switch back to it.
+        local og_bufnr = vim.api.nvim_get_current_buf()
+        vim.cmd("Obsidian workspace todo")
+        vim.cmd(string.format("Obsidian new %s", input))
+        local obsidian_buf = vim.api.nvim_get_current_buf()
+        if og_bufnr then
+          vim.api.nvim_set_current_buf(og_bufnr)
+        end
+        vim.api.nvim_buf_delete(obsidian_buf, {})
       end)
   end,
   { desc = 'Capture text and apped to capture_notes.md' }

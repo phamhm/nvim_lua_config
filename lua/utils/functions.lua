@@ -2,6 +2,11 @@ local M = require('utils.markdowns')
 
 local F = {}
 
+ function F._inspect(obj)
+  vim.notify(vim.inspect(obj))
+end
+
+
 local custom_key_maps = {}
 
 function F.save_keys(key)
