@@ -4,12 +4,6 @@ local TODO = {}
 
 local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO")
 
--- take items that has the item.content, and flatten it
-local function flatten_picker_items(items)
-  return vim.iter(items)
-    :map(function(item) return item.content end)
-    :flatten():totable()
-end
 
 local function get_times(path)
   local time_prefixes = {"m_todo_Created:", "m_todo_Started:", "m_todo_Finished:"}
@@ -22,6 +16,7 @@ local function get_times(path)
             return true
           end
         end
+        return false
       end)
     :flatten()
     :fold({}, function(acc, val)
@@ -33,9 +28,9 @@ local function get_times(path)
 end
 
 local function update_time(file_path)
-  local dir_iter = vim.fs.dir(TODO_FILE_PATH)
+  local dir_iter = vim.fs.dir(file_path)
   return vim.iter(dir_iter)
-    :filter(function(name, ft) return ft=="file" end)
+    :filter(function(_, ft) return ft=="file" end)
     :map(function(name)
       local path = TODO_FILE_PATH..'/'..name
       return { [path] = get_times(path) }
@@ -44,23 +39,6 @@ local function update_time(file_path)
     return vim.tbl_deep_extend("force", acc, obj)
   end)
 end
-
-local function load_file_in_background(filepath)
-  -- 1. Create a new, valid buffer (listed=true, scratchpad=false)
-  local bufnr = vim.api.nvim_create_buf(true, false)
-
-  -- 2. Set the file path/name for the newly created buffer
-  vim.api.nvim_buf_set_name(bufnr, filepath)
-
-  -- 3. Run the edit command strictly inside that buffer's context to populate it
-  vim.api.nvim_buf_call(bufnr, function()
-    vim.cmd.edit({ bang = true })
-  end)
-
-  -- Returns the buffer number so you can manipulate or display it later
-  return bufnr
-end
-
 
 local function replace_first_in_buffer(filepath, old_text, new_text)
   -- Expand system paths like ~/ or $HOME
@@ -115,7 +93,6 @@ local function todo_picker(title, actions, keys)
     exclude = {"DONE/", "DISCARDED/", "templates/"},
     cwd = TODO_FILE_PATH,
     title = title or "select to run",
-    format = "text", -- Display only the title in the list
     layout = {
       hidden = actions.hidden or {"preview"},
       layout = {
@@ -186,11 +163,11 @@ function TODO.todo()
     end
   end
 
-  function m_actions.discard_notes(picker, item)
+  function m_actions.discard_notes(picker, _)
     F.clear_todo()
     local items = picker:selected({ fallback = true })
 
-    local it = vim.iter(items)
+    vim.iter(items)
       :map(function(item)
         local f_path = item._path
         local p_path = vim.fs.dirname(f_path)
@@ -204,11 +181,11 @@ function TODO.todo()
       :totable()
   end
 
-  function m_actions.done_notes(picker, item)
+  function m_actions.done_notes(picker, _)
     F.clear_todo()
     local items = picker:selected({ fallback = true })
 
-    local it = vim.iter(items)
+    vim.iter(items)
       :map(function(item)
         local f_path = item._path
         local p_path = vim.fs.dirname(f_path)
@@ -222,9 +199,7 @@ function TODO.todo()
       :totable()
   end
 
-  function m_actions.m_format(item, picker)
-    local display_text = item.text
-
+  function m_actions.m_format(item, _)
     local path = item.cwd .. '/' .. item.file
     local times = file_times_map[path]
     local started = times.m_todo_Started
