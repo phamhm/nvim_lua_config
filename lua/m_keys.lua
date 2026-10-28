@@ -111,7 +111,6 @@ map(
         -- this will save my current buffer then switch back to it.
         local og_bufnr = vim.api.nvim_get_current_buf()
         local ft = vim.bo.filetype
-        vim.notify(ft)
         vim.cmd("Obsidian workspace todo")
         vim.cmd(string.format("Obsidian new_from_template %s todo_notes", input))
         local obsidian_buf = vim.api.nvim_get_current_buf()
