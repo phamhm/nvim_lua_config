@@ -87,6 +87,9 @@ local function m_picker_files(cwd, fn_confirm)
     exclude = {
       "archive",
       "todo_notes",
+      "assets",
+      ".git",
+      "node_modules",
     },
     confirm = fn_confirm
   })
@@ -176,6 +179,7 @@ local m_snacks = {
             "target",
             "build",
             "archive",
+            "assets",
             ".*env*",
             "*env*",
             "*pycache*",

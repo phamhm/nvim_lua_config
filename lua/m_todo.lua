@@ -2,8 +2,8 @@ local F = require('utils.functions')
 local M = require('utils.markdowns')
 
 local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO.md")
-local DISCARD_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/archive/discarded_notes.md")
-local SAVE_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/archive/save_notes.md")
+local DISCARD_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/notes_archive/discarded_notes.md")
+local SAVE_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/notes_archive/save_notes.md")
 
 -- take items that has the item.content, and flatten it
 local function flatten_picker_items(items)
@@ -98,15 +98,14 @@ local function _move_code(moving_indices, items, from_path, to_path)
   vim.notify("Item moved to "..to_path)
 end
 
-local function get_heading(bufnr, heading)
+local function get_headings(bufnr, heading)
   local query_string = [[
   (section
-    (atx_heading
-      (atx_%s_marker)
-    ) @%s_marker
-  ) @%s_section
+    (atx_heading (atx_%s_marker)) @%s_marker) @%s_section
+
 ]]
-  query_string = string.format(query_string, heading, heading, heading)
+  -- (#not-has-ancestor? @%s_section "fenced_code_block")
+  query_string = string.format(query_string, heading, heading, heading, heading)
 
   bufnr = bufnr or 0
   local parser = vim.treesitter.get_parser(bufnr, 'markdown')
@@ -114,20 +113,20 @@ local function get_heading(bufnr, heading)
   local root = tree:root()
 
   local query = vim.treesitter.query.parse('markdown', query_string)
-  local results = {}
+  local headings = {}
 
   for id, node, _ in query:iter_captures(root, bufnr, 0, -1) do
     local capture_name = query.captures[id]
     if capture_name == 'h1_section' then
-      local start_row, _, end_row, _ = node:range()
-      local text = vim.treesitter.get_node_text(node, bufnr)
-      text = vim.split(text, "\r?\n", { plain = false })
+      -- local start_row, _, end_row, _ = node:range()
+      local heading_txt = vim.treesitter.get_node_text(node, bufnr)
+      local heading_table = vim.split(heading_txt, "\r?\n", { plain = false, trimempty = true })
 
-      table.insert(results, text)
+      table.insert(headings, heading_table)
     end
   end
 
-  return results
+  return headings
 end
 
 function todo()
@@ -136,27 +135,27 @@ function todo()
   local bufnr = vim.fn.bufadd(TODO_FILE_PATH)
   vim.fn.bufload(bufnr)
 
-  items = {}
-  for _, heading in ipairs(get_heading(bufnr, "h1")) do
-    local item = {
-      text = string.sub(heading[1], 3),
-      link = TODO_FILE_PATH,
-      raw_heading = string.sub(heading[1], 3),
-      content = heading -- contain what tree sitter return
-    }
-    table.insert(items, item)
-  end
+  local items = vim.iter(get_headings(bufnr, "h1"))
+    :map(function(heading)
+      local text = string.sub(heading[1], 3)
+
+      local _, s_time, f_time = M.get_times(heading[2])
+      if f_time then
+        text = " "..text
+      elseif s_time then
+        text = " "..text
+      end
+
+      return {
+        text = text,
+        link = TODO_FILE_PATH,
+        raw_heading = string.sub(heading[1], 3),
+        content = heading -- contain what tree sitter return
+      }
+    end):totable()
+
   vim.api.nvim_buf_delete(bufnr, {force = true}) -- close the tmp buffer
 
-  for _, item in ipairs(items) do
-    local datetime_line = item.content[2]
-    local _, s_time, f_time = M.get_times(datetime_line)
-    if f_time then
-      item.text = " "..item.text
-    elseif s_time then
-      item.text = " "..item.text
-    end
-  end
 
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
@@ -292,10 +291,12 @@ function todo()
     F.clear_todo()
     local items = picker:selected({ fallback = true })
     local moving_indices = vim.iter(items):map(function(i) return i.idx end):totable()
+
     _move_code(moving_indices, picker.list.items, TODO_FILE_PATH, DISCARD_FILE_PATH)
 
     picker.list.items = vim.iter(picker.list.items)
-      :filter(function(item) return not vim.list_contains(moving_indices, item.idx) end):totable()
+      :filter(function(item) return not vim.list_contains(moving_indices, item.idx) end)
+      :totable()
     picker.list:update({ force = true })
   end
 
