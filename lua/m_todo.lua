@@ -1,9 +1,8 @@
 local F = require('utils.functions')
-local M = require('utils.markdowns')
 
-local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO.md")
-local DISCARD_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/notes_archive/discarded_notes.md")
-local SAVE_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/notes_archive/save_notes.md")
+local TODO = {}
+
+local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO")
 
 -- take items that has the item.content, and flatten it
 local function flatten_picker_items(items)
@@ -12,20 +11,109 @@ local function flatten_picker_items(items)
     :flatten():totable()
 end
 
-local function todo_picker(items, title, actions, keys)
+local function get_times(path)
+  local time_prefixes = {"m_todo_Created:", "m_todo_Started:", "m_todo_Finished:"}
+
+  local lines = vim.iter(vim.fn.readfile(path))
+    :filter(
+      function(line)
+        for _, prefix in ipairs(time_prefixes) do
+          if vim.startswith(line, prefix) then
+            return true
+          end
+        end
+      end)
+    :flatten()
+    :fold({}, function(acc, val)
+      local res = vim.split(val, ':')
+      acc[res[1]] = res[2]
+      return acc
+    end)
+  return lines
+end
+
+local function update_time(file_path)
+  local dir_iter = vim.fs.dir(TODO_FILE_PATH)
+  return vim.iter(dir_iter)
+    :filter(function(name, ft) return ft=="file" end)
+    :map(function(name)
+      local path = TODO_FILE_PATH..'/'..name
+      return { [path] = get_times(path) }
+    end)
+    :fold({}, function(acc, obj)
+    return vim.tbl_deep_extend("force", acc, obj)
+  end)
+end
+
+local function load_file_in_background(filepath)
+  -- 1. Create a new, valid buffer (listed=true, scratchpad=false)
+  local bufnr = vim.api.nvim_create_buf(true, false)
+
+  -- 2. Set the file path/name for the newly created buffer
+  vim.api.nvim_buf_set_name(bufnr, filepath)
+
+  -- 3. Run the edit command strictly inside that buffer's context to populate it
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.cmd.edit({ bang = true })
+  end)
+
+  -- Returns the buffer number so you can manipulate or display it later
+  return bufnr
+end
+
+
+local function replace_first_in_buffer(filepath, old_text, new_text)
+  -- Expand system paths like ~/ or $HOME
+  local expanded_path = vim.fn.expand(filepath)
+
+  if vim.fn.filereadable(expanded_path) == 0 then
+    vim.notify("Error: File not found: " .. expanded_path, vim.log.levels.ERROR)
+    return
+  end
+
+  -- 1. Create a hidden background buffer and load the file lines into it
+  local bufnr = vim.fn.bufadd(expanded_path)
+  vim.fn.bufload(bufnr)
+
+  -- 2. Fetch all lines from the background buffer
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local target = string.format("^%s$", old_text)
+  local replaced = false
+
+  -- 3. Loop through lines to find and swap the first match
+  for i, line in ipairs(lines) do
+    if line:match(target) then
+      -- Replace just that specific line (0-indexed API)
+      vim.api.nvim_buf_set_lines(bufnr, i - 1, i, false, { new_text })
+      replaced = true
+      break -- Exit instantly so subsequent matches aren't touched
+    end
+  end
+
+  -- 4. If a change happened, commit it silently to disk and clean up
+  if replaced then
+    -- Write the hidden buffer changes to disk
+    vim.api.nvim_buf_call(bufnr, function()
+      vim.cmd("silent update")
+    end)
+    vim.notify("Replaced first match in background buffer for: " .. filepath, vim.log.levels.INFO)
+  else
+    vim.notify("Pattern not found in: " .. filepath, vim.log.levels.WARN)
+  end
+
+  -- 5. Delete the hidden buffer from memory to keep things clean
+  -- vim.api.nvim_buf_delete(bufnr, { force = true })
+end
+
+local function todo_picker(title, actions, keys)
   if not actions then
     vim.notify("No actions for picker", vim.log.levels.ERROR)
     return
   end
 
-  if not items or #items==0 then
-    vim.notify("No item to pick")
-    return
-  end
-
-  Snacks.picker.pick({
-    source = "markdown_links",
-    items = items,
+  Snacks.picker.files({
+    exclude = {"DONE/", "DISCARDED/", "templates/"},
+    cwd = TODO_FILE_PATH,
     title = title or "select to run",
     format = "text", -- Display only the title in the list
     layout = {
@@ -56,109 +144,26 @@ local function todo_picker(items, title, actions, keys)
         keys = keys,
       },
       preview = {
-        keys = {
-          ["<C-w>h"] = { "m_focus_list", mode = {"n"}},
-          ["<C-s>"] = { "save_preview", mode = {"i", "n"}},
-          ["<C-j>"] = { "m_list_down", mode = {"n"}},
-          ["<C-k>"] = { "m_list_up", mode = {"n"}},
-          ["i"] = {function() vim.cmd("startinsert") end , mode = {"n"}} -- have to define it here, default value enter input window
-        },
-        wo = {
-        }
+        keys = { },
       },
     },
-    preview = actions.fn_preview,
+    -- preview = actions.fn_preview,
     confirm = actions.fn_confirm,
+    -- transform = actions.m_transform,
+    format = actions.m_format,
   })
 end
 
-local function _move_code(moving_indices, items, from_path, to_path)
-  local move_lines = vim.iter(items)
-    :filter(function(item) return vim.list_contains(moving_indices, item.idx) end)
-    :map(function(item) return item.content end)
-    :flatten():totable()
-
-  local save_lines = vim.iter(items)
-    :filter(function(item) return not vim.list_contains(moving_indices, item.idx) end)
-    :map(function(item) return item.content end) -- create a list of content without the meta data
-    :flatten():totable() -- turn a list of lists into a list of strings
-
-
-  -- update the the from file with the saved lines
-  if vim.fn.writefile(save_lines, vim.fn.expand(from_path)) ~= 0 then
-    vim.notify("Failed to write to file:"..from_path)
-    return
-  end
-
-  -- append  the to_move lines into the to_move files md
-  if vim.fn.writefile(move_lines, vim.fn.expand(to_path), "a") ~=0 then
-    vim.notify("Failed to write to file:" .. to_path)
-    return
-  end
-  vim.notify("Item moved to "..to_path)
-end
-
-local function get_headings(bufnr, heading)
-  local query_string = [[
-  (section
-    (atx_heading (atx_%s_marker)) @%s_marker) @%s_section
-
-]]
-  -- (#not-has-ancestor? @%s_section "fenced_code_block")
-  query_string = string.format(query_string, heading, heading, heading, heading)
-
-  bufnr = bufnr or 0
-  local parser = vim.treesitter.get_parser(bufnr, 'markdown')
-  local tree = parser:parse()[1]
-  local root = tree:root()
-
-  local query = vim.treesitter.query.parse('markdown', query_string)
-  local headings = {}
-
-  for id, node, _ in query:iter_captures(root, bufnr, 0, -1) do
-    local capture_name = query.captures[id]
-    if capture_name == 'h1_section' then
-      -- local start_row, _, end_row, _ = node:range()
-      local heading_txt = vim.treesitter.get_node_text(node, bufnr)
-      local heading_table = vim.split(heading_txt, "\r?\n", { plain = false, trimempty = true })
-
-      table.insert(headings, heading_table)
-    end
-  end
-
-  return headings
-end
-
-function todo()
+function TODO.todo()
   vim.cmd("fclose")
   -- opening a headless buffer
-  local bufnr = vim.fn.bufadd(TODO_FILE_PATH)
-  vim.fn.bufload(bufnr)
 
-  local items = vim.iter(get_headings(bufnr, "h1"))
-    :map(function(heading)
-      local text = string.sub(heading[1], 3)
+  local file_times_map = update_time(TODO_FILE_PATH)
 
-      local _, s_time, f_time = M.get_times(heading[2])
-      if f_time then
-        text = " "..text
-      elseif s_time then
-        text = " "..text
-      end
-
-      return {
-        text = text,
-        link = TODO_FILE_PATH,
-        raw_heading = string.sub(heading[1], 3),
-        content = heading -- contain what tree sitter return
-      }
-    end):totable()
-
-  vim.api.nvim_buf_delete(bufnr, {force = true}) -- close the tmp buffer
-
+  local file_counter = vim.tbl_count(file_times_map)
 
   -- 4. Open the Snacks picker if we found any links
-  if #items == 0 then
+  if file_counter == 0 then
     vim.notify("No todo item", vim.log.levels.WARN)
     return
   end
@@ -166,59 +171,6 @@ function todo()
   local m_actions = {
     hidden = {"input"},
   }
-
-  function m_actions.save_preview (picker, item)
-    if picker.preview and picker.preview.win and picker.preview.win:valid() then
-      local preview_bufnr = picker.preview.win.buf
-
-      -- 2. Check if the buffer is valid
-      if vim.api.nvim_buf_is_valid(preview_bufnr) then
-        -- 3. Read all lines from the preview buffer (0 to -1 means everything)
-        local new_content = vim.api.nvim_buf_get_lines(preview_bufnr, 0, -1, false)
-
-        if not vim.deep_equal(new_content, item.content) then
-          picker.list.items[item.idx].content = new_content
-          picker.list:update({ force = true })
-
-          local file_lines = flatten_picker_items(picker.list.items)
-          if vim.fn.writefile(file_lines, vim.fn.expand(TODO_FILE_PATH)) == 0 then
-            vim.notify("Saved preview content")
-          else
-            vim.notify("Failed to write new preview to ".. TODO_FILE_PATH)
-          end
-        else
-          vim.notify("Same content. Not saved")
-        end
-      end
-    else
-      vim.notify("Preview window is not open or active.", vim.log.levels.WARN)
-    end
-  end
-
-  function m_actions.m_focus_list(picker, item)
-    m_actions.save_preview(picker, item)
-    Snacks.picker.actions.focus_list(picker)
-  end
-
-  function m_actions.m_list_up(picker, item)
-    m_actions.save_preview(picker, item)
-    Snacks.picker.actions.list_up(picker)
-  end
-
-  function m_actions.m_list_down(picker, item)
-    m_actions.save_preview(picker, item)
-    Snacks.picker.actions.list_down(picker)
-  end
-
-  function m_actions.move_notes(picker, item)
-    local items = picker:selected({ fallback = true })
-    local moving_indices = vim.iter(items):map(function(i) return i.idx end):totable()
-    _move_code(moving_indices, picker.list.items, TODO_FILE_PATH, SAVE_FILE_PATH)
-
-    picker.list.items = vim.iter(picker.list.items)
-      :filter(function(item) return not vim.list_contains(moving_indices, item.idx) end):totable()
-    picker.list:update({ force = true })
-  end
 
   function m_actions.set_todo(picker, item)
     local items = picker:selected({ fallback = true })
@@ -234,94 +186,106 @@ function todo()
     end
   end
 
-  function m_actions.advance_time(picker, item)
-    local items = picker:selected({ fallback = true })
-    if #items>1 then
-      vim.notify("Can't advance time on multiple items")
-      return
-    end
-
-    local datetime_line = item.content[2]
-    local current_f_time = M.get_timestamp(datetime_line, "f")
-    if current_f_time then
-      vim.notify("Task is DONE")
-      if item.text == F.get_todo() then
-        F.clear_todo()
-      end
-      return
-    end
-
-    local new_datetime_line = M.advance_todo_time(datetime_line)
-    item.content[2] = new_datetime_line -- update the the new time. also update picker.list.items
-    local _, s_time, f_time = M.get_times(new_datetime_line)
-
-    if f_time then
-      vim.notify("Task is DONE")
-      if item.text == F.get_todo() then
-        F.clear_todo()
-      end
-      item.text = " "..vim.fn.strcharpart(item.text, 2) -- must be strcharpart because unicode first character
-    elseif s_time then
-      vim.notify("Starting:" .. item.text)
-      F.set_todo(item.raw_heading)
-      item.text = " "..item.text
-    end
-
-    if date_line == new_datetime_line then
-      return
-    end
-
-    picker.list.items[item.idx] = item
-    picker.list:update({ force = true })
-
-    local file_lines = flatten_picker_items(picker.list.items)
-
-    if vim.fn.writefile(file_lines, vim.fn.expand(TODO_FILE_PATH)) ~= 0 then
-      vim.notify("Failed to write to ".. TODO_FILE_PATH)
-    end
-
-    -- currently not in preview window. must check if there is an preview number to reload it
-    if picker and picker.preview and picker.preview.win:valid() then
-      local preview_buf = vim.api.nvim_win_get_buf(picker.preview.win.win)
-      F.update_picker_preview(preview_buf, item.content)
-    end
-  end
-
   function m_actions.discard_notes(picker, item)
     F.clear_todo()
     local items = picker:selected({ fallback = true })
-    local moving_indices = vim.iter(items):map(function(i) return i.idx end):totable()
 
-    _move_code(moving_indices, picker.list.items, TODO_FILE_PATH, DISCARD_FILE_PATH)
+    local it = vim.iter(items)
+      :map(function(item)
+        local f_path = item._path
+        local p_path = vim.fs.dirname(f_path)
+        local fname = item.text
+        local new_path = p_path .. '/DISCARDED/' .. fname
 
-    picker.list.items = vim.iter(picker.list.items)
-      :filter(function(item) return not vim.list_contains(moving_indices, item.idx) end)
+        vim.uv.fs_rename(f_path, new_path, function() vim.notify("renamed to " .. new_path) picker:refresh() end)
+
+        return ""
+      end)
       :totable()
-    picker.list:update({ force = true })
   end
 
-  function m_actions.fn_preview(picker)
-    if picker.preview and picker.preview.win then
-      vim.bo[picker.buf].filetype = "markdown"
-      vim.bo[picker.buf].modifiable = true
-      vim.bo[picker.buf].readonly = false
+  function m_actions.done_notes(picker, item)
+    F.clear_todo()
+    local items = picker:selected({ fallback = true })
 
-      pcall(function()
-        require("render-markdown").enable(picker.buf)
+    local it = vim.iter(items)
+      :map(function(item)
+        local f_path = item._path
+        local p_path = vim.fs.dirname(f_path)
+        local fname = item.text
+        local new_path = p_path .. '/DONE/' .. fname
+
+        vim.uv.fs_rename(f_path, new_path, function() vim.notify("renamed to " .. new_path) picker:refresh() end)
+
+        return ""
       end)
-      vim.api.nvim_buf_set_lines(picker.buf, 0, -1, false, picker.item.content)
+      :totable()
+  end
+
+  function m_actions.m_format(item, picker)
+    local display_text = item.text
+
+    local path = item.cwd .. '/' .. item.file
+    local times = file_times_map[path]
+    local started = times.m_todo_Started
+    local finished = times.m_todo_Finished
+
+    local status = ""
+    if finished and finished ~= "" then
+      status= " "
+    elseif started and started ~="" then
+      status= " "
     end
+
+
+    return {
+      { status , "CursorLinNr" }, -- Replace with your desired highlight group
+      { item.text:gsub("-", " "):gsub(".md", "") , "String" }, -- Replace with your desired highlight group
+    }
+  end
+
+  -- function m_actions.m_transform(item, picker)
+  -- end
+
+  function m_actions.m_advance_todo(picker, item)
+    local items = picker:selected({ fallback = true })
+    if #items>1 then
+      vim.notify("Can't advance time on multiple items", vim.log.levels.ERROR)
+      return
+    end
+
+    local file_path = item.cwd .. '/' .. item.file
+    local times = file_times_map[file_path]
+    local started = times.m_todo_Started
+    local finished = times.m_todo_Finished
+    local new_date = os.date("%Y-%m-%d %H%M")
+    if started and started == "" then
+      replace_first_in_buffer(file_path, "m_todo_Started:", "m_todo_Started: " .. new_date)
+      file_times_map[file_path]["m_todo_Started"] = new_date
+    elseif finished and finished == "" then
+      replace_first_in_buffer(file_path, "m_todo_Finished:", "m_todo_Finished: " .. new_date)
+      file_times_map[file_path]["m_todo_Finished"] = new_date
+    end
+
+    picker:refresh()
+  end
+
+
+  function m_actions.fn_confirm(picker, item)
+    picker:close()
+    Snacks.scratch.open({file = item._path, name = item.text})
   end
 
   local m_keys = {
-    ["<C-a>"] = { "advance_time", mode = {"i", "n"}},
-    ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
-    ["<C-m>"] = { "move_notes", mode = {"i", "n"}},
+    ["<C-a>"] = { "m_advance_todo", mode = {"i", "n"}},
+    ["<C-j>"] = { "list_down", mode = {"i", "n"}},
+    ["<C-k>"] = { "list_up", mode = {"i", "n"}},
+    ["<C-f>"] = { "done_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
     ["<C-w>l"] = { "focus_preview", mode = {"n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
-  todo_picker(items, "Select TODO item(s)", actions, keys)
+  todo_picker("Select TODO item(s)", actions, keys)
 end
 
-F.map("n", "<C-`>", todo, {desc = "calling todo"})
+F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})

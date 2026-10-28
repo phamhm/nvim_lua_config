@@ -2,6 +2,11 @@ local M = require('utils.markdowns')
 
 local F = {}
 
+function F._inspect(obj)
+  vim.notify(vim.inspect(obj))
+end
+
+
 local custom_key_maps = {}
 
 function F.save_keys(key)
@@ -275,7 +280,9 @@ function F.get_todo()
 end
 
 function F.clear_todo()
-  vim.notify("Clear todo:" .. vim.g.m_todo)
+  if vim.g.m_todo ~="" then
+    vim.notify("Clear todo:" .. vim.g.m_todo)
+  end
   vim.g.m_todo = ""
 end
 
