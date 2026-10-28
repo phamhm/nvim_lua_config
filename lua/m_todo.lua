@@ -170,8 +170,7 @@ function todo()
 
   function m_actions.save_preview (picker, item)
     if picker.preview and picker.preview.win and picker.preview.win:valid() then
-      local win_id = picker.preview.win.win
-      local preview_bufnr = vim.api.nvim_win_get_buf(win_id)
+      local preview_bufnr = picker.preview.win.buf
 
       -- 2. Check if the buffer is valid
       if vim.api.nvim_buf_is_valid(preview_bufnr) then
