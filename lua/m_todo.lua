@@ -149,7 +149,8 @@ local function todo_picker(title, actions, keys)
     },
     -- preview = actions.fn_preview,
     confirm = actions.fn_confirm,
-    transform = actions.m_transform,
+    -- transform = actions.m_transform,
+    format = actions.m_format,
   })
 end
 
@@ -157,13 +158,15 @@ function TODO.todo()
   vim.cmd("fclose")
   -- opening a headless buffer
 
-  local files = update_time(TODO_FILE_PATH)
+  local file_times_map = update_time(TODO_FILE_PATH)
+
+  local file_counter = vim.tbl_count(file_times_map)
 
   -- 4. Open the Snacks picker if we found any links
-  -- if file_counter == 0 then
-  --   vim.notify("No todo item", vim.log.levels.WARN)
-  --   return
-  -- end
+  if file_counter == 0 then
+    vim.notify("No todo item", vim.log.levels.WARN)
+    return
+  end
 
   local m_actions = {
     hidden = {"input"},
@@ -219,24 +222,30 @@ function TODO.todo()
       :totable()
   end
 
-  function m_actions.m_transform(item, ctx)
-    item.text = item.text:gsub("-", " "):gsub(".md", "")
+  function m_actions.m_format(item, picker)
+    local display_text = item.text
+
     local path = item.cwd .. '/' .. item.file
-    local times = files[path]
+    local times = file_times_map[path]
     local started = times.m_todo_Started
     local finished = times.m_todo_Finished
 
+    local status = ""
     if finished and finished ~= "" then
-      item.text = " " .. item.text:gsub("-", " "):gsub(".md", "")
-      item.status = 1
+      status= " "
     elseif started and started ~="" then
-      item.text = " " .. item.text:gsub("-", " "):gsub(".md", "")
-      item.status = 2
-    else
-      item.status = 3
+      status= " "
     end
-    return item
+
+
+    return {
+      { status , "CursorLinNr" }, -- Replace with your desired highlight group
+      { item.text:gsub("-", " "):gsub(".md", "") , "String" }, -- Replace with your desired highlight group
+    }
   end
+
+  -- function m_actions.m_transform(item, picker)
+  -- end
 
   function m_actions.m_advance_todo(picker, item)
     local items = picker:selected({ fallback = true })
@@ -246,17 +255,18 @@ function TODO.todo()
     end
 
     local file_path = item.cwd .. '/' .. item.file
-    local times = files[file_path]
+    local times = file_times_map[file_path]
     local started = times.m_todo_Started
     local finished = times.m_todo_Finished
     local new_date = os.date("%Y-%m-%d %H%M")
     if started and started == "" then
       replace_first_in_buffer(file_path, "m_todo_Started:", "m_todo_Started: " .. new_date)
+      file_times_map[file_path]["m_todo_Started"] = new_date
     elseif finished and finished == "" then
       replace_first_in_buffer(file_path, "m_todo_Finished:", "m_todo_Finished: " .. new_date)
+      file_times_map[file_path]["m_todo_Finished"] = new_date
     end
 
-    files = update_time(TODO_FILE_PATH)
     picker:refresh()
   end
 

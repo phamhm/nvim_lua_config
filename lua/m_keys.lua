@@ -110,13 +110,15 @@ map(
         -- Obsidian new will open the new note.
         -- this will save my current buffer then switch back to it.
         local og_bufnr = vim.api.nvim_get_current_buf()
+        local ft = vim.bo.filetype
+        vim.notify(ft)
         vim.cmd("Obsidian workspace todo")
         vim.cmd(string.format("Obsidian new_from_template %s todo_notes", input))
         local obsidian_buf = vim.api.nvim_get_current_buf()
-        if og_bufnr then
+        if og_bufnr and ft ~= "snacks_dashboard" then
           vim.api.nvim_set_current_buf(og_bufnr)
         end
-        vim.api.nvim_buf_delete(obsidian_buf, {})
+        vim.api.nvim_buf_delete(obsidian_buf, {force = true})
       end)
   end,
   { desc = 'Capture text and apped to capture_notes.md' }
