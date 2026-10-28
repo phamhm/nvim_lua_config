@@ -57,7 +57,7 @@ local function todo_picker(items, title, actions, keys)
       },
       preview = {
         keys = {
-          ["<C-h>"] = { "m_focus_list", mode = {"n"}},
+          ["<C-w>h"] = { "m_focus_list", mode = {"n"}},
           ["<C-s>"] = { "save_preview", mode = {"i", "n"}},
           ["<C-j>"] = { "m_list_down", mode = {"n"}},
           ["<C-k>"] = { "m_list_up", mode = {"n"}},
@@ -318,7 +318,7 @@ function todo()
     ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
     ["<C-m>"] = { "move_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
-    ["<C-l>"] = { "focus_preview", mode = {"n"}},
+    ["<C-w>l"] = { "focus_preview", mode = {"n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   todo_picker(items, "Select TODO item(s)", actions, keys)

@@ -5,6 +5,7 @@ vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.m_notes_path = "~/Documents/notes"
+vim.g.m_obsidan_path = "~/Documents/Obsidian"
 vim.g.m_scripts = "~/Documents/configs/scripts/"
 vim.g.m_todo = ""
 vim.g.global_status = ""
@@ -37,6 +38,7 @@ require('lazy').setup({
   require('m_autopair'),
   require('m_surround'),
   require('m_misc'),
+  require('m_obsidian'),
 })
 
 -- setup must be called before loading
