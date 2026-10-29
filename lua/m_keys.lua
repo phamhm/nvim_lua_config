@@ -2,7 +2,7 @@ local F = require("utils.functions")
 local alt_key = F.format_os_altkey
 local map = F.map
 
-local CAPTURE_NOTE_PATH = vim.fn.expand(vim.g.m_notes_path .. '/capture_notes.md')
+local CAPTURE_NOTE_DIR = vim.fn.expand(vim.g.m_notes_path .. '/CAPTURE_NOTES')
 
 vim.keymap.set(
   'n',
@@ -206,7 +206,6 @@ map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
 
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
 
-
 map('n', alt_key("<leader>cl"), function()
   vim.g.m_todo = ""
   vim.g.global_status = ""
@@ -245,7 +244,6 @@ end, {
   noremap =true
 })
 
-
 map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
 map('n', '<leader>Q', 'q', { desc = 'Remap macro recoring to C-Q' })
 
@@ -261,9 +259,27 @@ map("v", "<leader>nn",
     local ending = {'```'}
 
     vim.ui.input({prompt = "Note header"}, function(input)
-      local header = {"", string.format("# %s", input), ""}
-      local note = vim.iter({header, leading, lines, ending}):flatten():totable()
-      vim.fn.writefile(note, CAPTURE_NOTE_PATH, "a")
+      local new_date = os.date("%Y-%m-%d %H:%M")
+      local header = {"", string.format("# %s [%s]", input, new_date ), ""}
+      local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, vim.bo.filetype)
+
+      local yaml = {
+        "---",
+        "tags:",
+        " - "..vim.bo.filetype,
+        "---",
+        ""
+      }
+
+      local lines_list = {header, leading, lines, ending}
+      F._inspect(lines_list)
+      local stat = vim.uv.fs_stat(target_file)
+      if stat == nil then
+        lines_list = vim.list_extend(yaml, lines_list)
+      end
+
+      local note = vim.iter(lines_list):flatten():totable()
+      vim.fn.writefile(note, target_file, "a")
     end)
 
     -- Flatten the array of lines into a single string variable
