@@ -110,6 +110,39 @@ local function todo_picker(title, actions, keys)
   })
 end
 
+local function move_file(picker, location)
+  F.clear_todo()
+  local items = picker:selected({ fallback = true })
+
+  --remove items from list before actually removing the files
+  local indices_to_remove = vim.iter(items):map(function(i) return i.idx end):totable()
+  picker.list.items = vim.iter(picker.list.items)
+    :filter(
+      function(i)
+        return not vim.tbl_contains(indices_to_remove, i.idx)
+      end
+    ):totable()
+
+  picker.list:update({force = true})
+
+  vim.iter(items)
+    :each(
+    function(item)
+      local f_path = item._path
+      local p_path = vim.fs.dirname(f_path)
+      local fname = item.text
+      local new_path = p_path .. location .. fname
+
+      local success, err = vim.uv.fs_rename(f_path, new_path)
+      if success then
+        vim.notify("renamed to " .. new_path)
+      else
+        vim.notify("Failed to move to :"..  new_path)
+      end
+    end)
+  picker:refresh()
+end
+
 function TODO.todo()
   vim.cmd("fclose")
   -- opening a headless buffer
@@ -143,47 +176,11 @@ function TODO.todo()
   end
 
   function m_actions.discard_notes(picker, _)
-    F.clear_todo()
-    local items = picker:selected({ fallback = true })
-
-    vim.iter(items)
-      :each(
-      function(item)
-        local f_path = item._path
-        local p_path = vim.fs.dirname(f_path)
-        local fname = item.text
-        local new_path = p_path .. '/DISCARDED/' .. fname
-
-        local success, err = vim.uv.fs_rename(f_path, new_path)
-        picker:refresh()
-        if success then
-          vim.notify("Discarded to " .. new_path)
-        else
-          vim.notify("Failed to discard to :"..  new_path)
-        end
-      end)
+    move_file(picker, "/DISCARDED/")
   end
 
   function m_actions.done_notes(picker, _)
-    F.clear_todo()
-    local items = picker:selected({ fallback = true })
-
-    vim.iter(items)
-      :each(
-      function(item)
-        local f_path = item._path
-        local p_path = vim.fs.dirname(f_path)
-        local fname = item.text
-        local new_path = p_path .. '/DONE/' .. fname
-
-        local success, err = vim.uv.fs_rename(f_path, new_path)
-        picker:refresh()
-        if success then
-          vim.notify("renamed to " .. new_path)
-        else
-          vim.notify("Failed to move to :"..  new_path)
-        end
-      end)
+    move_file(picker, "/DONE/")
   end
 
   function m_actions.m_format(item, _)

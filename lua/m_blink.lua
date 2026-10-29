@@ -11,6 +11,7 @@ return {
   opts = {
     -- Default keymap preset ('default', 'super-tab', or 'enter')
     keymap = { preset = 'default' },
+    completion = { documentation = { auto_show = false } },
 
     appearance = {
       -- Sets the fallback highlight groups to nvim-cmp's highlight groups
@@ -22,6 +23,7 @@ return {
 
     -- Default list of enabled providers
     sources = {
+      min_keyword_length = 2,
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
   },
