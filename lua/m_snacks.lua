@@ -76,7 +76,6 @@ local function md_scratch_opts (md_name, keys)
   }
 end
 
-
 local function m_picker_files(cwd, fn_confirm)
   Snacks.picker.files({
     cwd = cwd,
@@ -86,9 +85,10 @@ local function m_picker_files(cwd, fn_confirm)
       "assets",
       ".git",
       "node_modules",
+      "attachments",
       "TODO", "DISCARDED",
     },
-    confirm = function(picker, item)
+    confirm = fn_confirm or function(picker, item)
       picker:close()
       vim.cmd("fclose!")
       Snacks.scratch(md_scratch_opts(item._path))
@@ -113,11 +113,13 @@ local m_snacks = {
     scratch = {
       root = "/tmp", -- os will clear it.
       win = {
-        width = 0.7,
-        height = 0.8,
+        width = 0.4,
+        height = 0.9,
         border = "rounded",
         wo = {
           wrap = true,
+          number = false,
+          relativenumber = false,
         }
       },
     },
@@ -138,7 +140,7 @@ local m_snacks = {
         position = "float",
         keys = {
           -- Overrides the double-escape behavior to exit instantly
-          term_normal = { "<C-q>", "<cmd>stopinsert<CR>", mode = "t", desc = "Escape to normal mode" },
+          term_normal = { "<C-/>", "<cmd>stopinsert<CR>", mode = "t", desc = "Escape to normal mode" },
         },
       }
     },
@@ -174,6 +176,26 @@ local m_snacks = {
           }
         },
         files = {
+          layout = {
+            hidden = {},
+            layout = {
+              min_width = 0,
+              width = 0.8,
+              height = 0.9,
+              box = "horizontal",
+              {
+                box = "vertical",
+                { win = "input", height = 1, border = "rounded" },
+                { win = "list", border = "rounded" },
+              },
+              {
+                win = "preview",
+                title = "{preview}",
+                width = 0.8, -- 70% of the picker width goes to the preview window
+                border = "rounded"
+              },
+            }
+          },
           exclude = {
             ".git",
             "node_modules",
@@ -310,7 +332,7 @@ local m_snacks = {
     -- this won't close any current floating windows.
     { "<leader>ww",
       function()
-        m_picker_files(vim.g.m_notes_path, fn_confirm)
+        m_picker_files(vim.g.m_notes_path )
       end,desc = "Help Page" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},

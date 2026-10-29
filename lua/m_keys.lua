@@ -2,6 +2,8 @@ local F = require("utils.functions")
 local alt_key = F.format_os_altkey
 local map = F.map
 
+local CAPTURE_NOTE_PATH = vim.fn.expand(vim.g.m_notes_path .. '/capture_notes.md')
+
 vim.keymap.set(
   'n',
   "<leader>mk",
@@ -246,3 +248,25 @@ end, {
 
 map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
 map('n', '<leader>Q', 'q', { desc = 'Remap macro recoring to C-Q' })
+
+map("v", "<leader>nn",
+  function()
+    local s_pos = vim.fn.getpos("v")
+    local e_pos = vim.fn.getpos(".")
+
+    -- Get the tert lines within that region
+    local lines = vim.fn.getregion(s_pos, e_pos, { type = vim.fn.mode() })
+
+    local leading = {'```'..vim.bo.filetype}
+    local ending = {'```'}
+
+    vim.ui.input({prompt = "Note header"}, function(input)
+      local header = {"", string.format("# %s", input), ""}
+      local note = vim.iter({header, leading, lines, ending}):flatten():totable()
+      vim.fn.writefile(note, CAPTURE_NOTE_PATH, "a")
+    end)
+
+    -- Flatten the array of lines into a single string variable
+    -- return selected_code
+  end,
+  {desc="make notes"})
