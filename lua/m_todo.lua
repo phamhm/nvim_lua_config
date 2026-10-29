@@ -147,17 +147,21 @@ function TODO.todo()
     local items = picker:selected({ fallback = true })
 
     vim.iter(items)
-      :map(function(item)
+      :each(
+      function(item)
         local f_path = item._path
         local p_path = vim.fs.dirname(f_path)
         local fname = item.text
         local new_path = p_path .. '/DISCARDED/' .. fname
 
-        vim.uv.fs_rename(f_path, new_path, function() vim.notify("renamed to " .. new_path) picker:refresh() end)
-
-        return ""
+        local success, err = vim.uv.fs_rename(f_path, new_path)
+        picker:refresh()
+        if success then
+          vim.notify("Discarded to " .. new_path)
+        else
+          vim.notify("Failed to discard to :"..  new_path)
+        end
       end)
-      :totable()
   end
 
   function m_actions.done_notes(picker, _)
@@ -165,17 +169,21 @@ function TODO.todo()
     local items = picker:selected({ fallback = true })
 
     vim.iter(items)
-      :map(function(item)
+      :each(
+      function(item)
         local f_path = item._path
         local p_path = vim.fs.dirname(f_path)
         local fname = item.text
         local new_path = p_path .. '/DONE/' .. fname
 
-        vim.uv.fs_rename(f_path, new_path, function() vim.notify("renamed to " .. new_path) picker:refresh() end)
-
-        return ""
+        local success, err = vim.uv.fs_rename(f_path, new_path)
+        picker:refresh()
+        if success then
+          vim.notify("renamed to " .. new_path)
+        else
+          vim.notify("Failed to move to :"..  new_path)
+        end
       end)
-      :totable()
   end
 
   function m_actions.m_format(item, _)
