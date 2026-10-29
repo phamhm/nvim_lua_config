@@ -112,7 +112,8 @@ map(
         local og_bufnr = vim.api.nvim_get_current_buf()
         local ft = vim.bo.filetype
         vim.cmd("Obsidian workspace todo")
-        vim.cmd(string.format("Obsidian new_from_template %s todo_notes", input))
+        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", input:gsub('/',""))
+        vim.cmd(cmd)
         local obsidian_buf = vim.api.nvim_get_current_buf()
         if og_bufnr and ft ~= "snacks_dashboard" then
           vim.api.nvim_set_current_buf(og_bufnr)

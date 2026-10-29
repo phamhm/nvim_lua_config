@@ -44,13 +44,13 @@ local md_capture_keys ={
 local function md_scratch_opts (md_name, keys)
   local m_keys = {
     ["buffer"] = {
-      "<C-b>",
+      "<C-v>",
       function()
         local full_path = vim.api.nvim_buf_get_name(0)
         vim.cmd("fclose")
-        vim.cmd.edit(full_path)
+        vim.cmd("botright vsplit " .. full_path)
       end,
-      desc = "buffer",
+      desc = "Splt R",
       mode = "n"
     },
   }
@@ -70,16 +70,12 @@ local function md_scratch_opts (md_name, keys)
       },
     },
     win = {
-      width = 0.9,
-      height = 0.9
+      width = 0.5,
+      height = 0.95
     }
   }
 end
 
-local fn_confirm = function(picker, item)
-  picker:close()
-  Snacks.scratch(md_scratch_opts(item._path))
-end
 
 local function m_picker_files(cwd, fn_confirm)
   Snacks.picker.files({
@@ -92,7 +88,11 @@ local function m_picker_files(cwd, fn_confirm)
       "node_modules",
       "TODO", "DISCARDED",
     },
-    confirm = fn_confirm
+    confirm = function(picker, item)
+      picker:close()
+      vim.cmd("fclose!")
+      Snacks.scratch(md_scratch_opts(item._path))
+    end
   })
 end
 
