@@ -272,7 +272,6 @@ map("v", "<leader>nn",
       }
 
       local lines_list = {header, leading, lines, ending}
-      F._inspect(lines_list)
       local stat = vim.uv.fs_stat(target_file)
       if stat == nil then
         lines_list = vim.list_extend(yaml, lines_list)
