@@ -90,22 +90,6 @@ local function todo_picker(title, actions, keys)
     title = title or "select to run",
     layout = {
       hidden = actions.hidden or {"preview"},
-      layout = {
-        width = actions.width or 0.9,
-        height = actions.height or 0.9,
-        box = "horizontal",
-        {
-          box = "vertical",
-          { win = "input", height = 1, border = "rounded" },
-          { win = "list", border = "rounded" },
-        },
-        {
-          win = "preview",
-          title = "{preview}",
-          width = 0.8, -- 70% of the picker width goes to the preview window
-          border = "rounded"
-        },
-      }
     },
     actions = actions,
     win = {
@@ -250,9 +234,8 @@ function TODO.todo()
     ["<C-a>"] = { "m_advance_todo", mode = {"i", "n"}},
     ["<C-j>"] = { "list_down", mode = {"i", "n"}},
     ["<C-k>"] = { "list_up", mode = {"i", "n"}},
-    ["<C-f>"] = { "done_notes", mode = {"i", "n"}},
+    ["<C-m>"] = { "done_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
-    ["<C-w>l"] = { "focus_preview", mode = {"n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   todo_picker("Select TODO item(s)", actions, keys)

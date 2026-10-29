@@ -392,7 +392,7 @@ function F.m_picker(items, title, actions, keys)
       layout = {
         min_width = 0,
         width = 0.3,
-        height =  0.4,
+        height =  0.5,
       }
     },
     actions = actions,
