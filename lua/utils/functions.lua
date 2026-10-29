@@ -388,10 +388,11 @@ function F.m_picker(items, title, actions, keys)
     title = title or "select to run",
     format = "text", -- Display only the title in the list
     layout = {
-      hidden = actions.hidden or {"preview"},
+      hidden = actions.hidden or {"preview", "input"},
       layout = {
-        width = actions.width or 0.3,
-        height = actions.height or 0.5,
+        min_width = 0,
+        width = 0.3,
+        height =  0.4,
       }
     },
     actions = actions,
