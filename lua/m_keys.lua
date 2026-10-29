@@ -61,7 +61,7 @@ map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move th
 -- map("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 -- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
-map({ "i", "v", "n", "s" }, "<C-c>", "<Esc>:noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
+map({ "i", "v", "n", "s" }, "<C-c>", "<C-c><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to google
 local function query(query_url)
@@ -228,19 +228,9 @@ map('i', "<C-v>", function()
   end
 
   if code == 1 then
-    local clipboard_content = vim.fn.getreg('+')
-
-    -- Split the string into a list of lines (required by nvim_put)
-    local lines = vim.split(clipboard_content, '\n')
-
-    -- Insert text at the cursor position
-    -- 'p' means after the cursor, true for follow cursor, true for lifestyle format
-    vim.api.nvim_put(lines, 'c', false, true)
-    -- reselected teh pasted block and use '=' to fix indent
-    vim.cmd("normal! `[")
-    vim.cmd('normal! V')
-    vim.cmd('normal! `]')
-    vim.cmd('normal! =')
+    -- paste from the @+ system clipboard register,
+    -- select the pasted line(s) and autoindent
+    vim.cmd('normal "+p`[V`]=')
   elseif vim.bo.filetype == "markdown" then
     vim.ui.input({prompt = "image name"}, function(input)
       vim.cmd("Obsidian paste_img "..input)
