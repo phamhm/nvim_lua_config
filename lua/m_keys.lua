@@ -242,7 +242,9 @@ map('i', "<C-v>", function()
     vim.cmd('normal! `]')
     vim.cmd('normal! =')
   elseif vim.bo.filetype == "markdown" then
-    vim.cmd("Obsidian paste_img")
+    vim.ui.input({prompt = "image name"}, function(input)
+      vim.cmd("Obsidian paste_img "..input)
+    end)
   end
 end, {
   desc="paste from @*. When markdown, check whether system clipboard is an image",
