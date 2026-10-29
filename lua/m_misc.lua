@@ -116,11 +116,15 @@ return {
           lualine_b = {
           },
           lualine_c = {
-            'location',
-            'branch',
+            {
+              'location',
+              color = { fg = 'lightgreen'},
+            },
             {
               F.set_title,
+              color = { fg = '#ff9e64'},
             },
+            'branch',
             -- 'diagnostics',
             -- 'diff',
             {
@@ -130,7 +134,6 @@ return {
                 end
               end,
               color = { fg = '#ff9e64'},
-
             }
           },
           lualine_x = {
