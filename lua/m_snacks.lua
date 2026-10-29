@@ -109,6 +109,10 @@ local m_snacks = {
         activeBorderColor = { fg = "MatchParen", bold = false },
         inactiveBorderColor = { fg = "Comment" },
       },
+     win = {
+        width = 0.9,
+        height = 0.9,
+      },
     },
     scratch = {
       root = "/tmp", -- os will clear it.
