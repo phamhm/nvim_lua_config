@@ -102,7 +102,8 @@ local m_snacks = {
   lazy = false,
   ---@type snacks.Config
   opts = {
-     lazygit = {
+    image = {enabled = true, doc = { inline = true , float = true}},
+    lazygit = {
       -- Override default theme colors mapped from Neovim highlights
       theme = {
         activeBorderColor = { fg = "MatchParen", bold = false },

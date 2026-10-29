@@ -210,9 +210,16 @@ map('n', alt_key("<leader>cl"), function()
 end, {desc = " clear global vim.g"})
 
 map('i', "<C-v>", function()
+  -- if markdown, call the scripts/get_clipboard.type.zsh
+  --     the zsh has different code dependent on OS.
+  -- if not an image, paste from clipboard @+
+  --    after pasting from clipboard, select the pasted block and apply "="
+  --    to autoindent
+  -- if an image, call "Obsidian paste_img"
   local code=1
 
-  if vim.fn.expand('%:p:h') == vim.fn.expand(vim.g.m_notes_path) then
+  -- only check if it's markdown because running running a zsh script is slow.
+  if vim.bo.filetype == "markdown" then
     local clip_board_zsh_path = vim.g.m_scripts .. '/get_clipboard_type.zsh'
     local result = vim.system({ "zsh", vim.fn.expand(clip_board_zsh_path) }, {
       text = true, -- Automatically decode stdout/stderr as strings
@@ -229,8 +236,13 @@ map('i', "<C-v>", function()
     -- Insert text at the cursor position
     -- 'p' means after the cursor, true for follow cursor, true for lifestyle format
     vim.api.nvim_put(lines, 'c', false, true)
-  else
-    vim.cmd("PasteImage")
+    -- reselected teh pasted block and use '=' to fix indent
+    vim.cmd("normal! `[")
+    vim.cmd('normal! V')
+    vim.cmd('normal! `]')
+    vim.cmd('normal! =')
+  elseif vim.bo.filetype == "markdown" then
+    vim.cmd("Obsidian paste_img")
   end
 end, {
   desc="paste from @*. When markdown, check whether system clipboard is an image",

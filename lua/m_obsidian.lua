@@ -6,6 +6,7 @@ return {
   config = function()
     require("obsidian").setup {
       legacy_commands = false, -- this will be removed in 4.0.0
+      frontmatter = {enabled = false },
       link = { auto_update = true },
       note_id_func = require("obsidian.builtin").title_id,
       templates = {
