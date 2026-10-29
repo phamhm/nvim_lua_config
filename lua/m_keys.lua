@@ -107,7 +107,7 @@ map(
   'n',
   '<leader>cc',
   function()
-    vim.ui.input({ prompt = 'Capture: ' },
+    vim.ui.input({ prompt = 'Todo: ' },
       function(input)
         -- Obsidian new will open the new note.
         -- this will save my current buffer then switch back to it.

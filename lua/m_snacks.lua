@@ -44,7 +44,7 @@ local md_capture_keys ={
 local function md_scratch_opts (md_name, keys)
   local m_keys = {
     ["buffer"] = {
-      "<C-v>",
+      "<CR>", -- using <CR> to prevent obsidianFollowLink in floating window
       function()
         local full_path = vim.api.nvim_buf_get_name(0)
         vim.cmd("fclose")
@@ -77,8 +77,17 @@ local function md_scratch_opts (md_name, keys)
 end
 
 local function m_picker_files(cwd, fn_confirm)
+  local keys = {
+    ["<C-l>"] = { "focus_preview", mode = {"n" }},
+    ["<C-h>"] = { "focus_list", mode = {"n"}},
+    ["<C-k>"] = { "focus_input", mode = {"n"}},
+  }
   Snacks.picker.files({
     cwd = cwd,
+    layout = {
+      hidden = {"input"},
+    },
+    focus = "list",
     exclude = {
       "archive",
       "todo_notes",
@@ -87,6 +96,11 @@ local function m_picker_files(cwd, fn_confirm)
       "node_modules",
       "attachments",
       "TODO", "DISCARDED",
+    },
+    win = {
+      list ={keys = keys},
+      input ={keys = keys},
+      preview ={keys = keys},
     },
     confirm = fn_confirm or function(picker, item)
       picker:close()
@@ -161,9 +175,22 @@ local m_snacks = {
           layout = {
             hidden = {"preview", "input"},
             layout = {
+              box = "vertical",
               min_width = 0,
-              width = 0.3,
+              width = 0.5,
               height = 0.4,
+              box = "vertical",
+              backdrop = false,
+              border = "none",
+              title = " {title} {live} {flags}",
+              -- align = "left",
+              -- title_pos = "left",
+              { win = "input", height = 1, border = "none" },
+              {
+                box = "horizontal",
+                { win = "list", border = "rounded" },
+                { win = "preview", title = "{preview}", width = 0.6, border = "rounded" },
+              },
             }
           },
           focus = 'list',
@@ -225,6 +252,7 @@ local m_snacks = {
         },
         list = {
           keys = {
+            [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
             ["<C-c>"] = { "close", mode = { "i", "n" } },
           }
         },
@@ -345,6 +373,8 @@ local m_snacks = {
     { "<leader>fr", function() Snacks.picker.resume() end, desc="resume"},
     { "<leader>h",function() Snacks.picker.help() end,desc = "Help Page" },
     { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
+    { "<leader>fl", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+    { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
     {"<leader>mc",
       function()
         F.menu_commands({
@@ -404,8 +434,6 @@ local m_snacks = {
     { "grt", function() Snacks.picker.lsp_type_definitions() end, desc = "LSP Goto T[y]pe Definition" },
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
-    { "gro", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
-    { "grs", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
     { "<leader><leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     {

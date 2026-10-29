@@ -39,6 +39,7 @@ require('lazy').setup({
   require('m_surround'),
   require('m_misc'),
   require('m_obsidian'),
+  require('m_blink'),
 })
 
 -- setup must be called before loading

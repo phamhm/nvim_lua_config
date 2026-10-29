@@ -53,7 +53,7 @@ return {
         vim.api.nvim_set_hl(0, border, { fg= hl.fg})
       end
       vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#93C572", bold = false })
-      vim.api.nvim_set_hl(0,  "LineNr", { fg = "#8A9A5B", bold = false })
+      -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#8A9A5B", bold = false })
     end
   },
   -- {"vague-theme/vague.nvim",
@@ -120,13 +120,9 @@ return {
               'location',
               color = { fg = 'lightgreen'},
             },
-            {
-              F.set_title,
-              color = { fg = '#ff9e64'},
-            },
             'branch',
-            -- 'diagnostics',
-            -- 'diff',
+            'diff',
+            'diagnostics',
             {
               function()
                 if vim.g.m_todo ~="" then return MiniIcons.get("file", "TODO") .. " " .. vim.g.m_todo

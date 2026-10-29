@@ -446,10 +446,10 @@ function F.set_title()
     session = ""
   end
 
-  local readonly = vim.bo[0].readonly and " " or " "
-  local modified = vim.bo[0].modified and " " or " "
+  local readonly = vim.bo[0].readonly and "[]" or " "
+  local modified = vim.bo[0].modified and "[]" or " "
 
-  return string.format("%s%s%s%s", session, fname, modified , readonly)
+  return string.format("%s%s %s%s", session, fname, modified , readonly)
 end
 
 return F

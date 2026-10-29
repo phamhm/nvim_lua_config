@@ -6,25 +6,20 @@ local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO")
 
 
 local function get_times(path)
-  local time_prefixes = {"m_todo_Created:", "m_todo_Started:", "m_todo_Finished:"}
+  local time_prefixes = {"m_todo_Created", "m_todo_Started", "m_todo_Finished"}
 
-  local lines = vim.iter(vim.fn.readfile(path))
+  return vim.iter(vim.fn.readfile(path))
     :filter(
       function(line)
-        for _, prefix in ipairs(time_prefixes) do
-          if vim.startswith(line, prefix) then
-            return true
-          end
-        end
-        return false
+        local time_type,_ = line:gsub(":.*", "")
+        return vim.tbl_contains(time_prefixes, vim.trim(time_type))
       end)
     :flatten()
     :fold({}, function(acc, val)
-      local res = vim.split(val, ':')
-      acc[res[1]] = res[2]
+      local time_type, date_time = unpack(vim.split(val, ':'))
+      acc[time_type] = date_time
       return acc
     end)
-  return lines
 end
 
 local function update_time(file_path)

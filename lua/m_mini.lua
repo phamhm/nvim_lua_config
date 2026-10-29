@@ -95,36 +95,36 @@ local m_mini = {
         delay = { completion = 999999, info = 99999, signature = 99999 },
       }) end
   },
-  {
-    'echasnovski/mini.snippets',
-    dependencies = { "rafamadriz/friendly-snippets" },
-    config = function()
-      local m_snippets =  require("mini.snippets")
-
-      m_snippets.setup({
-        -- Integrates seamlessly with mini.completion's fallback logic
-        snippets = {
-          m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
-          m_snippets.gen_loader.from_lang({lang_patterns = {
-            markdown_inline = { 'markdown.json' },
-          }}),
-        },
-
-        mappings = {
-          -- Expand snippet at cursor position. Created globally in Insert mode.
-          expand = '<C-.>',
-          -- Interact with default `expand.insert` session.
-          -- Created for the duration of active session(s)
-          jump_next = '<C-n>',
-          jump_prev = '<C-p>',
-          stop = '<C-c>',
-        },
-      })
-
-      -- must be after setup to add snipets to mini.completions
-      require("mini.snippets").start_lsp_server()
-    end
-  },
+  -- {
+  --   'echasnovski/mini.snippets',
+  --   dependencies = { "rafamadriz/friendly-snippets" },
+  --   config = function()
+  --     local m_snippets =  require("mini.snippets")
+  --
+  --     m_snippets.setup({
+  --       -- Integrates seamlessly with mini.completion's fallback logic
+  --       snippets = {
+  --         m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
+  --         m_snippets.gen_loader.from_lang({lang_patterns = {
+  --           markdown_inline = { 'markdown.json' },
+  --         }}),
+  --       },
+  --
+  --       mappings = {
+  --         -- Expand snippet at cursor position. Created globally in Insert mode.
+  --         expand = '<C-.>',
+  --         -- Interact with default `expand.insert` session.
+  --         -- Created for the duration of active session(s)
+  --         jump_next = '<C-n>',
+  --         jump_prev = '<C-p>',
+  --         stop = '<C-c>',
+  --       },
+  --     })
+  --
+  --     -- must be after setup to add snipets to mini.completions
+  --     require("mini.snippets").start_lsp_server()
+  --   end
+  -- },
   {
     'echasnovski/mini.sessions',
     config = function() require("mini.sessions").setup({
