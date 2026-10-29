@@ -126,19 +126,6 @@ map(
   { desc = 'Capture text and apped to capture_notes.md' }
 )
 
-map('n', '<leader>bb', function()
-  local reg_p = vim.trim(vim.fn.getreg('*'))
-  if reg_p == "" or not vim.startswith(reg_p, "http") then
-    vim.notify("Register @* isn't an url:'"..reg_p.."'", vim.log.levels.ERROR)
-    return
-  end
-  vim.notify("Bookmarking:" .. reg_p)
-  vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
-    local note_text = "[" .. input .. "](" .. reg_p .. ")"
-    F.append_text_to_file(note_text, vim.g.m_notes_path .. "/bookmarks.md")
-  end)
-end, {silent = true, desc = 'Capture url/bookmarking to bookmarks.md' })
-
 map('n', '<leader>vd',
   function()
     local today_date = os.date('%Y-%m-%d')
@@ -247,41 +234,68 @@ end, {
 map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
 map('n', '<leader>Q', 'q', { desc = 'Remap macro recoring to C-Q' })
 
-map("v", "<leader>nn",
-  function()
-    local s_pos = vim.fn.getpos("v")
-    local e_pos = vim.fn.getpos(".")
+local function capture_note(lines, filetype)
+  local leading = {'```'..filetype}
+  local ending = {'```'}
 
-    -- Get the tert lines within that region
-    local lines = vim.fn.getregion(s_pos, e_pos, { type = vim.fn.mode() })
+  vim.ui.input({prompt = "Note header"}, function(input)
+    local new_date = os.date("%Y-%m-%d %H:%M")
+    local header = {"", string.format("# %s [%s]", input, new_date ), ""}
+    local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
 
-    local leading = {'```'..vim.bo.filetype}
-    local ending = {'```'}
+    local yaml = {
+      "---",
+      "tags:",
+      " - "..filetype,
+      "---",
+      ""
+    }
 
-    vim.ui.input({prompt = "Note header"}, function(input)
-      local new_date = os.date("%Y-%m-%d %H:%M")
-      local header = {"", string.format("# %s [%s]", input, new_date ), ""}
-      local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, vim.bo.filetype)
+    local lines_list = {header, leading, lines, ending}
+    local stat = vim.uv.fs_stat(target_file)
+    if stat == nil then
+      lines_list = vim.list_extend(yaml, lines_list)
+    end
 
-      local yaml = {
-        "---",
-        "tags:",
-        " - "..vim.bo.filetype,
-        "---",
-        ""
-      }
+    local note = vim.iter(lines_list):flatten():totable()
+    vim.fn.writefile(note, target_file, "a")
+  end)
+end
 
-      local lines_list = {header, leading, lines, ending}
-      local stat = vim.uv.fs_stat(target_file)
-      if stat == nil then
-        lines_list = vim.list_extend(yaml, lines_list)
-      end
+local function capture_highlighted_block()
+  local s_pos = vim.fn.getpos("v")
+  local e_pos = vim.fn.getpos(".")
 
-      local note = vim.iter(lines_list):flatten():totable()
-      vim.fn.writefile(note, target_file, "a")
+  -- Get the tert lines within that region
+  local lines = vim.fn.getregion(s_pos, e_pos, { type = vim.fn.mode() })
+  local filetype = vim.bo.filetype
+  capture_note(lines, filetype)
+end
+
+local function capture_from_register()
+  local reg_p = vim.trim(vim.fn.getreg('*'))
+  if vim.startswith(reg_p, "http") then
+    vim.notify("Bookmarking:" .. reg_p)
+    vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
+      local note_text = "[" .. input .. "](" .. reg_p .. ")"
+      F.append_text_to_file(note_text, vim.g.m_notes_path .. "/bookmarks.md")
     end)
+  elseif reg_p ~= "" then
+    vim.notify("Capturing note:" .. reg_p)
+    lines = vim.split(reg_p, '\n', {plain = true})
+    vim.ui.input({ prompt = "Capture notes file type" }, function(filetype)
+      capture_note(lines, filetype)
+    end)
+  end
+end
 
-    -- Flatten the array of lines into a single string variable
-    -- return selected_code
+map({"v", "n"}, "<leader>bb",
+  function()
+    local mode = vim.fn.mode()
+    if mode == "n" then
+      capture_from_register()
+    elseif  mode == 'v' or mode == 'V' or mode == '\22' then
+      capture_highlighted_block()
+    end
   end,
-  {desc="make notes"})
+  {desc="make notes from highlted text"})
