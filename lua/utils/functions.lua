@@ -217,7 +217,7 @@ function F.get_todo_path()
 end
 
 function F.clear_todo()
-  if m_todo ~="" then
+  if m_todo ~="" and m_todo ~= default_todo then
     vim.notify("Clear todo:" .. m_todo)
   end
   m_todo = default_todo

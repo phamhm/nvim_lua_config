@@ -55,6 +55,7 @@ local function obsidian_select()
 			end
 		end)
 end
+
 return {
   "obsidian-nvim/obsidian.nvim",
   version = "*", -- use latest release, remove to use latest commit

@@ -87,6 +87,7 @@ local m_snacks = {
           wrap = true,
           number = false,
           relativenumber = false,
+          foldlevel = 0,
         }
       },
     },
@@ -236,7 +237,7 @@ local m_snacks = {
         list = {
           wo = {
             wrap = true,
-            number = true,
+            number = false,
             relativenumber = false,
           },
           keys = {

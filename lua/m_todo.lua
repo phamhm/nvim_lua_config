@@ -265,7 +265,7 @@ F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
 F.map("n", F.format_os_altkey("<C-%s-`>"),
   function()
     local file_path
-    if F.get_todo() ~= "" then
+    if F.get_todo_path() ~= "" then
       file_path = F.get_todo_path()
     else
       file_path = vim.fn.expand(vim.g.m_notes_path .. "/index.md")
