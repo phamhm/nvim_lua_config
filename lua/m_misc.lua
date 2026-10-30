@@ -5,10 +5,9 @@ return {
   {
     "folke/flash.nvim",
     event = "VeryLazy",
-    ---@type Flash.Config
     opts = { },
     keys = {
-      { F.format_os_altkey("<%s-s>"), mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
       { F.format_os_altkey("<%s-S>"), mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
       { F.format_os_altkey("<%s-r>"), mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
       { F.format_os_altkey("<%s-R>"), mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
@@ -16,9 +15,6 @@ return {
     },
   },
   {'nvim-tree/nvim-web-devicons'},
-  -- {'metalelf0/jellybeans-nvim'},
-  -- {"catppuccin/nvim", name = "catppuccin",
-  -- { "rebelot/kanagawa.nvim",
   {
     "webhooked/kanso.nvim",
     lazy = false,
@@ -56,30 +52,6 @@ return {
       -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#8A9A5B", bold = false })
     end
   },
-  -- {"vague-theme/vague.nvim",
-  --   config = function()
-  --
-  --     require('vague').setup({
-  --       bold = false, -- Disable bold globally
-  --       italic = false, -- Disable italic globally
-  --     })
-  --     vim.cmd.colorscheme("vague")
-  --
-  --     -- vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "orange", bold = true })
-  --     -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#a4a4a4", bold = true })
-  --     -- vim.api.nvim_set_hl(0, 'String', { fg = '#5f894c', italic = false })
-  --     -- local border_color = "grey"
-  --     -- local border_list = {
-  --     --   "SnacksPickerInputBorder",
-  --     --   "SnacksPickerBoxBorder",
-  --     --   "SnacksInputBorder",
-  --     --   "FloatBorder"
-  --     -- }
-  --     -- for _, border in ipairs(border_list) do
-  --     --   vim.api.nvim_set_hl(0, border, { fg= border_color})
-  --     -- end
-  --   end
-  -- },
   {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-mini/mini.icons' },
@@ -120,6 +92,7 @@ return {
               'location',
               color = { fg = 'lightgreen'},
             },
+            "filename",
             'branch',
             'diff',
             'diagnostics',
@@ -154,12 +127,7 @@ return {
         },
         inactive_sections = {
           lualine_c = {
-            'location',
-            {
-              function()
-                return F.set_title()
-              end
-            },
+            'filename',
           },
           lualine_x = { },
         },

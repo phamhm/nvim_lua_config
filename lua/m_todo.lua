@@ -21,7 +21,7 @@ local function get_times(path)
     end)
 end
 
-local function update_time(file_path)
+local function map_file_to_times(file_path)
   local dir_iter = vim.fs.dir(file_path)
   return vim.iter(dir_iter)
     :filter(function(_, ft) return ft=="file" end)
@@ -146,7 +146,7 @@ function TODO.todo()
   vim.cmd("fclose")
   -- opening a headless buffer
 
-  local file_times_map = update_time(TODO_FILE_PATH)
+  local file_times_map = map_file_to_times(TODO_FILE_PATH)
 
   local file_counter = vim.tbl_count(file_times_map)
 
