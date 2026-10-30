@@ -167,11 +167,8 @@ function TODO.todo()
       return
     end
 
-    if F.get_todo() == item.raw_heading then
-      F.clear_todo()
-    else
-      F.set_todo(item.raw_heading)
-    end
+    local todo = item.text:gsub("-"," "):gsub(".md", "")
+    F.set_todo(todo, item._path)
   end
 
   function m_actions.discard_notes(picker, _)
@@ -217,12 +214,17 @@ function TODO.todo()
     local started = times.m_todo_Started
     local finished = times.m_todo_Finished
     local new_date = os.date("%Y-%m-%d %H%M")
+    local todo = item.text:gsub("-"," "):gsub(".md", "")
     if started and started == "" then
       replace_first_in_buffer(file_path, "m_todo_Started:", "m_todo_Started: " .. new_date)
       file_times_map[file_path]["m_todo_Started"] = new_date
+      m_actions.set_todo(picker, item)
     elseif finished and finished == "" then
       replace_first_in_buffer(file_path, "m_todo_Finished:", "m_todo_Finished: " .. new_date)
       file_times_map[file_path]["m_todo_Finished"] = new_date
+      if todo == F.get_todo() then
+        F.clear_todo()
+      end
     end
 
     picker:refresh()
@@ -240,9 +242,22 @@ function TODO.todo()
     ["<C-k>"] = { "list_up", mode = {"i", "n"}},
     ["<C-m>"] = { "done_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
+    ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   todo_picker("Select TODO item(s)", actions, keys)
 end
 
 F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
+F.map("n", F.format_os_altkey("<C-%s-`>"),
+  function()
+    if F.get_todo() ~= "" then
+      Snacks.scratch({
+        file = F.get_todo_path(),
+        name = F.get_todo_path(),
+      })
+    else
+      vim.notify("Not doing anything", vim.log.levels.WARN)
+    end
+  end
+  , {desc = "Pulling up scrach"})

@@ -34,7 +34,9 @@ local obsidian_map = {
 }
 
 local function obsidian_select()
-	local commands = vim.iter(pairs(obsidian_map)):map(function(k,v) return k end):fold({}, function(acc, i) table.insert(acc, i) return acc end)
+	local commands = vim.iter(pairs(obsidian_map))
+    :map(function(k,v) return k end)
+    :fold({}, function(acc, i) table.insert(acc, i) return acc end)
 	vim.ui.select(commands, {
 		prompt = "Obsidian Commands",
 	},function(choice)
@@ -81,7 +83,10 @@ return {
           strict = true,
         },
       },
-      footer = {enabled = false}
+      footer = {enabled = false},
+      attachments = {
+        folder = "assets"
+      }
     }
 
     F.map("n", "<leader>oo", obsidian_select, {desc="calling obsidian commands"} )

@@ -194,8 +194,8 @@ map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
 
 map('n', alt_key("<leader>cl"), function()
-  vim.g.m_todo = ""
-  vim.g.global_status = ""
+  F.clear_todo()
+  F.clear_status()
 end, {desc = " clear global vim.g"})
 
 map('i', "<C-v>", function()
@@ -311,3 +311,16 @@ map("n", "<leader>fn",
       enter = true
     })
   end, {desc = "open filetype note"})
+
+
+
+map("n", "<C-w>f", function()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local config = vim.api.nvim_win_get_config(win)
+    if config.focusable and config.relative ~= "" then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+  print("No floating window found")
+end, { desc = "Jump to floating window" })

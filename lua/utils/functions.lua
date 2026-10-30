@@ -1,5 +1,9 @@
 local F = {}
 
+local m_todo = ""
+local m_todo_path = ""
+local m_status = ""
+
 function F._inspect(obj)
   vim.notify(vim.inspect(obj))
 end
@@ -190,27 +194,37 @@ function F.get_mdlink_lines(filepath)
   return items
 end
 
-function F.set_todo(todo)
-  vim.g.m_todo = todo
+function F.set_todo(todo, path)
+  m_todo = todo
+  m_todo_path = path
 end
 
 function F.get_todo()
-  return vim.g.m_todo
+  return m_todo
+end
+
+function F.get_todo_path()
+  return m_todo_path
 end
 
 function F.clear_todo()
-  if vim.g.m_todo ~="" then
-    vim.notify("Clear todo:" .. vim.g.m_todo)
+  if m_todo ~="" then
+    vim.notify("Clear todo:" .. m_todo)
   end
-  vim.g.m_todo = ""
+  m_todo = ""
+  m_todo_path = ""
 end
 
 function F.set_status(msg)
-  vim.g.global_status = msg
+  m_status = msg
+end
+
+function F.get_status()
+  return m_status
 end
 
 function F.clear_status()
-  vim.g.global_status = ""
+  m_status = ""
 end
 
 -- generate a keys and actions to handle multiple items.
@@ -294,10 +308,11 @@ function F.m_picker(items, title, actions, keys)
   Snacks.picker.pick({
     source = "markdown_links",
     items = items,
+    focus = "input",
     title = title or "select to run",
     format = "text", -- Display only the title in the list
     layout = {
-      hidden = actions.hidden or {"preview", "input"},
+      hidden = actions.hidden or {"preview"},
       layout = {
         min_width = 0,
         width = 0.3,
@@ -334,8 +349,8 @@ function F.set_title()
     session = ""
   end
 
-  local readonly = vim.bo[0].readonly and "[]" or " "
-  local modified = vim.bo[0].modified and "[]" or " "
+  local readonly = vim.bo[0].readonly and "[-]" or ""
+  local modified = vim.bo[0].modified and "[+]" or ""
 
   return string.format("%s%s %s%s", session, fname, modified , readonly)
 end

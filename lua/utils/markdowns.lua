@@ -55,7 +55,6 @@ function M.advance_todo_time(current_line)
     finished_time = os.date(date_time_format)
     local elapsed_time = calc_time(start_time, finished_time)
     local new_line = string.format("%s @f(%s) @e(%s)",current_line, finished_time, elapsed_time)
-    vim.g.m_todo=""
     return new_line
   else
     vim.notify("Task is DONE")
@@ -139,7 +138,6 @@ function M.set_todo()
     vim.notify("Can't find text to set todo")
     return
   end
-  vim.g.m_todo = text
 end
 
 return M

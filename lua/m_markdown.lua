@@ -1,5 +1,6 @@
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
+local _inspect = require("utils.functions")._inspect
 -- Create an augroup to ensure autocommands don't duplicate on reload
 local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
 
@@ -28,7 +29,7 @@ vim.api.nvim_create_autocmd("FileType", {
     -- Wrap lines at word boundaries instead of mid-word
     vim.opt_local.linebreak = true
     -- Turn off hard wrapping (prevents Neovim from inserting physical newlines)
-    vim.opt_local.textwidth = 0
+    vim.opt_local.textwidth = 80
     vim.opt_local.wrapmargin = 0
     -- Keep indents aligned for wrapped lines (great for nested lists)
     vim.opt_local.breakindent = true

@@ -62,6 +62,13 @@ return {
       for level, hl in pairs(colors) do
         vim.api.nvim_set_hl(0, 'RenderMarkdown' .. level .. 'Bg', hl)
       end
+
+      vim.api.nvim_set_hl(0, "Folded", {
+        fg = "lightgreen", -- Set a custom subtle foreground color
+        bg = "NONE",    -- "NONE" keeps the background transparent/flat
+        italic = false,   -- Makes folded lines visually distinct
+        bold = true,
+      })
     end
   },
   {
@@ -110,7 +117,7 @@ return {
             'diagnostics',
             {
               function()
-                if vim.g.m_todo ~="" then return MiniIcons.get("file", "TODO") .. " " .. vim.g.m_todo
+                if F.get_todo() ~="" then return MiniIcons.get("file", "TODO") .. " " .. F.get_todo()
                 else return ""
                 end
               end,
@@ -119,13 +126,7 @@ return {
           },
           lualine_x = {
             {
-              function()
-                if vim.g.global_status ~= "" then
-                  return vim.g.global_status
-                else
-                  return ""
-                end
-              end,
+              F.get_status,
               color = { fg = '#ff9e64'},
             },
           },

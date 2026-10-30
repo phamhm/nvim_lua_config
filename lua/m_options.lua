@@ -61,8 +61,8 @@ local options = {
   winborder      = "rounded",
   pumborder      = "rounded",
   textwidth      = 80,
+  fillchars      = {fold = ' '}
 }
-
 for k, v in pairs(options) do
   vim.opt[k] = v
 end
@@ -91,8 +91,8 @@ vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
 _G.get_custom_title = function()
   local title = F.set_title()
-  if vim.g.m_todo ~= "" then
-    title = title .." "..vim.g.m_todo
+  if F.get_todo() ~= "" then
+    title = title .." ".. F.get_todo()
   end
 
   return title
