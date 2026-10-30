@@ -112,17 +112,13 @@ return {
               color = { fg = 'lightgreen'},
             },
             "filename",
+            {
+              F.get_todo,
+              color = { fg = '#ff9e64'},
+            },
             'branch',
             'diff',
             'diagnostics',
-            {
-              function()
-                if F.get_todo() ~="" then return MiniIcons.get("file", "TODO") .. " " .. F.get_todo()
-                else return ""
-                end
-              end,
-              color = { fg = '#ff9e64'},
-            }
           },
           lualine_x = {
             {

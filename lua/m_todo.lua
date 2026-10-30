@@ -21,6 +21,9 @@ local function get_times(path)
     end)
 end
 
+-- Each todo file has 3 times(capture, start and finish)
+-- this function look at those time in the  yaml and create a list of them
+-- then associates the file name with this list. Help with advancing time
 local function map_file_to_times(file_path)
   local dir_iter = vim.fs.dir(file_path)
   return vim.iter(dir_iter)
@@ -34,6 +37,8 @@ local function map_file_to_times(file_path)
   end)
 end
 
+-- replace the first instance of old text with new text
+-- if there are multiple instances of old text, only the first one get replaced
 local function replace_first_in_buffer(filepath, old_text, new_text)
   -- Expand system paths like ~/ or $HOME
   local expanded_path = vim.fn.expand(filepath)
@@ -109,7 +114,12 @@ local function todo_picker(title, actions, keys)
   })
 end
 
-local function move_file(picker, location)
+local function move_file(picker, sub_dir)
+  if not sub_dir or sub_dir=="" then
+    vim.notify("Subdir missing, can't rename", vim.log.levels.ERROR)
+    return
+  end
+
   F.clear_todo()
   local items = picker:selected({ fallback = true })
 
@@ -127,17 +137,18 @@ local function move_file(picker, location)
   vim.iter(items)
     :each(
     function(item)
-      local f_path = item._path
-      local p_path = vim.fs.dirname(f_path)
-      local fname = item.text
-      local new_path = p_path .. location .. fname
+      local from = item._path
 
-      local success, err = vim.uv.fs_rename(f_path, new_path)
-      if success then
-        vim.notify("renamed to " .. new_path)
-      else
-        vim.notify("Failed to move to :"..  new_path)
-      end
+      local from_path = vim.fs.dirname(from)
+      local filename = item.text
+
+      local to = string.format("%s/%s/%s", from_path, sub_dir, filename):gsub("//", "/")
+
+      Snacks.rename.rename_file({
+        from = from,
+        to = to
+      })
+
     end)
   picker:refresh()
 end
@@ -172,11 +183,11 @@ function TODO.todo()
   end
 
   function m_actions.discard_notes(picker, _)
-    move_file(picker, "/DISCARDED/")
+    move_file(picker, "DISCARDED")
   end
 
   function m_actions.done_notes(picker, _)
-    move_file(picker, "/DONE/")
+    move_file(picker, "DONE")
   end
 
   function m_actions.m_format(item, _)

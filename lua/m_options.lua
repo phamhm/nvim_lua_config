@@ -92,7 +92,7 @@ vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
 _G.get_custom_title = function()
   local title = F.set_title()
   if F.get_todo() ~= "" then
-    title = title .." ".. F.get_todo()
+    title = title .."| " .. F.get_todo()
   end
 
   return title

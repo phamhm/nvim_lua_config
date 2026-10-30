@@ -1,6 +1,7 @@
 local F = {}
 
-local m_todo = ""
+local default_todo = "do something"
+local m_todo =  default_todo
 local m_todo_path = ""
 local m_status = ""
 
@@ -195,12 +196,20 @@ function F.get_mdlink_lines(filepath)
 end
 
 function F.set_todo(todo, path)
+  vim.notify("New Task:" .. todo, vim.log.levels.INFO)
+  if not path or path == "" then
+    vim.notify("Task with no file path", vim.log.levels.WARN)
+  end
   m_todo = todo
   m_todo_path = path
 end
 
 function F.get_todo()
-  return m_todo
+  local todo = m_todo
+  if vim.fn.strcharlen(m_todo) > 20 then
+    todo = vim.fn.strcharpart(todo, 0, 17) .. "..."
+  end
+  return string.format("[%s %s]", MiniIcons.get("file", "TODO"), todo)
 end
 
 function F.get_todo_path()
@@ -211,7 +220,7 @@ function F.clear_todo()
   if m_todo ~="" then
     vim.notify("Clear todo:" .. m_todo)
   end
-  m_todo = ""
+  m_todo = default_todo
   m_todo_path = ""
 end
 
