@@ -36,7 +36,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
     vim.opt_local.spell = false
 
-    -- vim.opt_local.foldlevel = 1  <- this isn't working
+    vim.opt_local.foldlevel = 0  -- <- set this here instead of treesitter autocmd
   end,
 })
 

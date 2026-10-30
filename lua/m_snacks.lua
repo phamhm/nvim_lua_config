@@ -189,6 +189,11 @@ local m_snacks = {
           }
         },
         list = {
+          wo = {
+            wrap = true,
+            number = true,
+            relativenumber = false,
+          },
           keys = {
             [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
             ["<C-c>"] = { "close", mode = { "i", "n" } },

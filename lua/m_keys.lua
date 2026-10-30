@@ -322,3 +322,7 @@ map("n", "<C-w>f", function()
   end
   print("No floating window found")
 end, { desc = "Jump to floating window" })
+
+for i = 1, 9 do
+  map("n", string.format("z%s", i), function() vim.wo.foldlevel = i - 1 end, {desc = "fold level "..i-1})
+end

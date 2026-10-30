@@ -72,14 +72,19 @@ return {
     -- Treesitter features for installed languages must be enabled manually
     vim.api.nvim_create_autocmd("FileType", {
       pattern = languages,
-      callback = function()
+      callback = function(args)
         -- Enable native Neovim treesitter highlighting
+        local filetype = args.match
         vim.treesitter.start()
 
         -- Configure code folding
         vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
         vim.wo.foldmethod = "expr"
-        vim.wo.foldlevel = 99
+
+        -- m_markdown.lua will manage this
+        if filetype ~= "markdown" then
+          vim.wo.foldlevel = 99
+        end
 
         -- Enable treesitter-based indentation
         vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"

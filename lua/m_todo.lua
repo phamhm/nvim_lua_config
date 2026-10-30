@@ -187,11 +187,12 @@ function TODO.todo()
 
     local status = ""
     if finished and finished ~= "" then
-      status= " "
+      status= " "
     elseif started and started ~="" then
-      status= " "
+      status= " "
+    else
+      status = " "
     end
-
 
     return {
       { status , "CursorLinNr" }, -- Replace with your desired highlight group
