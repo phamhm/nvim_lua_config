@@ -299,4 +299,15 @@ map({"v", "n"}, "<leader>bb",
       capture_highlighted_block()
     end
   end,
-  {desc="make notes from highlted text"})
+  {desc="make notes/bookmark from highlted text"})
+
+map("n", "<leader>fn",
+  function()
+    local filetype = vim.bo.filetype
+    local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
+    Snacks.scratch({
+      file = target_file,
+      name = target_file,
+      enter = true
+    })
+  end, {desc = "open filetype note"})

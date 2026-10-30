@@ -50,6 +50,18 @@ return {
       end
       vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#93C572", bold = false })
       -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#8A9A5B", bold = false })
+      local colors = {
+        H1 = { fg = 'green',   }, -- Red
+        H2 = { fg = '#fabd2f', }, -- Yellow
+        H3 = { fg = '#b8bb26', }, -- Green
+        H4 = { fg = '#8ec07c', }, -- Aqua
+        H5 = { fg = '#83a598', }, -- Blue
+        H6 = { fg = '#d3869b', }, -- Purple
+      }
+
+      for level, hl in pairs(colors) do
+        vim.api.nvim_set_hl(0, 'RenderMarkdown' .. level .. 'Bg', hl)
+      end
     end
   },
   {

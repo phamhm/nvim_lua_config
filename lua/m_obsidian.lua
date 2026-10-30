@@ -81,6 +81,7 @@ return {
           strict = true,
         },
       },
+      footer = {enabled = false}
     }
 
     F.map("n", "<leader>oo", obsidian_select, {desc="calling obsidian commands"} )
