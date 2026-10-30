@@ -277,7 +277,7 @@ local function capture_from_register()
   if vim.startswith(reg_p, "http") then
     vim.notify("Bookmarking:" .. reg_p)
     vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
-      local note_text = "[" .. input .. "](" .. reg_p .. ")"
+      local note_text = { string.format("[%s](%s)", input, reg_p) }
       local full_path = vim.fn.expand( vim.g.m_notes_path .. "/bookmarks.md")
       vim.fn.writefile(note_text, full_path ,"a")
     end)
@@ -311,8 +311,6 @@ map("n", "<leader>fn",
       enter = true
     })
   end, {desc = "open filetype note"})
-
-
 
 map("n", "<C-w>f", function()
   for _, win in ipairs(vim.api.nvim_list_wins()) do

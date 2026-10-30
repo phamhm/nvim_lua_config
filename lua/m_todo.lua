@@ -249,25 +249,18 @@ function TODO.todo()
 end
 
 F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
+
 F.map("n", F.format_os_altkey("<C-%s-`>"),
   function()
+    local file_path
     if F.get_todo() ~= "" then
-      Snacks.scratch({
-        file = F.get_todo_path(),
-        name = F.get_todo_path(),
-      })
+      file_path = F.get_todo_path()
     else
-      vim.notify("Not doing anything", vim.log.levels.WARN)
+      file_path = vim.fn.expand(vim.g.m_notes_path .. "/reminders.md")
     end
-  end
-  , {desc = "Pulling up scrach"})
-
-F.map("n", F.format_os_altkey("<C-%s-r>"),
-  function()
-    local reminder_path = vim.fn.expand(vim.g.m_notes_path .. "/reminders.md")
     Snacks.scratch({
-      file = reminder_path,
-      name = reminder_path,
+      file = file_path,
+      name = file_path,
     })
   end
-  , {desc = "Reminder"})
+  , {desc = "Scratch doing or reminders"})
