@@ -9,6 +9,39 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+local function zip_selected(picker, item)
+  local path_to_files = vim.fn.fnamemodify(item._path, ":h")
+
+  local filenames = vim.iter(picker:selected({fallback = true}))
+    :map(function(i) return vim.fn.fnamemodify(i._path, ":t") end)
+    :totable()
+
+  vim.notify("File(s) to tar:\n" .. table.concat(filenames,"\n"))
+
+  vim.ui.input({prompt = "tar file name"},
+    function(tar_name)
+      local tar_filename = string.format("~/Backups/%s.tar.gz",tar_name)
+      tar_filename = vim.fn.expand(tar_filename)
+      local cmd = {
+        "tar",
+        "-cvzf",
+        tar_filename
+      }
+      vim.list_extend(cmd, filenames)
+
+      vim.system(cmd, { cwd = path_to_files }, function(obj)
+        if obj.code == 0 then
+          vim.notify("Zipped successfully!")
+        else
+          vim.notify("Error zipping files: " .. obj.stderr, vim.log.levels.ERROR)
+        end
+      end)
+    end
+  )
+
+  -- Combine the 'tar -cvzf <archive> <files...>' command
+end
+
 local m_snacks = {
   "folke/snacks.nvim",
   priority = 1000,
@@ -57,7 +90,7 @@ local m_snacks = {
         }
       },
     },
-    explorer = { enabled = false },
+    explorer = { enabled = true },
     bigfile = { enabled = true },
     indent = {
       enabled = true,
@@ -83,6 +116,7 @@ local m_snacks = {
       timeout = 5000,
     },
     picker = {
+
       enabled = true ,
       hidden=true,
       sources = {
@@ -112,8 +146,19 @@ local m_snacks = {
         },
 
         explorer = {
-          auto_close = false,
+          auto_close = true,
+          actions = {
+            zip_selected = zip_selected,
+          },
+          win = {
+            list = {
+              keys = {
+                ["Z"] = { 'zip_selected', mode = { "i", "n" } },
+              }
+            }
+          },
           layout = {
+            hidden = {"input"},
             layout = {
               border="none",
               position="left",
@@ -298,7 +343,7 @@ local m_snacks = {
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    -- { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-M-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fk",function() Snacks.picker.keymaps() end,desc = "keymaps" },
