@@ -1,4 +1,3 @@
-local M = require("utils.markdowns")
 local F = require("utils.functions")
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map

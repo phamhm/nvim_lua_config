@@ -1,5 +1,4 @@
 local F = require("utils.functions")
-local M = require("utils.markdowns")
 local alt_key = F.format_os_altkey
 
 -- disable autocompletion in the windows. will work on vim.ui.open

@@ -1,11 +1,8 @@
-local M = require('utils.markdowns')
-
 local F = {}
 
 function F._inspect(obj)
   vim.notify(vim.inspect(obj))
 end
-
 
 local custom_key_maps = {}
 
@@ -37,47 +34,7 @@ function F.get_keys()
 end
 
 -- take note_text and write to destination with @c capture time
-function F.append_text_to_file(text, destination)
-  -- destination = destination or  vim.g.m_notes_path .. "/capture_notes.md"
-  if not destination then
-    vim.notify("Desination is missing", vim.log.levels.ERROR)
-    return
-  end
-  if not text then
-    vim.notify("Text is missing", vim.log.levels.ERROR)
-    return
-  end
 
-  vim.fn.writefile(text, vim.fn.expand(destination), "a")
-end
-
--- this get the current line in the buffer
-function F.move_line_to_file(target_path, l_formatter)
-  l_formatter = l_formatter or function(x) return x end
-
-  -- 1. Expand the target path (handles ~ or relative paths safely)
-  local expanded_path = vim.fn.expand(target_path)
-
-  -- 2. Get the current cursor line text
-  local current_line = vim.api.nvim_get_current_line()
-  current_line = l_formatter(current_line)
-  if current_line == "" then
-    vim.notify("Can't move empty line")
-    return
-  end
-
-  local res = vim.fn.writefile(current_line, expanded_path, "a")
-  if res == -1 then
-    return
-  end
-
-  -- 5. Delete the line from the active Neovim buffer
-  -- nvim_buf_set_lines replaces a range of lines. Passing an empty table {} deletes them.
-  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
-  vim.api.nvim_buf_set_lines(0, row - 1, row, false, {})
-
-  vim.notify("Line appended to " .. target_path, vim.log.levels.INFO)
-end
 
 function F.format_os_altkey(key_formatter, repeat_n)
   repeat_n = repeat_n or 1
@@ -233,44 +190,6 @@ function F.get_mdlink_lines(filepath)
   return items
 end
 
--- pass nil to new_line and that line will be removed
-local function replace_line_in_file(filepath, old_line, new_line)
-  -- 1. Open the file in read mode
-  --
-  filepath = vim.fn.expand(filepath)
-  local file = io.open(filepath, "r")
-  if not file then
-    error("Could not open file for reading: " .. filepath)
-  end
-
-  -- 2. Read all lines into a table
-  local lines = {}
-  for line in file:lines() do
-    if line == old_line then
-      if new_line ~= nil then
-        table.insert(lines, new_line)
-      end
-    else
-      table.insert(lines, line)
-    end
-  end
-  file:close()
-
-  -- 3. Open the file in write mode to overwrite it with the modified content
-  file = io.open(filepath, "w")
-  if not file then
-    error("Could not open file for writing: " .. filepath)
-  end
-
-  -- 4. Write the lines back to the file
-  for _, line in ipairs(lines) do
-    file:write(line .. "\n")
-  end
-  file:close()
-
-  return true
-end
-
 function F.set_todo(todo)
   vim.g.m_todo = todo
 end
@@ -294,16 +213,6 @@ function F.clear_status()
   vim.g.global_status = ""
 end
 
--- "/archive/discarded_ideas.md"
-local function _move_todo(from_file_path, current_line, to_file_path)
-  local res = vim.fn.writefile(current_line, vim.fn.expand(vim.g.m_notes_path .. to_file_path), "a")
-  if res ~= -1 then
-    replace_line_in_file(from_file_path, current_line, nil)
-  end
-end
-
-
-
 -- generate a keys and actions to handle multiple items.
 -- if you pass in anything that need access to the list, user must provide that object with the m_actions.
 -- otherwise, m_actions methods won't be able to access the same picker_items list from this scope
@@ -319,7 +228,7 @@ function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
   local keys ={}
 
   local actions = {
-    fn_confirm = function(picker, item)
+    fn_confirm = function(picker, _)
       picker:close()
       local items = picker:selected({ fallback = true })
       fn_items_handler(items)
@@ -407,28 +316,6 @@ function F.m_picker(items, title, actions, keys)
     preview = actions.fn_preview,
     confirm = actions.fn_confirm,
   })
-end
-
--- not using it. stash it here
--- map('n', '<leader>lu', function() prompt_and_run_lua("Lua command", "lua") end, { desc = 'Prompt and execute Lua code' })
-local function prompt_and_run_lua(prompt, cmp_type)
-  vim.ui.input({ prompt = prompt, completion = cmp_type }, function(input)
-    -- If the user hits Esc or Cancels, input is nil
-    if not input or input == "" then return end
-
-    -- Compile the string into an executable Lua chunk
-    local chunk, err = load(input)
-
-    if chunk then
-      -- Safely execute the compiled chunk
-      local success, result = pcall(chunk)
-      if not success then
-        vim.notify("Runtime Error: " .. tostring(result), vim.log.levels.ERROR)
-      end
-    else
-      vim.notify("Syntax Error: " .. tostring(err), vim.log.levels.ERROR)
-    end
-  end)
 end
 
 function F.set_title()
