@@ -261,3 +261,13 @@ F.map("n", F.format_os_altkey("<C-%s-`>"),
     end
   end
   , {desc = "Pulling up scrach"})
+
+F.map("n", F.format_os_altkey("<C-%s-r>"),
+  function()
+    local reminder_path = vim.fn.expand(vim.g.m_notes_path .. "/reminders.md")
+    Snacks.scratch({
+      file = reminder_path,
+      name = reminder_path,
+    })
+  end
+  , {desc = "Reminder"})
