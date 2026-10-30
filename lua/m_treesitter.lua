@@ -84,6 +84,8 @@ return {
         -- m_markdown.lua will manage this
         if filetype ~= "markdown" then
           vim.wo.foldlevel = 99
+        else
+          vim.wo.foldlevel = 0
         end
 
         -- Enable treesitter-based indentation

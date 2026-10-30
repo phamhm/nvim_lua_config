@@ -97,3 +97,21 @@ _G.get_custom_title = function()
 
   return title
 end
+
+-- Define the custom foldtext appearance
+_G.my_fold_text = function()
+  -- Get the text of the first line inside the fold
+  local first_line = vim.fn.getline(vim.v.foldstart)
+
+  -- Calculate how many lines are collapsed
+  local folded_lines = vim.v.foldend - vim.v.foldstart + 1
+
+  -- Create a suffix displaying the count (e.g., " ⋯ [42 lines] ")
+  local suffix = string.format(" ⋯ [%d lines] ", folded_lines)
+
+  return first_line .. suffix
+end
+-- Assign it using the v:lua global wrapper so Vimscript options engine can resolve it
+vim.opt.foldtext = "v:lua.my_fold_text()"
+-- Clean up trailing filler characters so they don't overwrite your custom text
+vim.opt.fillchars:append({ fold = " " })
