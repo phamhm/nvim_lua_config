@@ -219,7 +219,7 @@ map('i', "<C-v>", function()
   if code == 1 then
     -- paste from the @+ system clipboard register,
     -- select the pasted line(s) and autoindent
-    vim.cmd('normal "+p`[V`]=')
+    vim.cmd('normal "+P`[V`]=')
   elseif vim.bo.filetype == "markdown" then
     vim.ui.input({prompt = "image name"}, function(input)
       vim.cmd("Obsidian paste_img "..input)
