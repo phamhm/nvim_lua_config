@@ -4,7 +4,6 @@ local TODO = {}
 
 local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO")
 
-
 local function get_times(path)
   local time_prefixes = {"m_todo_Created", "m_todo_Started", "m_todo_Finished"}
 

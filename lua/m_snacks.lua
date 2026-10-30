@@ -10,106 +10,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-local md_capture_keys ={
-    ["todo"] = {
-      "<C-t>", function() F.move_line_to_file(vim.g.m_notes_path .. "/TODO.md", M.md_create_link) end,
-      desc = "Todo",
-      mode = {"n"},
-    },
-    ["discard"] = {
-      ("<C-x>"), function()
-        vim.ui.select({"yes", "no"}, { prompt = "Discard this item?" },
-          function(choice)
-            if choice == "yes" then
-              F.move_line_to_file(vim.g.m_notes_path .. "/archive/discarded_ideas.md")
-            end
-          end
-        )
-      end,
-      desc = "Discard",
-      mode = {"n", },
-    },
-    ["index"] = {
-      ("<C-i>"), function()
-        local m_formatter = function(line)
-          return string.gsub(line, "^-", "\n#")
-        end
-        F.move_line_to_file(vim.g.m_notes_path .. "/index.md", m_formatter) end,
-      desc = "Index",
-      mode = {"n", },
-    },
-  }
-
--- this set actions for snacks.scrach
-local function md_scratch_opts (md_name, keys)
-  local m_keys = {
-    ["buffer"] = {
-      "<CR>", -- using <CR> to prevent obsidianFollowLink in floating window
-      function()
-        local full_path = vim.api.nvim_buf_get_name(0)
-        vim.cmd("fclose")
-        vim.cmd("botright vsplit " .. full_path)
-      end,
-      desc = "Splt R",
-      mode = "n"
-    },
-  }
-
-  if keys then
-    m_keys = vim.tbl_deep_extend("force", m_keys, keys)
-  end
-
-  return {
-    file = md_name,
-    enter = true,
-    name = md_name,
-    ft = "markdown",
-    win_by_ft = {
-      markdown = {
-        keys = m_keys,
-      },
-    },
-    win = {
-      width = 0.5,
-      height = 0.95
-    }
-  }
-end
-
-local function m_picker_files(cwd, fn_confirm)
-  local keys = {
-    ["<C-l>"] = { "focus_preview", mode = {"n" }},
-    ["<C-h>"] = { "focus_list", mode = {"n"}},
-    ["<C-k>"] = { "focus_input", mode = {"n"}},
-  }
-  Snacks.picker.files({
-    cwd = cwd,
-    layout = {
-      hidden = {"input"},
-    },
-    focus = "list",
-    exclude = {
-      "archive",
-      "todo_notes",
-      "assets",
-      ".git",
-      "node_modules",
-      "attachments",
-      "TODO", "DISCARDED",
-    },
-    win = {
-      list ={keys = keys},
-      input ={keys = keys},
-      preview ={keys = keys},
-    },
-    confirm = fn_confirm or function(picker, item)
-      picker:close()
-      vim.cmd("fclose!")
-      Snacks.scratch(md_scratch_opts(item._path))
-    end
-  })
-end
-
 local m_snacks = {
   "folke/snacks.nvim",
   priority = 1000,
@@ -130,8 +30,25 @@ local m_snacks = {
     },
     scratch = {
       root = "/tmp", -- os will clear it.
+      win_by_ft = {
+        markdown = {
+          keys = {
+            ["buffer"] = {
+              "<CR>", -- using <CR> to prevent obsidianFollowLink in floating window
+              function()
+                local full_path = vim.api.nvim_buf_get_name(0)
+                vim.cmd("fclose")
+                vim.cmd("botright vsplit " .. full_path)
+              end,
+              desc = "Splt R",
+              mode = "n"
+            },
+          },
+        },
+      },
       win = {
-        width = 0.4,
+        min_width = 0,
+        width = 0.6,
         height = 0.9,
         border = "rounded",
         wo = {
@@ -207,6 +124,7 @@ local m_snacks = {
           }
         },
         files = {
+          focus = {},
           layout = {
             hidden = {},
             layout = {
@@ -239,7 +157,29 @@ local m_snacks = {
             "*env*",
             "*pycache*",
             "*backup*",
-            "todo_notes"
+            "todo_notes",
+            "templates",
+            "DISCARDED", "DONE", "TODO",
+            "attachments"
+          },
+          -- in Snacks.picker.files list, <C-s> open the file in Snacks.scratch
+          actions = {
+            m_open_scratch = function(picker)
+              local file = picker:current()._path
+              picker:close()
+              Snacks.scratch({
+                file = file,
+                name = file,
+                enter = true,
+              })
+            end,
+          },
+          win = {
+            list = {
+              keys = {
+                ["<C-s>"] = {"m_open_scratch", mode = {"n"}}
+              },
+            }
           }
         }
       },
@@ -364,8 +304,14 @@ local m_snacks = {
     -- this won't close any current floating windows.
     { "<leader>ww",
       function()
-        m_picker_files(vim.g.m_notes_path )
-      end,desc = "Help Page" },
+        Snacks.picker.files({
+          cwd =vim.g.m_notes_path,
+          layout = {
+            hidden = {"input"},
+          },
+          focus = "list",
+        })
+      end,desc = "My Notes" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
@@ -415,8 +361,6 @@ local m_snacks = {
     -- seabch
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
-    -- search
-    -- { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} }) end, desc = "Registers", mode='i' },
     { '<leader>r', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
@@ -436,12 +380,6 @@ local m_snacks = {
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader><leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
-    {
-      alt_key("<C-%s-`>"), function()
-        Snacks.scratch(md_scratch_opts(vim.fn.expand(vim.g.m_notes_path .. "/capture_notes.md"), md_capture_keys))
-      end,
-      desc="snack scrach reminder notes"
-    },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     {
       "<leader>q",

@@ -60,6 +60,7 @@ local options = {
   spellfile      = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
   winborder      = "rounded",
   pumborder      = "rounded",
+  textwidth      = 80,
 }
 
 for k, v in pairs(options) do
