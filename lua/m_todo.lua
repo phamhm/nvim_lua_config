@@ -256,7 +256,7 @@ F.map("n", F.format_os_altkey("<C-%s-`>"),
     if F.get_todo() ~= "" then
       file_path = F.get_todo_path()
     else
-      file_path = vim.fn.expand(vim.g.m_notes_path .. "/reminders.md")
+      file_path = vim.fn.expand(vim.g.m_notes_path .. "/index.md")
     end
     Snacks.scratch({
       file = file_path,
