@@ -40,7 +40,6 @@ require('lazy').setup({
   require('m_misc'),
   require('m_obsidian'),
   require('m_blink'),
-  require('m_zen'),
 })
 
 -- setup must be called before loading
