@@ -1,4 +1,3 @@
-local F = require("utils.functions")
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
 -- Create an augroup to ensure autocommands don't duplicate on reload

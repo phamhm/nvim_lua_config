@@ -217,7 +217,7 @@ end
 -- if you pass in anything that need access to the list, user must provide that object with the m_actions.
 -- otherwise, m_actions methods won't be able to access the same picker_items list from this scope
 function F.gen_picker_actions(fn_items_handler, m_actions, m_keys)
-  local fn_items_handler = fn_items_handler or function(bookmarks)
+  fn_items_handler = fn_items_handler or function(bookmarks)
     for _, bookmark in ipairs(bookmarks) do
       F.open_md_link(bookmark)
     end

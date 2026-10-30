@@ -95,7 +95,6 @@ local m_snacks = {
               min_width = 0,
               width = 0.3,
               height = 0.5,
-              box = "vertical",
               backdrop = false,
               border = "none",
               title = " {title} {live} {flags}",
