@@ -89,14 +89,7 @@ autocmd("FileType", {
 
 vim.opt.title = true
 vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
-_G.get_custom_title = function()
-  local title = F.set_title()
-  if F.get_todo() ~= "" then
-    title = title .."| " .. F.get_todo()
-  end
-
-  return title
-end
+_G.get_custom_title = F.set_title
 
 -- Define the custom foldtext appearance
 _G.my_fold_text = function()

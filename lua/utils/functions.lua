@@ -1,7 +1,6 @@
 local F = {}
 
-local default_todo = ""
-local m_todo =  default_todo
+local m_todo =  ""
 local m_todo_path = ""
 local m_status = ""
 
@@ -198,10 +197,10 @@ function F.get_todo_path()
 end
 
 function F.clear_todo()
-  if m_todo ~="" and m_todo ~= default_todo then
+  if m_todo ~="" then
     vim.notify("Clear todo:" .. m_todo)
   end
-  m_todo = default_todo
+  m_todo = ""
   m_todo_path = ""
 end
 
@@ -331,24 +330,16 @@ function F.m_picker(items, title, actions, keys)
 end
 
 function F.set_title()
-  local fname = vim.fn.expand('%:t')
-  if not (fname and fname~="") then
-    return "[no file]"
-  end
-  -- local icon = MiniIcons.get('file', fname).. ' '
-
-  local path = vim.fs.dir(fname)
-
   local session = vim.trim(vim.v.this_session)
   if session~="" then
-    session = vim.fs.basename(vim.v.this_session)..">"
+    session = vim.fs.basename(vim.v.this_session).."::"
   else
     session = ""
   end
 
-  local path = vim.fn.expand('%:p:h')
+  local todo = F.get_todo()
 
-  return string.format("%s%s", session, path)
+  return string.format("%s%s", session, todo)
 end
 
 return F

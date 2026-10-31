@@ -111,11 +111,14 @@ return {
               'location',
               color = { fg = 'lightgreen'},
             },
-            "filename",
             {
-              F.get_todo,
-              color = { fg = '#ff9e64'},
+              "filename",
+              path = 1,
             },
+            -- {
+            --   F.get_todo,
+            --   color = { fg = '#ff9e64'},
+            -- },
             'branch',
             'diff',
             'diagnostics',
