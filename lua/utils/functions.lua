@@ -185,11 +185,10 @@ function F.set_todo(todo, path)
 end
 
 function F.get_todo()
-  local todo = m_todo
-  if vim.fn.strcharlen(m_todo) > 20 then
-    todo = vim.fn.strcharpart(todo, 0, 17) .. "..."
-  end
-  return string.format("[%s %s]", MiniIcons.get("file", "TODO"), todo)
+  local len = 20
+  local todo = #m_todo<len and m_todo or vim.fn.strcharpart(m_todo, 0, len-3) .. "..."
+  local icon = MiniIcons.get("file", "TODO")
+  return string.format("[%s %s]", icon , todo)
 end
 
 function F.get_todo_path()
