@@ -88,6 +88,7 @@ local function todo_picker(title, actions, keys)
 
   Snacks.picker.files({
     title = title or "select to run",
+    cwd = TODO_FILE_PATH,
     layout = {
       hidden = actions.hidden or {"input"},
     },
@@ -189,19 +190,14 @@ function TODO.todo()
     return item
   end
 
-  function m_actions.resort_by_score(picker)
-    table.sort(picker.list.items, function(i1, i2) return i1.priority > i2.priority end)
-    picker.list:update({force = true})
-  end
-
-  function m_actions.m_finder()
+  function m_actions.m_finder(picker)
     -- return {file = , text, cwd, status_hl_group and score}
-    local files =vim.fn.globpath(TODO_FILE_PATH, "*.md", 0, 1)
+    local files =vim.fn.globpath(picker.cwd, "*.md", 0, 1)
     return vim.iter(files)
       :map(function(file)
         local item = {}
         item.file = vim.fs.basename(file)
-        item.cwd = vim.fs.dirname(file)
+        item.cwd = picker.cwd
 
         local times = get_times(file)
         local started = times.m_todo_Started
@@ -275,7 +271,6 @@ function TODO.todo()
     ["<C-m>"] = { "done_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
     ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
-    ["<C-r>"] = { "resort_by_score", mode = {"i", "n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   todo_picker("Select TODO item(s)", actions, keys)
