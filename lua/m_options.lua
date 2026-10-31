@@ -71,12 +71,9 @@ vim.opt.shortmess:append("cW")
 vim.opt.formatoptions:append('r')
 vim.opt.whichwrap:append('<,>,[,],h,l')
 
--- JavaScript: 2 spaces
--- local augroup = vim.api.nvim_create_augroup
-local autocmd = vim.api.nvim_create_autocmd
-
-autocmd("FileType", {
-  group = indent_group,
+-- 2 spaces tab
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("tab_2_group", {clear = true}),
   pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua" },
   callback = function()
     vim.bo.tabstop = 2

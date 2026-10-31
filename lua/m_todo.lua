@@ -3,38 +3,36 @@ local F = require('utils.functions')
 local TODO = {}
 
 local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO")
+local TIME_PREFIXES = {"m_todo_Created", "m_todo_Started", "m_todo_Finished"}
+
+vim.api.nvim_set_hl(0, "finished_hl", {
+  fg = "grey",        -- Foreground color (Hex)
+})
+
+vim.api.nvim_set_hl(0, "pending_hl", {
+  fg = "green",        -- Foreground color (Hex)
+  bold = true,           -- Text style attribute
+  italic = true,         -- Text style attribute
+})
+
+vim.api.nvim_set_hl(0, "started_hl", {
+  fg = "yellow",        -- Foreground color (Hex)
+  bold = true,           -- Text style attribute
+  italic = true,         -- Text style attribute
+})
 
 local function get_times(path)
-  local time_prefixes = {"m_todo_Created", "m_todo_Started", "m_todo_Finished"}
-
   return vim.iter(vim.fn.readfile(path))
     :filter(
       function(line)
         local time_type,_ = line:gsub(":.*", "")
-        return vim.tbl_contains(time_prefixes, vim.trim(time_type))
+        return vim.tbl_contains(TIME_PREFIXES, vim.trim(time_type))
       end)
-    :flatten()
     :fold({}, function(acc, val)
       local time_type, date_time = unpack(vim.split(val, ':'))
       acc[time_type] = date_time
       return acc
     end)
-end
-
--- Each todo file has 3 times(capture, start and finish)
--- this function look at those time in the  yaml and create a list of them
--- then associates the file name with this list. Help with advancing time
-local function map_file_to_times(file_path)
-  local dir_iter = vim.fs.dir(file_path)
-  return vim.iter(dir_iter)
-    :filter(function(_, ft) return ft=="file" end)
-    :map(function(name)
-      local path = TODO_FILE_PATH..'/'..name
-      return { [path] = get_times(path) }
-    end)
-    :fold({}, function(acc, obj)
-    return vim.tbl_deep_extend("force", acc, obj)
-  end)
 end
 
 -- replace the first instance of old text with new text
@@ -89,11 +87,9 @@ local function todo_picker(title, actions, keys)
   end
 
   Snacks.picker.files({
-    exclude = {"DONE/", "DISCARDED/", "templates/"},
-    cwd = TODO_FILE_PATH,
     title = title or "select to run",
     layout = {
-      hidden = actions.hidden or {"preview"},
+      hidden = actions.hidden or {"input"},
     },
     actions = actions,
     win = {
@@ -109,8 +105,11 @@ local function todo_picker(title, actions, keys)
     },
     -- preview = actions.fn_preview,
     confirm = actions.fn_confirm,
-    -- transform = actions.m_transform,
+    transform = actions.m_transform,
     format = actions.m_format,
+    finder = actions.m_finder,
+    matcher = {sort_empty = true},
+    sort = { fields = { "priority:desc", } },
   })
 end
 
@@ -154,21 +153,17 @@ local function move_file(picker, sub_dir)
 end
 
 function TODO.todo()
-  vim.cmd("fclose")
+  vim.cmd("fclose!")
   -- opening a headless buffer
 
-  local file_times_map = map_file_to_times(TODO_FILE_PATH)
-
-  local file_counter = vim.tbl_count(file_times_map)
-
+  local todo_files = vim.fn.globpath(TODO_FILE_PATH, "*.md", 0, 1)
   -- 4. Open the Snacks picker if we found any links
-  if file_counter == 0 then
+  if #todo_files == 0 then
     vim.notify("No todo item", vim.log.levels.WARN)
     return
   end
 
   local m_actions = {
-    hidden = {"input"},
   }
 
   function m_actions.set_todo(picker, item)
@@ -190,29 +185,57 @@ function TODO.todo()
     move_file(picker, "DONE")
   end
 
-  function m_actions.m_format(item, _)
-    local path = item.cwd .. '/' .. item.file
-    local times = file_times_map[path]
-    local started = times.m_todo_Started
-    local finished = times.m_todo_Finished
-
-    local status = ""
-    if finished and finished ~= "" then
-      status= " "
-    elseif started and started ~="" then
-      status= " "
-    else
-      status = " "
-    end
-
-    return {
-      { status , "CursorLinNr" }, -- Replace with your desired highlight group
-      { item.text:gsub("-", " "):gsub(".md", "") , "String" }, -- Replace with your desired highlight group
-    }
+  function m_actions.m_transform(item)
+    return item
   end
 
-  -- function m_actions.m_transform(item, picker)
-  -- end
+  function m_actions.resort_by_score(picker)
+    table.sort(picker.list.items, function(i1, i2) return i1.priority > i2.priority end)
+    picker.list:update({force = true})
+  end
+
+  function m_actions.m_finder()
+    -- return {file = , text, cwd, status_hl_group and score}
+    local files =vim.fn.globpath(TODO_FILE_PATH, "*.md", 0, 1)
+    return vim.iter(files)
+      :map(function(file)
+        local item = {}
+        item.file = vim.fs.basename(file)
+        item.cwd = vim.fs.dirname(file)
+
+        local times = get_times(file)
+        local started = times.m_todo_Started
+        local finished = times.m_todo_Finished
+
+        local status = ""
+        if finished and finished ~= "" then
+          status= " "
+          item.status_hl_group = "finished_hl"
+          item.priority = 0
+        elseif started and started ~="" then
+          status= " "
+          item.status_hl_group = "started_hl"
+          item.priority = 999
+        else
+          status = " "
+          item.status_hl_group = "pending_hl"
+          item.priority =100
+        end
+
+        item.text = status .. " " ..item.file:gsub("-"," "):gsub(".md","")
+        item.started = vim.trim(started)
+
+        return item
+      end)
+      :fold({}, function(acc, item)
+        table.insert(acc, item)
+        return acc
+      end)
+  end
+
+  function m_actions.m_format(item, _)
+    return { { item.text , item.status_hl_group }, }
+  end
 
   function m_actions.m_advance_todo(picker, item)
     local items = picker:selected({ fallback = true })
@@ -222,18 +245,16 @@ function TODO.todo()
     end
 
     local file_path = item.cwd .. '/' .. item.file
-    local times = file_times_map[file_path]
+    local times = get_times( file_path )
     local started = times.m_todo_Started
     local finished = times.m_todo_Finished
     local new_date = os.date("%Y-%m-%d %H%M")
     local todo = item.text:gsub("-"," "):gsub(".md", "")
     if started and started == "" then
       replace_first_in_buffer(file_path, "m_todo_Started:", "m_todo_Started: " .. new_date)
-      file_times_map[file_path]["m_todo_Started"] = new_date
       m_actions.set_todo(picker, item)
     elseif finished and finished == "" then
       replace_first_in_buffer(file_path, "m_todo_Finished:", "m_todo_Finished: " .. new_date)
-      file_times_map[file_path]["m_todo_Finished"] = new_date
       if todo == F.get_todo() then
         F.clear_todo()
       end
@@ -241,7 +262,6 @@ function TODO.todo()
 
     picker:refresh()
   end
-
 
   function m_actions.fn_confirm(picker, item)
     picker:close()
@@ -255,6 +275,7 @@ function TODO.todo()
     ["<C-m>"] = { "done_notes", mode = {"i", "n"}},
     ["<C-x>"] = { "discard_notes", mode = {"i", "n"}},
     ["<C-t>"] = { "set_todo", mode = {"i", "n"}},
+    ["<C-r>"] = { "resort_by_score", mode = {"i", "n"}},
   }
   local actions, keys = F.gen_picker_actions(nil, m_actions, m_keys)
   todo_picker("Select TODO item(s)", actions, keys)

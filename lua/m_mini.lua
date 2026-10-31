@@ -87,14 +87,14 @@ local m_mini = {
       }
     }) end
   },
-  {
-    'echasnovski/mini.completion',
-    config = function()
-      require("mini.completion").setup({
-        lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-        delay = { completion = 999999, info = 99999, signature = 99999 },
-      }) end
-  },
+  -- {
+  --   'echasnovski/mini.completion',
+  --   config = function()
+  --     require("mini.completion").setup({
+  --       lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
+  --       delay = { completion = 999999, info = 99999, signature = 99999 },
+  --     }) end
+  -- },
   -- {
   --   'echasnovski/mini.snippets',
   --   dependencies = { "rafamadriz/friendly-snippets" },
@@ -128,7 +128,9 @@ local m_mini = {
   {
     'echasnovski/mini.sessions',
     config = function() require("mini.sessions").setup({
-      directory = vim.fn.stdpath('config') .. '/sessions/'
+      directory = vim.fn.stdpath('config') .. '/sessions/',
+      autowrite = true,
+      verbose = {write = true, read = true}
     }) end,
     keys = {
       {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
@@ -164,17 +166,6 @@ local m_mini = {
   },
   {
     'echasnovski/mini.trailspace',
-    config = function()
-      -- don't call setup because don't want highlight everything
-      vim.api.nvim_create_autocmd('BufWritePre', {
-        desc = 'Removes trailing whitespace on save',
-        callback = function()
-          local ts = require("mini.trailspace")
-          ts.trim()
-          ts.trim_last_lines()
-        end,
-      })
-    end,
   },
   {
     'echasnovski/mini.splitjoin',

@@ -9,6 +9,19 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Picker explorer actions
+local function diff_selected(picker)
+  picker:close()
+  local selected = picker:selected()
+  if #selected == 2 then
+    vim.cmd("tabnew " .. selected[1].file)
+    vim.cmd("vert diffs " .. selected[2].file)
+    Snacks.notify.info("Diffing " .. selected[1].file .. " & " .. selected[2].file)
+  else
+    vim.notify("Need 2 files to diff. Found " .. #selected, vim.log.levels.WARN)
+  end
+end
+
 local function zip_selected(picker, item)
   local path_to_files = vim.fn.fnamemodify(item._path, ":h")
 
@@ -69,7 +82,7 @@ local m_snacks = {
               "<CR>", -- using <CR> to prevent obsidianFollowLink in floating window
               function()
                 local full_path = vim.api.nvim_buf_get_name(0)
-                vim.cmd("fclose")
+                vim.cmd("fclose!")
                 vim.cmd("botright vsplit " .. full_path)
               end,
               desc = "Splt R",
@@ -150,21 +163,21 @@ local m_snacks = {
           auto_close = true,
           actions = {
             zip_selected = zip_selected,
+            diff_selected     = diff_selected,
           },
           win = {
             list = {
               keys = {
-                ["Z"] = { 'zip_selected', mode = { "i", "n" } },
+                ["Z"] = { 'zip_selected', mode = { "n" } },
+                ["D"] = { 'diff_selected', mode = { "n" } },
+                ["h"] = { 'explorer_up', mode = { "n" } },
+                ["l"] = { 'tcd', mode = { "n" } },
               }
             }
           },
           layout = {
             hidden = {"input"},
-            layout = {
-              border="none",
-              position="left",
-              width=0.15
-            }
+            preset = "default",
           }
         },
         files = {
@@ -443,7 +456,7 @@ local m_snacks = {
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
-    { "<C-/>",      function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
+    { "<C-/>",      function() vim.cmd("fclose!") Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
     { "<leader>`",  F.generate_bookmarks_picker, desc = "Open Link Picker" }

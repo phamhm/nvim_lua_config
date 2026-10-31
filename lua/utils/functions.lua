@@ -261,7 +261,7 @@ end
 -- AND the scripts in Documents/scripts
 -- build a list of {text, link}
 function F.generate_bookmarks_picker()
-  vim.cmd("fclose")
+  vim.cmd("fclose!")
 
   local items = vim.iter(vim.fn.readfile(vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md")))
     :map(function(line)

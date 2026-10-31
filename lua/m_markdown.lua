@@ -2,16 +2,15 @@ local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
 local _inspect = require("utils.functions")._inspect
 -- Create an augroup to ensure autocommands don't duplicate on reload
-local prose_group = vim.api.nvim_create_augroup("ProseMode", { clear = true })
+--
 
 local function opts(desc_text)
   return {desc=desc_text, buffer = true, noremap = false, silent = true}
 end
 
 -- Example keymap binding to <leader>c in normal mode
-
 vim.api.nvim_create_autocmd("FileType", {
-  group = prose_group,
+  group = vim.api.nvim_create_augroup("ProseMode", { clear = true }),
   -- Target text-focused filetypes (mimicking vim-pencil's default targets)
   pattern = { "markdown"},
   callback = function()
@@ -36,7 +35,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
     vim.opt_local.spell = false
 
-    vim.opt_local.foldlevel = 0  -- <- set this here instead of treesitter autocmd
+    vim.opt_local.foldlevel = 1  -- <- set this here instead of treesitter autocmd
   end,
 })
 

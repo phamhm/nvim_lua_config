@@ -1,6 +1,7 @@
 local F = require("utils.functions")
 local alt_key = F.format_os_altkey
 local map = F.map
+local ts = require("mini.trailspace")
 
 local CAPTURE_NOTE_DIR = vim.fn.expand(vim.g.m_notes_path .. '/CAPTURE_NOTES')
 
@@ -32,7 +33,13 @@ map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
 map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
 map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>', "<cmd>w!<cr><Esc>",{silent = true, desc="save buffer"})
+map({'n', 'i', 'v'}, '<C-s>',
+  function()
+    vim.cmd("stopinsert")
+    ts.trim()
+    ts.trim_last_lines()
+    vim.cmd("write")
+  end,{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
 
 -- end key maps
