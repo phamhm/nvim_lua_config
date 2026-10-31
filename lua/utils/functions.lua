@@ -337,19 +337,18 @@ function F.set_title()
   end
   -- local icon = MiniIcons.get('file', fname).. ' '
 
-  fname = vim.fn.expand('%:p:h:t')..'/' .. fname
+  local path = vim.fs.dir(fname)
 
   local session = vim.trim(vim.v.this_session)
   if session~="" then
-    session = vim.fs.basename(vim.v.this_session).."::"
+    session = vim.fs.basename(vim.v.this_session)..">"
   else
     session = ""
   end
 
-  local readonly = vim.bo[0].readonly and "[-]" or ""
-  local modified = vim.bo[0].modified and "[+]" or ""
+  local path = vim.fn.expand('%:p:h')
 
-  return string.format("%s%s %s%s", session, fname, modified , readonly)
+  return string.format("%s%s", session, path)
 end
 
 return F
