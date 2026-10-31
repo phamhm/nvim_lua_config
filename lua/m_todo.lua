@@ -3,7 +3,16 @@ local F = require('utils.functions')
 local TODO = {}
 
 local TODO_FILE_PATH = vim.fn.expand(vim.g.m_notes_path .. "/TODO")
-local TIME_PREFIXES = {"m_todo_Created", "m_todo_Started", "m_todo_Finished"}
+local TODO_PREFIX_YAML = {"m_todo_Title", "m_todo_Created", "m_todo_Started", "m_todo_Finished"}
+
+local DONE        = "0"
+local STARTED     = "9"
+local PENDING     = "5"
+local  STATUS_MAP = {
+  [DONE] =    {icon = "  " , hl_group = "finished_hl"},
+  [STARTED] = {icon = "  " , hl_group = "started_hl"},
+  [PENDING] = {icon = "  " , hl_group = "pending_hl"},
+}
 
 vim.api.nvim_set_hl(0, "finished_hl", {
   fg = "grey",        -- Foreground color (Hex)
@@ -21,16 +30,16 @@ vim.api.nvim_set_hl(0, "started_hl", {
   italic = true,         -- Text style attribute
 })
 
-local function get_times(path)
+local function get_yaml_config(path)
   return vim.iter(vim.fn.readfile(path))
     :filter(
       function(line)
         local time_type,_ = line:gsub(":.*", "")
-        return vim.tbl_contains(TIME_PREFIXES, vim.trim(time_type))
+        return vim.tbl_contains(TODO_PREFIX_YAML, vim.trim(time_type))
       end)
     :fold({}, function(acc, val)
-      local time_type, date_time = unpack(vim.split(val, ':'))
-      acc[time_type] = date_time
+      local key, value = unpack(vim.split(val, ':'))
+      acc[key] = vim.trim(value):gsub("^'(.*)'$", "%1")
       return acc
     end)
 end
@@ -110,7 +119,7 @@ local function todo_picker(title, actions, keys)
     format = actions.m_format,
     finder = actions.m_finder,
     matcher = {sort_empty = true},
-    sort = { fields = { "priority:desc", } },
+    sort = { fields = { "status:desc", } },
   })
 end
 
@@ -174,8 +183,7 @@ function TODO.todo()
       return
     end
 
-    local todo = item.text:gsub("-"," "):gsub(".md", "")
-    F.set_todo(todo, item._path)
+    F.set_todo(item.text, item._path)
   end
 
   function m_actions.discard_notes(picker, _)
@@ -199,27 +207,19 @@ function TODO.todo()
         item.file = vim.fs.basename(file)
         item.cwd = picker.cwd
 
-        local times = get_times(file)
-        local started = times.m_todo_Started
-        local finished = times.m_todo_Finished
-
-        local status = ""
-        if finished and finished ~= "" then
-          status= " "
-          item.status_hl_group = "finished_hl"
-          item.priority = 0
-        elseif started and started ~="" then
-          status= " "
-          item.status_hl_group = "started_hl"
-          item.priority = 999
-        else
-          status = " "
-          item.status_hl_group = "pending_hl"
-          item.priority =100
-        end
-
-        item.text = status .. " " ..item.file:gsub("-"," "):gsub(".md","")
+        local yaml_config = get_yaml_config(file)
+        item.text = yaml_config.m_todo_Title
+        local started = yaml_config.m_todo_Started
         item.started = vim.trim(started)
+        local finished = yaml_config.m_todo_Finished
+
+        if finished and finished ~= "" then
+          item.status= DONE
+        elseif started and started ~="" then
+          item.status= STARTED
+        else
+          item.status = PENDING
+        end
 
         return item
       end)
@@ -230,7 +230,8 @@ function TODO.todo()
   end
 
   function m_actions.m_format(item, _)
-    return { { item.text , item.status_hl_group }, }
+    local status = STATUS_MAP[item.status] or {icon = "??" , hl_group = "Comment"}
+    return { { status.icon .. ' ' .. item.text , status.hl_group }, }
   end
 
   function m_actions.m_advance_todo(picker, item)
@@ -241,11 +242,11 @@ function TODO.todo()
     end
 
     local file_path = item.cwd .. '/' .. item.file
-    local times = get_times( file_path )
-    local started = times.m_todo_Started
-    local finished = times.m_todo_Finished
+    local yaml_config = get_yaml_config( file_path )
+    local started = yaml_config.m_todo_Started
+    local finished = yaml_config.m_todo_Finished
     local new_date = os.date("%Y-%m-%d %H%M")
-    local todo = item.text:gsub("-"," "):gsub(".md", "")
+    local todo = item.text
     if started and started == "" then
       replace_first_in_buffer(file_path, "m_todo_Started:", "m_todo_Started: " .. new_date)
       m_actions.set_todo(picker, item)
