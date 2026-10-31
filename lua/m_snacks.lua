@@ -362,7 +362,7 @@ local m_snacks = {
         })
       end,desc = "My Notes" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
-    { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="diagnostics"},
+    { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="buffer diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
     { "<leader>fg",function() Snacks.picker.git_status() end, desc="git status" },
     { "<leader>fr", function() Snacks.picker.resume() end, desc="resume"},
@@ -464,10 +464,9 @@ local m_snacks = {
 }
 
 if m_snacks.keys then
-  for _, val in ipairs(m_snacks.keys) do
-    local key = val[1] ..":".. "Snacks "..(val.desc or "no description")
-    F.save_keys(key)
-  end
+  vim.iter(m_snacks.keys)
+    :map(function(key) return string.format("%s:Snacks %s", key[1], key.desc or "no description") end)
+    :each(function(key) F.save_keys(key) end)
 end
 
 return m_snacks
