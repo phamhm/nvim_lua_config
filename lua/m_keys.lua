@@ -32,7 +32,7 @@ map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
 map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
 map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>', "<cmd>w!<cr>",{silent = true, desc="save buffer"})
+map({'n', 'i', 'v'}, '<C-s>', "<cmd>w!<cr><Esc>",{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
 
 -- end key maps
