@@ -107,7 +107,7 @@ map(
   'n',
   '<leader>cc',
   function()
-    vim.ui.input({ prompt = 'Todo: ' },
+    vim.ui.input({ prompt = 'Quick Capture: ' },
       function(input)
         -- Obsidian new will open the new note.
         -- this will save my current buffer then switch back to it.
@@ -124,6 +124,18 @@ map(
       end)
   end,
   { desc = 'Capture text and apped to capture_notes.md' }
+)
+
+map( 'n', '<leader>cC',
+  function()
+    vim.ui.input({ prompt = 'Detail Capture:' },
+      function(input)
+        vim.cmd("Obsidian workspace todo")
+        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", input:gsub('/',""))
+        vim.cmd(cmd)
+      end)
+  end,
+  { desc = 'will open the buffer up for writing' }
 )
 
 map('n', '<leader>vd',

@@ -1,43 +1,40 @@
 local F = require('utils.functions')
 
-local obsidian_map = {
-  ["Obsidian check "] = " check for common issues in your vault and plugin setup",
-  ["Obsidian dailies [OFFSET ...] "] = " open a picker list of daily notes",
-  ["Obsidian dailies "] = "2 1 to list daily notes from 2 days ago until tomorrow",
-  ["Obsidian help "] = " find files in the plugin help docs",
-  ["Obsidian helpgrep "] = " grep files in the plugin help docs",
-  ["Obsidian new [TITLE] "] = " create a new note",
-  ["Obsidian open [QUERY] "] = " open a note in the Obsidian app",
-  ["Obsidian properties [KEY] [VALUE] "] = " get a picker list of frontmatter properties across the vault",
-  ["Obsidian today [OFFSET_OR_DATE] "] = " open/create a new daily note",
-  ["Obsidian tomorrow "] = " open/create the daily note for the next working day",
-  ["Obsidian yesterday "] = " open/create the daily note for the previous working day",
-  ["Obsidian new_from_template [TITLE] [TEMPLATE] "] = " create a new note with TITLE from a template with the name TEMPLATE",
-  ["Obsidian quick_switch "] = " switch to another note in your vault, searching by its name with a picker",
-  ["Obsidian rebuild_cache "] = " force a full cache rescan and flush",
-  ["Obsidian search [QUERY] "] = " search for (or create) notes in your vault using ripgrep with your preferred picker",
-  ["Obsidian sync [SUBCMD] "] = "use obsidianheadless to access official obsidian sync service. Default off, enable with opts.sync.enabled = true, for more see Sync.",
-  ["Obsidian tags [TAG ...] "] = " get a picker list of all occurrences of the given tags",
-  ["Obsidian unique_note [TITLE] "] = "create a new note with a unique, timestampbased ID",
-  ["Obsidian workspace [NAME] "] = " switch to another workspace",
-  ["Obsidian backlinks "] = " get a picker list of references to the current note",
-  ["Obsidian follow_link [STRATEGY] "] = " follow a note reference under the cursor",
-  ["Obsidian toc "] = " get a picker list of table of contents for current note",
-  ["Obsidian footnotes "] = " get a select list of all footnotes in current note, with preview",
-  ["Obsidian template [NAME] "] = " insert a template from the templates folder, selecting from a list using your preferred picker",
-  ["Obsidian paste_img [IMGNAME] "] = " paste an image from the clipboard into the note at the cursor position by saving it to the vault and adding a markdown image link",
-  ["Obsidian rename [NEWNAME] "] = " rename the note of the current buffer or reference under the cursor, updating all backlinks across the vault",
-  ["Obsidian toggle_checkbox "] = " cycle through checkbox options",
-  ["Obsidian extract_note [TITLE] "] = " extract the visually selected text into a new note and link to it",
-  ["Obsidian link [QUERY] "] = " link an inline visual selection of text to a note",
-  ["Obsidian link_new [TITLE] "] = " create a new note and link it to an inline visual selection of text",
+local obsidian_commands = {
+  "Obsidian check ",
+  "Obsidian dailies [OFFSET ...] ",
+  "Obsidian dailies ",
+  "Obsidian help ",
+  "Obsidian helpgrep ",
+  "Obsidian new [TITLE] ",
+  "Obsidian open [QUERY] ",
+  "Obsidian properties [KEY] [VALUE] ",
+  "Obsidian today [OFFSET_OR_DATE] ",
+  "Obsidian tomorrow ",
+  "Obsidian yesterday ",
+  "Obsidian new_from_template [TITLE] [TEMPLATE] ",
+  "Obsidian quick_switch ",
+  "Obsidian rebuild_cache ",
+  "Obsidian search [QUERY] ",
+  "Obsidian sync [SUBCMD] ",
+  "Obsidian tags [TAG ...] ",
+  "Obsidian unique_note [TITLE] ",
+  "Obsidian workspace [NAME] ",
+  "Obsidian backlinks ",
+  "Obsidian follow_link [STRATEGY] ",
+  "Obsidian toc ",
+  "Obsidian footnotes ",
+  "Obsidian template [NAME] ",
+  "Obsidian paste_img [IMGNAME] ",
+  "Obsidian rename [NEWNAME] ",
+  "Obsidian toggle_checkbox ",
+  "Obsidian extract_note [TITLE] ",
+  "Obsidian link [QUERY] ",
+  "Obsidian link_new [TITLE] ",
 }
 
 local function obsidian_select()
-	local commands = vim.iter(pairs(obsidian_map))
-    :map(function(k,v) return k end)
-    :fold({}, function(acc, i) table.insert(acc, i) return acc end)
-	vim.ui.select(commands, {
+	vim.ui.select(obsidian_commands, {
 		prompt = "Obsidian Commands",
 	},function(choice)
       if choice == "" or choice == nil then

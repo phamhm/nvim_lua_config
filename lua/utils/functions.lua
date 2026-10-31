@@ -1,6 +1,6 @@
 local F = {}
 
-local default_todo = "do something"
+local default_todo = ""
 local m_todo =  default_todo
 local m_todo_path = ""
 local m_status = ""
@@ -174,25 +174,6 @@ end
 
 
 function F.get_mdlink_lines(filepath)
-  local items = {} -- must be first line
-
-  -- 1. Define the path to your file
-  local bookmark_file_path = vim.fn.expand(filepath) -- Change this to your file path
-  -- 2. Read lines from the file
-  local lines = vim.fn.readfile(bookmark_file_path)
-
-  -- 3. Parse each line for the [title](link) format
-  for _, line in ipairs(lines) do
-    local title, link = line:match("%[(.-)%]%((.-)%)")
-    if title and link then
-      table.insert(items, {
-        text = vim.trim(title),    -- What shows up and is searchable in the picker
-        link = vim.trim(link),     -- Store the URL to use on confirmation
-        raw  = line
-      })
-    end
-  end
-  return items
 end
 
 function F.set_todo(todo, path)
@@ -283,7 +264,16 @@ end
 -- build a list of {text, link}
 function F.generate_bookmarks_picker()
   vim.cmd("fclose")
-  local items = F.get_mdlink_lines(vim.g.m_notes_path .. "/bookmarks.md")
+
+  local items = vim.iter(vim.fn.readfile(vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md")))
+    :map(function(line)
+      local title, link = line:match("%[(.-)%]%((.-)%)")
+      return {text = vim.trim(title), link = vim.trim(link) }
+    end)
+    :fold({}, function(acc, item)
+      table.insert(acc, item)
+      return acc
+    end)
 
   vim.list_extend(items, picker_list_files(vim.g.m_scripts))
 
@@ -297,8 +287,6 @@ function F.generate_bookmarks_picker()
 
   F.m_picker(items, "Select Bookmark(s) to open",actions, keys)
 end
-
-
 
 -- my custom Snacks.picker.pick for multiple selections
 -- User can do multiple selection, and executes all at once
@@ -317,11 +305,11 @@ function F.m_picker(items, title, actions, keys)
   Snacks.picker.pick({
     source = "markdown_links",
     items = items,
-    focus = "input",
+    focus = "list",
     title = title or "select to run",
     format = "text", -- Display only the title in the list
     layout = {
-      hidden = actions.hidden or {"preview"},
+      hidden = actions.hidden or {"preview", "input"},
       layout = {
         min_width = 0,
         width = 0.3,

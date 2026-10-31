@@ -124,7 +124,7 @@ local m_snacks = {
         select = {
           -- Set the layout preset (e.g., "select", "dropdown", "ivy", "vscode", "telescope")
           layout = {
-            hidden = {"preview"},
+            hidden = {"preview", "input"},
             layout = {
               box = "vertical",
               min_width = 0,
@@ -138,7 +138,7 @@ local m_snacks = {
               { win = "input", height = 1, border = "rounded" },
               {
                 box = "horizontal",
-                { win = "list", border = "rounded" },
+                { win = "list", border = "rounded", title="{title}" },
                 { win = "preview", title = "{preview}", width = 0.6, border = "rounded" },
               },
             }
