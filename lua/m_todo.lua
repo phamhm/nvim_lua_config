@@ -149,7 +149,7 @@ local function move_file(picker, sub_dir)
       local from = item._path
 
       local from_path = vim.fs.dirname(from)
-      local filename = item.text
+      local filename = item.file
 
       local to = string.format("%s/%s/%s", from_path, sub_dir, filename):gsub("//", "/")
 
@@ -278,18 +278,3 @@ function TODO.todo()
 end
 
 F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
-
-F.map("n", F.format_os_altkey("<C-%s-`>"),
-  function()
-    local file_path
-    if F.get_todo_path() ~= "" then
-      file_path = F.get_todo_path()
-    else
-      file_path = vim.fn.expand(vim.g.m_notes_path .. "/index.md")
-    end
-    Snacks.scratch({
-      file = file_path,
-      name = file_path,
-    })
-  end
-  , {desc = "Scratch doing or reminders"})

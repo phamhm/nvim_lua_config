@@ -383,7 +383,7 @@ local m_snacks = {
     { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
     { "<leader>fl", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
-    {"<leader>mc",
+    {"<leader>fc",
       function()
         F.menu_commands({
           { text = "Branches", fn = function() Snacks.picker.git_branches() end },

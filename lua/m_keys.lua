@@ -38,7 +38,6 @@ map({'n', 'i', 'v'}, '<C-s>',
     vim.cmd("stopinsert")
     ts.trim()
     ts.trim_last_lines()
-    -- vim.cmd([[g/^\n^$/d]]) -- good but too annoying
     vim.cmd("write")
   end,{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
@@ -328,13 +327,30 @@ map({"v", "n"}, "<leader>bb",
 
 map("n", "<leader>fn",
   function()
-    local filetype = vim.bo.filetype
-    local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
-    Snacks.scratch({
-      file = target_file,
-      name = target_file,
-      enter = true
-    })
+    local paths = {}
+
+    if F.get_todo_path() ~= "" then
+      local basename = vim.fs.basename(F.get_todo_path())
+      paths[basename] = F.get_todo_path()
+    end
+
+    local basename = vim.bo.filetype .. ".md"
+    paths[basename] = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
+
+    local session_name = vim.fs.basename( vim.v.this_session )
+    if session_name ~= "" then
+      paths[session_name .. ".md"] = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+    end
+
+    vim.ui.select(vim.tbl_keys(paths), {prompt = "Visits"},
+      function(filename)
+        local path = paths[filename]
+        Snacks.scratch({
+          file = vim.fn.expand(path),
+          name = vim.fs.basename(filename),
+          enter = true
+        })
+      end)
   end, {desc = "open filetype note"})
 
 map("n", "<C-w>f", function()

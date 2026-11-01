@@ -62,6 +62,12 @@ return {
       for level, hl in pairs(colors) do
         vim.api.nvim_set_hl(0, 'RenderMarkdown' .. level .. 'Bg', hl)
       end
+      vim.api.nvim_set_hl(0, 'RenderMarkdownLink', {fg = 'lightgreen'})
+      vim.api.nvim_set_hl(0, 'RenderMarkdownLinkTitle', {fg = 'white'})
+      vim.api.nvim_set_hl(0, 'markdownLinkText', {fg = 'white', underline = false})
+      vim.api.nvim_set_hl(0, 'markdownUrl', {fg = 'white', underline = false})
+      -- vim.api.nvim_set_hl(0, '@markup.link.url', {fg = 'white', underline = false})
+      vim.api.nvim_set_hl(0, '@markup.link', {fg = 'lightgrey', underline = true})
 
       vim.api.nvim_set_hl(0, "Folded", {
         fg = "lightgreen", -- Set a custom subtle foreground color
