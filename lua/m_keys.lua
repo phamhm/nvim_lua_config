@@ -38,6 +38,7 @@ map({'n', 'i', 'v'}, '<C-s>',
     vim.cmd("stopinsert")
     ts.trim()
     ts.trim_last_lines()
+    -- vim.cmd([[g/^\n^$/d]]) -- good but too annoying
     vim.cmd("write")
   end,{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
@@ -118,34 +119,34 @@ map(
       function(input)
         -- Obsidian new will open the new note.
         -- this will save my current buffer then switch back to it.
-        local og_bufnr = vim.api.nvim_get_current_buf()
-        local ft = vim.bo.filetype
-        vim.cmd("Obsidian workspace todo")
         local todo_item = input:gsub('/', '')
-        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", todo_item)
-        vim.cmd(cmd)
-        local obsidian_buf = vim.api.nvim_get_current_buf()
-        if og_bufnr and ft ~= "snacks_dashboard" then
-          vim.api.nvim_set_current_buf(og_bufnr)
+        local path = string.format("%s/TODO/%s.md",
+          vim.g.m_notes_path,
+          todo_item:gsub(" ","_")
+        )
+
+        local new_lines = {
+          "---",
+          string.format("m_todo_Title: %s", todo_item),
+          "m_todo_Created: "..os.date("%Y-%m-%d %H%M"),
+          "m_todo_Started:",
+          "m_todo_Finished:",
+          "---",
+          "",
+          "# "..todo_item
+        }
+        vim.fn.writefile(new_lines, vim.fn.expand(path))
+
+        local session_name = vim.fs.basename( vim.v.this_session )
+        if session_name ~= "" then
+          local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+          vim.fn.writefile({"", string.format("## [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
+        else
+          vim.notify("Not a session. No capture link", vim.log.levels.ERROR)
         end
-        vim.api.nvim_buf_delete(obsidian_buf, {force = true})
       end)
   end,
   { desc = 'Capture text and apped to capture_notes.md' }
-)
-
-map( 'n', '<leader>cC',
-  function()
-    vim.ui.input({ prompt = 'Detail Capture:' },
-      function(input)
-        vim.cmd("Obsidian workspace todo")
-
-        local today_item = input:gsub('/', '')
-        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", today_item)
-        vim.cmd(cmd)
-      end)
-  end,
-  { desc = 'will open the buffer up for writing' }
 )
 
 map('n', '<leader>vd',
@@ -169,7 +170,6 @@ map('n', '<leader>vd',
 
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
-
 
 map("v", "Y", function()
   vim.cmd.normal([["+y]])
@@ -207,7 +207,6 @@ end, { desc = "Open MiniFiles in directory of file under cursor" })
 vim.keymap.set('n', '<leader><leader>o', function()
   vim.ui.open(vim.fn.expand('%'))
 end, { desc = 'Open current buffer with system handler' })
-
 
 -- how to define this but ignore minifiles
 map('n', "<C-d>", '<C-d>zz', { desc = "half page down, centered" })
@@ -299,7 +298,7 @@ local function capture_highlighted_block()
 end
 
 local function capture_from_register()
-  local reg_p = vim.trim(vim.fn.getreg('*'))
+  local reg_p = vim.trim(vim.fn.getreg('+'))
   if vim.startswith(reg_p, "http") then
     vim.notify("Bookmarking:" .. reg_p)
     vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)

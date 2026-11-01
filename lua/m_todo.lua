@@ -210,7 +210,7 @@ function TODO.todo()
         local yaml_config = get_yaml_config(file)
         item.text = yaml_config.m_todo_Title
         local started = yaml_config.m_todo_Started
-        item.started = vim.trim(started)
+        item.started = started and vim.trim(started)
         local finished = yaml_config.m_todo_Finished
 
         if finished and finished ~= "" then

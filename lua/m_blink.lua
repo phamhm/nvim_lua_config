@@ -10,7 +10,10 @@ return {
   ---@type blink.cmp.ConfigOpts
   opts = {
     -- Default keymap preset ('default', 'super-tab', or 'enter')
-    keymap = { preset = 'default' },
+    keymap = { preset = 'default',
+      ['<C-j>'] = { 'select_next', 'fallback'},
+      ['<C-k>'] = { 'select_prev', 'fallback' },
+    },
     completion = { documentation = { auto_show = false } },
 
     appearance = {
@@ -23,9 +26,9 @@ return {
 
     -- Default list of enabled providers
     sources = {
-      min_keyword_length = 10,
+      min_keyword_length = 3,
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
   },
-  opts_extend = { "sources.default" }
+  opts_extend = { "sources.default" },
 }

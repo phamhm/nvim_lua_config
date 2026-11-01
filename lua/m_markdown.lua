@@ -17,11 +17,15 @@ vim.api.nvim_create_autocmd("FileType", {
     -- map("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
     map("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
     map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
+    map({ 'n', 'i' }, '<C-j>', '<Cmd>MDListItemBelow<CR>', opts("Markdown list/number above"))
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
-    -- map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
+    map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
     map('n', '<C-.>', "<cmd>.s/^/#/<cr><cmd>noh<cr>", opts("promote markdown heading"))
     map('n', '<C-,>', "<cmd>.s/^#//<cr><cmd>noh<cr>", opts("demote markdown heading"))
+    map('n', 'gd', function()
+      vim.lsp.buf.definition()
+    end, opts("follow markdown link"))
 
     -- Enable soft wrapping
     vim.opt_local.wrap = true
@@ -51,11 +55,15 @@ return {
     dependencies = { 'nvim-treesitter/nvim-treesitter',},
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    ft = { "markdown.snacks_picker_preview" },
+    ft = { "markdown.snacks_picker_preview", "markdown"},
     -- opts = {enabled = false},
     opts = {
-      file_types = { 'markdown.snacks_picker_preview'},
+      file_types = { 'markdown.snacks_picker_preview', "markdown"},
     },
+    config = function()
+      require('render-markdown').setup()
+      -- require('render-markdown').disable()
+    end
   },
   {
     "tadmccorkle/markdown.nvim",

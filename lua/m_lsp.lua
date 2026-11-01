@@ -13,9 +13,26 @@ return {
         "ts_ls",        -- JavaScript/TypeScript LSP
         "lua_ls", -- Lua/Neovim
         "bashls",
-        -- "marksman",  <- this broke MiniFiles
+        "marksman",  -- << this broke MiniFiles
       } -- your desired servers
     })
+
+    -- Define the native Marksman configuration
+    vim.lsp.config('marksman', {
+      cmd = { 'marksman', 'server' },
+      filetypes = { 'markdown', 'markdown.mdx' },
+      -- Detect root workspace using Git or Markdown-specific files
+      root_markers = { '.git', '.marksman.toml' },
+      -- Optional settings mapping
+      settings = {
+        markdown = {
+          toc = { enable = true },
+        },
+      },
+    })
+    -- Dynamically activate the server
+    vim.lsp.enable('marksman')
+
 
     -- Pass specific server settings directly via vim.lsp.config
     -- Configure lua_ls natively using the 0.11+ API
