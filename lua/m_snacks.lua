@@ -100,7 +100,7 @@ local m_snacks = {
           wrap = true,
           number = false,
           relativenumber = false,
-          foldlevel = 0,
+          -- foldlevel = 9,
         }
       },
     },
@@ -444,7 +444,7 @@ local m_snacks = {
     { "<leader><leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     {
-      "<leader>q",
+      alt_key("<%s-w>"),
       function()
         Snacks.bufdelete()
         if vim.fn.winnr('$') > 1 then

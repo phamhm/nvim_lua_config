@@ -84,7 +84,17 @@ return {
       footer = {enabled = false},
       attachments = {
         folder = "assets"
-      }
+      },
+      daily_notes = {
+        -- Optional directory where daily notes will be saved
+        folder = "dailies",
+        -- Optional date format to use (matches Obsidian's core plugin style)
+        date_format = "%Y-%m-%d",
+        time_format = "%H%M",
+        -- Optional template file stub to apply automatically when creating a new daily note
+        -- This looks for "~/vaults/personal/templates/daily-template.md"
+        template = "daily-template.md"
+      },
     }
 
     F.map("n", "<leader>oo", obsidian_select, {desc="calling obsidian commands"} )

@@ -35,7 +35,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
     vim.opt_local.spell = false
 
-    vim.opt_local.foldlevel = 1  -- <- set this here instead of treesitter autocmd
+    -- vim.opt_local.foldlevel = 9  -- <- set this here instead of treesitter autocmd
   end,
 })
 
@@ -48,10 +48,14 @@ return {
   },
   {
     'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter',},            -- if you use the mini.nvim suite
+    dependencies = { 'nvim-treesitter/nvim-treesitter',},
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    opts = {enabled = true},
+    ft = { "markdown.snacks_picker_preview" },
+    -- opts = {enabled = false},
+    opts = {
+      file_types = { 'markdown.snacks_picker_preview'},
+    },
   },
   {
     "tadmccorkle/markdown.nvim",

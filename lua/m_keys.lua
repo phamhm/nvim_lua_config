@@ -121,7 +121,8 @@ map(
         local og_bufnr = vim.api.nvim_get_current_buf()
         local ft = vim.bo.filetype
         vim.cmd("Obsidian workspace todo")
-        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", input:gsub('/',""))
+        local todo_item = input:gsub('/', '')
+        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", todo_item)
         vim.cmd(cmd)
         local obsidian_buf = vim.api.nvim_get_current_buf()
         if og_bufnr and ft ~= "snacks_dashboard" then
@@ -138,7 +139,9 @@ map( 'n', '<leader>cC',
     vim.ui.input({ prompt = 'Detail Capture:' },
       function(input)
         vim.cmd("Obsidian workspace todo")
-        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", input:gsub('/',""))
+
+        local today_item = input:gsub('/', '')
+        local cmd = string.format("Obsidian new_from_template '%s' todo_notes", today_item)
         vim.cmd(cmd)
       end)
   end,
