@@ -104,7 +104,7 @@ local m_snacks = {
         }
       },
     },
-    explorer = { enabled = true },
+    explorer = {enabled = true,},
     bigfile = { enabled = true },
     indent = {
       enabled = true,
@@ -358,6 +358,7 @@ local m_snacks = {
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
     { alt_key("<C-%s-e>"), function() Snacks.explorer() end, desc = "File Explorer" },
+    { "<C-e>", function() Snacks.explorer() end, desc = "File Explorer" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
     { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fk",function() Snacks.picker.keymaps() end,desc = "keymaps" },

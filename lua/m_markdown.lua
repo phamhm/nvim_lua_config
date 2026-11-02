@@ -8,6 +8,27 @@ local function opts(desc_text)
   return {desc=desc_text, buffer = true, noremap = false, silent = true}
 end
 
+local function add_hash()
+  local line_num = vim.api.nvim_win_get_cursor(0)[1]
+  local current_line = vim.trim(vim.api.nvim_get_current_line())
+
+  if vim.startswith(current_line, "#") then
+    vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { "#" .. current_line })
+  else
+    vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { "# " .. current_line })
+  end
+end
+
+local function remove_hash()
+  local line_num = vim.api.nvim_win_get_cursor(0)[1]
+  local current_line = vim.trim(vim.api.nvim_get_current_line())
+
+  if vim.startswith(current_line, "#")  then
+    vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { vim.trim(string.sub(current_line, 2)) })
+  end
+end
+
+
 -- Example keymap binding to <leader>c in normal mode
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("ProseMode", { clear = true }),
@@ -21,8 +42,9 @@ vim.api.nvim_create_autocmd("FileType", {
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
     map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
 
-    map('n', '<C-.>', "<cmd>.s/^/#/<cr><cmd>noh<cr>", opts("promote markdown heading"))
-    map('n', '<C-,>', "<cmd>.s/^#//<cr><cmd>noh<cr>", opts("demote markdown heading"))
+    map('n', '>>', add_hash , opts("promote markdown heading"))
+    map('n', '<<', remove_hash, opts("demote markdown heading"))
+
     map('n', 'gd', function()
       vim.lsp.buf.definition()
     end, opts("follow markdown link"))

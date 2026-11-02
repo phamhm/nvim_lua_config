@@ -78,15 +78,15 @@ local m_mini = {
     }
     ) end
   },
-  {
-    'echasnovski/mini.files',
-    config = function() require("mini.files").setup({
-      windows = {
-        preview=true,
-        width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
-      }
-    }) end
-  },
+  -- {
+  --   'echasnovski/mini.files',
+  --   config = function() require("mini.files").setup({
+  --     windows = {
+  --       preview=true,
+  --       width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
+  --     }
+  --   }) end
+  -- },
   -- {
   --   'echasnovski/mini.completion',
   --   config = function()

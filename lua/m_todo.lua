@@ -30,23 +30,20 @@ vim.api.nvim_set_hl(0, "started_hl", {
   italic = true,         -- Text style attribute
 })
 
-local function get_yaml_config(path)
-  return vim.iter(vim.fn.readfile(path))
-    :filter(
-      function(line)
-        local time_type,_ = line:gsub(":.*", "")
-        return vim.tbl_contains(TODO_PREFIX_YAML, vim.trim(time_type))
-      end)
-    :fold({}, function(acc, val)
-      local key, value = unpack(vim.split(val, ':'))
-      acc[key] = vim.trim(value):gsub("^'(.*)'$", "%1")
-      return acc
-    end)
+local function read_first_line(filename)
+  for line in io.lines(vim.fn.expand(filename)) do
+    return line
+  end
+end
+
+local function read_json_first_line(filename)
+  local first_line = read_first_line(filename)
+  return vim.json.decode(first_line)
 end
 
 -- replace the first instance of old text with new text
 -- if there are multiple instances of old text, only the first one get replaced
-local function replace_first_in_buffer(filepath, old_text, new_text)
+local function replace_first_in_buffer(filepath, line)
   -- Expand system paths like ~/ or $HOME
   local expanded_path = vim.fn.expand(filepath)
 
@@ -59,34 +56,11 @@ local function replace_first_in_buffer(filepath, old_text, new_text)
   local bufnr = vim.fn.bufadd(expanded_path)
   vim.fn.bufload(bufnr)
 
-  -- 2. Fetch all lines from the background buffer
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local target = string.format("^%s$", old_text)
-  local replaced = false
-
-  -- 3. Loop through lines to find and swap the first match
-  for i, line in ipairs(lines) do
-    if line:match(target) then
-      -- Replace just that specific line (0-indexed API)
-      vim.api.nvim_buf_set_lines(bufnr, i - 1, i, false, { new_text })
-      replaced = true
-      break -- Exit instantly so subsequent matches aren't touched
-    end
-  end
-
-  -- 4. If a change happened, commit it silently to disk and clean up
-  if replaced then
-    -- Write the hidden buffer changes to disk
-    vim.api.nvim_buf_call(bufnr, function()
-      vim.cmd("silent update")
-    end)
-    vim.notify("Replaced first match in background buffer for: " .. filepath, vim.log.levels.INFO)
-  else
-    vim.notify("Pattern not found in: " .. filepath, vim.log.levels.WARN)
-  end
-
-  -- 5. Delete the hidden buffer from memory to keep things clean
-  -- vim.api.nvim_buf_delete(bufnr, { force = true })
+  vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { line })
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.cmd("silent update")
+  end)
+  vim.api.nvim_buf_delete(bufnr, { force = true })
 end
 
 local function todo_picker(title, actions, keys)
@@ -207,11 +181,12 @@ function TODO.todo()
         item.file = vim.fs.basename(file)
         item.cwd = picker.cwd
 
-        local yaml_config = get_yaml_config(file)
-        item.text = yaml_config.m_todo_Title
-        local started = yaml_config.m_todo_Started
+        local file_path = item.cwd .. '/' .. item.file
+        local config_json = read_json_first_line(file_path)
+        item.text = config_json.Title
+        local started = config_json.Started
         item.started = started and vim.trim(started)
-        local finished = yaml_config.m_todo_Finished
+        local finished = config_json.Finished
 
         if finished and finished ~= "" then
           item.status= DONE
@@ -242,22 +217,27 @@ function TODO.todo()
     end
 
     local file_path = item.cwd .. '/' .. item.file
-    local yaml_config = get_yaml_config( file_path )
-    local started = yaml_config.m_todo_Started
-    local finished = yaml_config.m_todo_Finished
+    local meta_info = read_json_first_line( file_path )
+    local started = meta_info.Started
+    local finished = meta_info.Finished
     local new_date = os.date("%Y-%m-%d %H%M")
     local todo = item.text
     if started and started == "" then
-      replace_first_in_buffer(file_path, "m_todo_Started:", "m_todo_Started: " .. new_date)
+      meta_info.Started = new_date
+      local meta_json = vim.json.encode(meta_info)
+      replace_first_in_buffer(file_path, meta_json)
       m_actions.set_todo(picker, item)
     elseif finished and finished == "" then
-      replace_first_in_buffer(file_path, "m_todo_Finished:", "m_todo_Finished: " .. new_date)
+      meta_info.Finished = new_date
+      local meta_json = vim.json.encode(meta_info)
+      replace_first_in_buffer(file_path, meta_json)
       if todo == F.get_todo() then
         F.clear_todo()
       end
     end
 
     picker:refresh()
+    picker.preview:refresh(picker)
   end
 
   function m_actions.fn_confirm(picker, item)

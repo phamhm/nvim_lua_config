@@ -124,13 +124,17 @@ map(
           todo_item:gsub(" ","_")
         )
 
+        local meta_info = {
+          ["Title"] = todo_item,
+          ["Created"] = os.date("%Y-%m-%d %H%M"),
+          ["Started"] = "",
+          ["Finished"] = "",
+        }
+
+        local meta_json = vim.json.encode(meta_info)
+
         local new_lines = {
-          "---",
-          string.format("m_todo_Title: %s", todo_item),
-          "m_todo_Created: "..os.date("%Y-%m-%d %H%M"),
-          "m_todo_Started:",
-          "m_todo_Finished:",
-          "---",
+          meta_json,
           "",
           "# "..todo_item
         }
@@ -262,7 +266,7 @@ local function capture_note(lines, filetype)
   local leading = {'```'..filetype}
   local ending = {'```'}
 
-  vim.ui.input({prompt = "Note header"}, function(input)
+  vim.ui.input({prompt = "Note header for filetype:" .. filetype}, function(input)
     local new_date = os.date("%Y-%m-%d %H:%M")
     local header = {"", string.format("# %s [%s]", input, new_date ), ""}
     local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
@@ -299,16 +303,16 @@ end
 local function capture_from_register()
   local reg_p = vim.trim(vim.fn.getreg('+'))
   if vim.startswith(reg_p, "http") then
-    vim.notify("Bookmarking:" .. reg_p)
+    vim.notify("Bookmarking http:" .. reg_p)
     vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
       local note_text = { string.format("[%s](%s)", input, reg_p) }
       local full_path = vim.fn.expand( vim.g.m_notes_path .. "/bookmarks.md")
       vim.fn.writefile(note_text, full_path ,"a")
     end)
   elseif reg_p ~= "" then
-    vim.notify("Capturing note:" .. reg_p)
+    vim.notify("Capturing note from @p:" .. reg_p)
     lines = vim.split(reg_p, '\n', {plain = true})
-    vim.ui.input({ prompt = "Capture notes file type" }, function(filetype)
+    vim.ui.input({ prompt = "Capture reg @+ as filetype"}, function(filetype)
       capture_note(lines, filetype)
     end)
   end
@@ -345,6 +349,9 @@ map("n", "<leader>fn",
     vim.ui.select(vim.tbl_keys(paths), {prompt = "Visits"},
       function(filename)
         local path = paths[filename]
+        if not path or path == "" then
+          return
+        end
         Snacks.scratch({
           file = vim.fn.expand(path),
           name = vim.fs.basename(filename),
