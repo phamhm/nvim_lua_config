@@ -105,11 +105,11 @@ local m_snacks = {
 
               local bufnr = vim.api.nvim_get_current_buf()
               vim.api.nvim_buf_delete(bufnr, { force = true })
-              if vim.startswith(current,scratch_root) then
+              if string.find(current,scratch_root,1, true) then
                 os.remove(current)
                 os.remove(current .. ".meta")
               end
-            end, desc ="scratch delete", mode = {"n"}}
+            end, desc ="Delete", mode = {"n"}}
         },
         min_width = 0,
         width = 0.6,
