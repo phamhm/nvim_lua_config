@@ -28,13 +28,13 @@ function F.map(mode, lhs, rhs, opts)
     end
   end
 
-  local key = lhs ..":".. (opts and opts.desc or "no description")
+  local key = lhs .."=".. (opts and opts.desc or "no description")
   F.save_keys(key)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 function F.get_keys()
-  return MiniAlign.align_strings(custom_key_maps, {split_pattern=':'})
+  return MiniAlign.align_strings(custom_key_maps, {split_pattern='='})
 end
 
 -- take note_text and write to destination with @c capture time

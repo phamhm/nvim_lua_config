@@ -479,7 +479,7 @@ local m_snacks = {
 
 if m_snacks.keys then
   vim.iter(m_snacks.keys)
-    :map(function(key) return string.format("%s:Snacks %s", key[1], key.desc or "no description") end)
+    :map(function(key) return string.format("%s=Snacks %s", key[1], key.desc or "no description") end)
     :each(function(key) F.save_keys(key) end)
 end
 

@@ -186,7 +186,7 @@ local m_mini = {
 for _, minimi in ipairs(m_mini) do
   if minimi.keys then
     for _, val in ipairs(minimi.keys) do
-      local key = val[1] ..":".. "Mini "..(val.desc or "no description")
+      local key = val[1] .."=".. "Mini "..(val.desc or "no description")
       F.save_keys(key)
     end
   end

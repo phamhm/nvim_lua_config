@@ -11,6 +11,9 @@ end
 local function add_hash()
   local line_num = vim.api.nvim_win_get_cursor(0)[1]
   local current_line = vim.trim(vim.api.nvim_get_current_line())
+  if current_line == "" then
+    return
+  end
 
   if vim.startswith(current_line, "#") then
     vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { "#" .. current_line })
@@ -22,6 +25,10 @@ end
 local function remove_hash()
   local line_num = vim.api.nvim_win_get_cursor(0)[1]
   local current_line = vim.trim(vim.api.nvim_get_current_line())
+
+  if current_line == "" then
+    return
+  end
 
   if vim.startswith(current_line, "#")  then
     vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { vim.trim(string.sub(current_line, 2)) })
@@ -44,6 +51,8 @@ vim.api.nvim_create_autocmd("FileType", {
 
     map('n', '>>', add_hash , opts("promote markdown heading"))
     map('n', '<<', remove_hash, opts("demote markdown heading"))
+
+    map("n", alt_key("<C-%s-f>"), "gwap", opts("format pagraph"))
 
     map('n', 'gd', function()
       vim.lsp.buf.definition()
