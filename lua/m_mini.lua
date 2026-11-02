@@ -134,19 +134,33 @@ local m_mini = {
     }) end,
     keys = {
       {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
-      {'<leader>ss', function() MiniSessions.select() end, desc = 'Save current session'},
-      {'<leader>sw', function() MiniSessions.write() end,  desc = 'Save current session' },
-      {'<leader>s?', function() vim.notify("Current session:" .. vim.fs.basename( vim.v.this_session )) end,  desc = 'Show current session' },
-      {'<leader>se', function() MiniFiles.open(vim.fn.stdpath('config') .. '/sessions/') end, { desc = 'Open mini.files Workspace' } },
-      {'<leader>sD', function() MiniSessions.select('delete') end, { desc = 'Delete mini.sessions Workspace' } },
-      {'<leader>sN', function()
-        vim.ui.input({ prompt = 'Session Name: ' }, function(name)
-          if name ~= '' then
-            require('snacks').bufdelete.all()
-            MiniSessions.write(name)
-          end
-        end)
-      end, desc = 'Save named session'},
+      {'<leader>ss', function()
+        local session_commands = {
+          select = MiniSessions.select,
+          write  = MiniSessions.write,
+          -- delete = function() MiniSessions.select('delete') end,
+          session_save = function()
+            vim.ui.input({ prompt = 'Session Name: ' }, function(name)
+              if name ~= '' then
+                require('snacks').bufdelete.all()
+                MiniSessions.write(name)
+              end
+            end)
+          end ,
+        }
+
+        local keys = vim.tbl_keys(session_commands)
+
+        vim.ui.select( keys, {prompt = "Session Management"},
+          function(key)
+            local fn = session_commands[key]
+            if fn then
+              fn()
+            end
+          end)
+
+      end,
+        desc = 'Mini Sessions Management'},
     },
   },
   {
