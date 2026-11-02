@@ -3,11 +3,6 @@
 #
 kitten @ set-tab-color active_fg="black" active_bg="#83d0c9" inactive_fg=pink inactive_bg=black
 
-set_title() {
-# \e]2; sets the window title, \a terminates the sequence
-    print -Pn "\e]2;NV Running: $1\a"
-}
-
 print -Pn "\e]2;NVIM Running: $1\a"
 
 if [[ -z "$1" ]]; then
