@@ -73,7 +73,7 @@ local m_mini = {
     config =  function() require("mini.diff").setup({
       view = {
         style = 'sign',
-        signs = { add = '┃', change = '┃', delete = '' },
+        signs = { add = '┃', change = '┃', delete = '󰗨 ' },
       },
     }
     ) end
@@ -134,33 +134,24 @@ local m_mini = {
     }) end,
     keys = {
       -- {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
-      {'<leader>ss', function()
-        local session_commands = {
-          select = MiniSessions.select,
-          write  = MiniSessions.write,
-          delete = function() MiniSessions.select('delete') end,
-          save = function()
-            vim.ui.input({ prompt = 'Session Name: ' }, function(name)
-              if name ~= '' then
-                require('snacks').bufdelete.all()
-                MiniSessions.write(name)
-              end
-            end)
-          end ,
-        }
+      {'<leader>ss',
+        function()
+          local session_commands = {
+            {text = "select", fn = MiniSessions.select},
+            {text = "write ", fn = MiniSessions.write},
+            {text = "delete", fn = function() MiniSessions.select('delete') end},
+            {text = "save  ", fn = function()
+              vim.ui.input({ prompt = 'Session Name: ' }, function(name)
+                if name ~= '' then
+                  require('snacks').bufdelete.all()
+                  MiniSessions.write(name)
+                end
+              end)
+            end} ,
+          }
 
-        local keys = {"select", "save", "write", "delete"}
-
-        vim.ui.select( keys, {prompt = "Session Management"},
-          function(key)
-            local fn = session_commands[key]
-            if fn then
-              fn()
-            end
-          end)
-
-      end,
-        desc = 'Mini Sessions Management'},
+          F.menu_commands(session_commands, "Session commands", "")
+      end, desc = 'Mini Sessions Management'},
     },
   },
   {

@@ -49,15 +49,17 @@ function F.format_os_altkey(key_formatter, repeat_n)
   return string.rep(key, repeat_n)
 end
 
-function F.menu_commands(items, title)
+function F.menu_commands(items, title, pattern)
+  pattern = pattern or "^"
   Snacks.picker.pick({
-    pattern="^",
+    pattern=pattern,
     items = items,
     title = title,
     format = "text",
     layout = {
       preview = false,
       layout = {
+        min_width = 0,
         width = 0.3,
         height = 0.5,
       }
