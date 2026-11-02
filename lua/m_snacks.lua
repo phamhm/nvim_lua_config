@@ -389,16 +389,6 @@ local m_snacks = {
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     { "<leader>fp",function() Snacks.picker.projects() end,desc = "projects" },
     -- this won't close any current floating windows.
-    { "<leader>ww",
-      function()
-        Snacks.picker.files({
-          cwd =vim.g.m_notes_path,
-          layout = {
-            hidden = {"input"},
-          },
-          focus = "list",
-        })
-      end,desc = "My Notes" },
     { "<leader>fs",function()  Snacks.picker.smart() end,desc = "Help Page" },
     { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="buffer diagnostics"},
     { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},

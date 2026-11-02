@@ -372,3 +372,11 @@ end, { desc = "Jump to floating window" })
 for i = 1, 9 do
   map("n", string.format("z%s", i), function() vim.wo.foldlevel = i - 1 end, {desc = "fold level "..i-1})
 end
+
+map("n", "<leader>ww",
+  function()
+    vim.cmd.edit(string.format("%s/%s",vim.g.m_notes_path, "index.md" ))
+    vim.cmd("normal! Gzz")
+  end,
+  {desc = "My Notes" }
+)
