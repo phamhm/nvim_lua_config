@@ -1,6 +1,8 @@
 local F = require("utils.functions")
 local alt_key = F.format_os_altkey
 
+local scratch_root = "/tmp"
+
 -- disable autocompletion in the windows. will work on vim.ui.open
 vim.api.nvim_create_autocmd("FileType", {
   pattern = {"snacks_picker", "snacks_picker_input", "snacks_input"}, -- "snacks_input""snacks_picker_input",
@@ -74,7 +76,7 @@ local m_snacks = {
       },
     },
     scratch = {
-      root = "/tmp", -- os will clear it.
+      root = scratch_root, -- os will clear it.
       win_by_ft = {
         markdown = {
           keys = {
@@ -92,6 +94,23 @@ local m_snacks = {
         },
       },
       win = {
+        keys = {
+          ["q"] = {
+            -- Experience weird error where my saving didn't work, nvim
+            -- indicated something overwote it.
+            -- After c-x all the scratches, the sav worked again.
+            -- there function prevent scratch from saving to the tmp dir.
+            function()
+              local current = vim.api.nvim_buf_get_name(0)
+
+              local bufnr = vim.api.nvim_get_current_buf()
+              vim.api.nvim_buf_delete(bufnr, { force = true })
+              if vim.startswith(current,scratch_root) then
+                os.remove(current)
+                os.remove(current .. ".meta")
+              end
+            end, desc ="scratch delete", mode = {"n"}}
+        },
         min_width = 0,
         width = 0.6,
         height = 0.9,

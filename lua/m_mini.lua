@@ -133,13 +133,13 @@ local m_mini = {
       verbose = {write = true, read = true}
     }) end,
     keys = {
-      {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
+      -- {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
       {'<leader>ss', function()
         local session_commands = {
           select = MiniSessions.select,
           write  = MiniSessions.write,
-          -- delete = function() MiniSessions.select('delete') end,
-          session_save = function()
+          delete = function() MiniSessions.select('delete') end,
+          save = function()
             vim.ui.input({ prompt = 'Session Name: ' }, function(name)
               if name ~= '' then
                 require('snacks').bufdelete.all()
@@ -149,7 +149,7 @@ local m_mini = {
           end ,
         }
 
-        local keys = vim.tbl_keys(session_commands)
+        local keys = {"select", "save", "write", "delete"}
 
         vim.ui.select( keys, {prompt = "Session Management"},
           function(key)
