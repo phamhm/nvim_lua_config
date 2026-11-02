@@ -1,6 +1,5 @@
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
-local _inspect = require("utils.functions")._inspect
 -- Create an augroup to ensure autocommands don't duplicate on reload
 --
 
@@ -76,6 +75,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 return {
   {
+    -- [doc](https://github.com/hakonharnes/img-clip.nvim)
     "HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
     opts = {
@@ -104,7 +104,6 @@ return {
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     ft = { "markdown.snacks_picker_preview", "markdown"},
-    -- opts = {enabled = false},
     opts = {
       file_types = { 'markdown.snacks_picker_preview', "markdown"},
     },
