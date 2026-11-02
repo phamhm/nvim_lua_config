@@ -145,6 +145,7 @@ function F.open_md_link(md_link_item)
       '--type=tab',
       'zsh',
       '-f',
+      string.format("%s/%s/%s", vim.fn.stdpath("config"), 'zsh_scripts', 'zsh_run_script.zsh'),
       vim.fn.expand( md_link_item.link ),
     }
   elseif vim.fn.filereadable(vim.fn.expand(md_link_item.link)) == 1 then

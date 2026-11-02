@@ -4,9 +4,9 @@ require('m_options')
 vim.keymap.set("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.g.m_notes_path = "~/Documents/notes"
-vim.g.m_obsidan_path = "~/Documents/Obsidian"
-vim.g.m_scripts = "~/Documents/configs/scripts/"
+vim.g.m_notes_path   = vim.fn.expand("~/Documents/notes")
+vim.g.m_obsidan_path = vim.fn.expand("~/Documents/Obsidian")
+vim.g.m_scripts      = vim.fn.expand("~/Documents/configs/scripts/")
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 local uv = vim.uv or vim.loop
