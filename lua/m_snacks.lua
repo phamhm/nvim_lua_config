@@ -406,8 +406,8 @@ local m_snacks = {
     {"<leader>.",
       function()
         F.menu_commands({
-          { text = "*Select Scratch Buffer"  ,  fn = Snacks.scratch.select },
-          { text = "*Toggle Scratch Buffer"  ,  fn = Snacks.scratch },
+          { text = "Select Scratch Buffer"  ,  fn = Snacks.scratch.select },
+          { text = "Toggle Scratch Buffer"  ,  fn = Snacks.scratch },
           { text = "Branches", fn = Snacks.picker.git_branches },
           { text = "Log", fn = Snacks.picker.git_log },
           { text = "Log Line", fn = Snacks.picker.git_log_line },
@@ -417,7 +417,6 @@ local m_snacks = {
           { text = "Issues (open)", fn = Snacks.picker.gh_issue },
           { text = "Issues (all)", fn = function() Snacks.picker.gh_issue({ state = "all" }) end },
           { text = "Pull Requests (all)", fn = function() Snacks.picker.gh_pr({ state = "all" }) end },
-          -- { text = "Workspace dir" , fn = function() Snacks.explorer({ cwd = "~/Workspace" }) end},
           { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
           { text = "Pull Requests (open)", fn = Snacks.picker.gh_pr },
           { text = "Browse", fn = Snacks.gitbrowse  },
