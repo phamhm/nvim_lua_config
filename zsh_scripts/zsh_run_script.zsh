@@ -1,7 +1,14 @@
 #!/usr/bin/env zsh
 # Ensure at least one argument (the target script name) is provided
 #
-kitten @ set-tab-color active_fg=orange active_bg=blue inactive_fg=red inactive_bg=black
+kitten @ set-tab-color active_fg="black" active_bg="#83d0c9" inactive_fg=pink inactive_bg=black
+
+set_title() {
+# \e]2; sets the window title, \a terminates the sequence
+    print -Pn "\e]2;NV Running: $1\a"
+}
+
+print -Pn "\e]2;NVIM Running: $1\a"
 
 if [[ -z "$1" ]]; then
     echo "Usage: $0 <script-name-or-path> [arguments...]"
