@@ -76,6 +76,23 @@ vim.api.nvim_create_autocmd("FileType", {
 
 return {
   {
+    "HakonHarnes/img-clip.nvim",
+    event = "VeryLazy",
+    opts = {
+      filetypes = {
+        markdown = {
+          dir_path = string.format("%s/%s",vim.g.m_notes_path, "assets/images/"),
+          use_absolute_path = true,
+          template = "![$LABEL]($FILE_PATH)\n\n$CURSOR",
+        },
+      },
+    },
+    keys = {
+      -- suggested keymap
+      -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
+    },
+  },
+  {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
