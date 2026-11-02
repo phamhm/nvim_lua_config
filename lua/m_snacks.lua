@@ -149,10 +149,15 @@ local m_snacks = {
       timeout = 5000,
     },
     picker = {
-
       enabled = true ,
       hidden=true,
       sources = {
+        lsp_symbols = {
+          layout = {
+            hidden = {"preview"},
+            preset = "sidebar",
+          },
+        },
         select = {
           -- Set the layout preset (e.g., "select", "dropdown", "ivy", "vscode", "telescope")
           layout = {
