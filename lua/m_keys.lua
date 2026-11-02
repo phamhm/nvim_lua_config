@@ -140,13 +140,13 @@ map(
         }
         vim.fn.writefile(new_lines, vim.fn.expand(path))
 
-        local session_name = vim.fs.basename( vim.v.this_session )
-        if session_name ~= "" then
-          local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
-          vim.fn.writefile({"", string.format("## [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
-        else
-          vim.notify("Not a session. No capture link", vim.log.levels.ERROR)
-        end
+        -- local session_name = vim.fs.basename( vim.v.this_session )
+        -- if session_name ~= "" then
+        --   local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+        --   vim.fn.writefile({"", string.format("## [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
+        -- else
+        --   vim.notify("Not in session. No capturing into session notes", vim.log.levels.ERROR)
+        -- end
       end)
   end,
   { desc = 'Capture text and apped to capture_notes.md' }
