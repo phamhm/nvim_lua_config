@@ -237,7 +237,6 @@ function TODO.todo()
     end
 
     picker:refresh()
-    picker.preview:refresh(picker)
   end
 
   function m_actions.fn_confirm(picker, item)
