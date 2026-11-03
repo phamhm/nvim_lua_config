@@ -353,5 +353,46 @@ function F.open_scratch(filename, name)
   })
 end
 
+-- stash it here, not useing
+local function scrach_goto_def()
+-- vim.lsp.buf_definition() will jump to a buffer outside of snack.scratch
+-- this is written to open a new scratch
+
+
+  local params = vim.lsp.util.make_position_params(0, "utf-8")
+
+  -- F._inspect(params)
+  local uri = params.textDocument.uri
+  if uri and vim.startswith(uri, "file://") then
+    uri = uri:gsub("file://", "")
+    local stat = vim.uv.fs_stat(uri)
+    if not uri then
+      vim.notify("File doesn't exist", vim.log.levels.ERROR)
+      return
+    end
+  end
+
+  vim.lsp.buf_request(0, "textDocument/definition", params, function(err, result, ctx, config)
+    if err or not result then
+      vim.notify("No definition found or error occurred",
+        vim.log.levels.ERROR)
+      return
+    end
+    -- 'result' can be a Location or a List of Location / LocationLink
+    -- local locations = vim.lsp.util.locations_to_items(result, "utf-8")
+
+    local uri = result.uri
+    if uri and vim.startswith(uri, "file://") then
+      uri = uri:gsub("file://", "")
+      F.open_scratch(uri, uri)
+    else
+      F._inspect(result)
+      vim.notify("scratc_goto_def unexpected result:" .. vim.inspect(result),
+        vim.log.levels.ERROR)
+    end
+
+    -- vim.lsp.util.jump_to_location(result, "utf-8", true)
+  end)
+end
 
 return F

@@ -88,7 +88,7 @@ local function todo_picker(title, actions, keys)
       },
     },
     -- preview = actions.fn_preview,
-    confirm = actions.fn_confirm,
+    -- confirm = actions.fn_confirm,
     transform = actions.m_transform,
     format = actions.m_format,
     finder = actions.m_finder,
@@ -239,10 +239,10 @@ function TODO.todo()
     picker:refresh()
   end
 
-  function m_actions.fn_confirm(picker, item)
-    picker:close()
-    Snacks.scratch.open({file = item._path, name = item.text})
-  end
+  -- function m_actions.fn_confirm(picker, item)
+  --   picker:close()
+  --   Snacks.scratch.open({file = item._path, name = item.text})
+  -- end
 
   local m_keys = {
     ["<C-a>"] = { "m_advance_todo", mode = {"i", "n"}},

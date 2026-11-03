@@ -350,11 +350,12 @@ map("n", "<leader>fn",
         if not path or path == "" then
           return
         end
-        Snacks.scratch({
-          file = vim.fn.expand(path),
-          name = vim.fs.basename(filename),
-          enter = true
-        })
+        local file = vim.fn.expand(path),
+        vim.cmd.edit(file)
+        -- Snacks.scratch({
+        --   name = vim.fs.basename(filename),
+        --   enter = true
+        -- })
       end)
   end, {desc = "open filetype note"})
 
@@ -386,7 +387,7 @@ map("n", "<C-1>",
     local session_name = vim.fs.basename( vim.v.this_session )
     if session_name ~= "" then
       local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
-      F.open_scratch(filename, "Session notes " .. session_name)
+      vim.cmd.vsplit(filename)
     else
       vim.notify("Not in a session", vim.log.levels.WARN)
     end
@@ -396,7 +397,7 @@ map("n", "<C-2>",
   function()
     if F.get_todo_path() ~= "" then
       local filename = vim.fs.basename(F.get_todo_path())
-      F.open_scratch(filename, "Task")
+      vim.cmd.vsplit(filename)
     else
       vim.notify("Start a task", vim.log.levels.WARN)
     end
@@ -406,5 +407,5 @@ map("n", "<C-3>",
   function()
     local basename = vim.bo.filetype .. ".md"
     local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
-    F.open_scratch(filename, "FT notes: " .. basename)
+    vim.cmd.vsplit(filename)
   end, {desc = "session note"})
