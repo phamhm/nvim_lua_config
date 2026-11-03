@@ -306,11 +306,11 @@ function F.m_picker(items, title, actions, keys)
   Snacks.picker.pick({
     source = "markdown_links",
     items = items,
-    focus = "list",
+    focus = "input",
     title = title or "select to run",
     format = "text", -- Display only the title in the list
     layout = {
-      hidden = actions.hidden or {"preview", "input"},
+      hidden = actions.hidden or {"preview"},
       layout = {
         min_width = 0,
         width = 0.3,

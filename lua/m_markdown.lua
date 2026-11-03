@@ -106,8 +106,9 @@ return {
       file_types = { 'markdown.snacks_picker_preview', "markdown"},
     },
     config = function()
-      require('render-markdown').setup()
-      -- require('render-markdown').disable()
+      require('render-markdown').setup({
+        anti_conceal = { enabled = false }
+      })
     end
   },
   {
