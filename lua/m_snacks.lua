@@ -259,20 +259,20 @@ local m_snacks = {
           },
           -- in Snacks.picker.files list, <C-s> open the file in Snacks.scratch
           actions = {
-            m_open_scratch = function(picker)
-              local file = picker:current()._path
-              picker:close()
-              Snacks.scratch({
-                file = file,
-                name = file,
-                enter = true,
-              })
-            end,
+            -- m_open_scratch = function(picker)
+            --   local file = picker:current()._path
+            --   picker:close()
+            --   Snacks.scratch({
+            --     file = file,
+            --     name = file,
+            --     enter = true,
+            --   })
+            -- end,
           },
           win = {
             list = {
               keys = {
-                ["<C-s>"] = {"m_open_scratch", mode = {"n"}}
+                -- ["<C-s>"] = {"m_open_scratch", mode = {"n"}}
               },
             }
           }
@@ -416,7 +416,7 @@ local m_snacks = {
     {"<leader>fc",
       function()
         F.menu_commands({
-          { text = "Toggle Scratch Buffer"  ,  fn = Snacks.scratch },
+          -- { text = "Toggle Scratch Buffer"  ,  fn = Snacks.scratch },
           { text = "Rename File", fn = Snacks.rename.rename_file },
           { text = "Quickfix List" , fn = Snacks.picker.qflist},
           { text = "Marks" , fn = Snacks.picker.marks},
@@ -445,7 +445,7 @@ local m_snacks = {
           { text = "Man Pages" , fn = Snacks.picker.man},
           { text = "Search for Plugin Spec" , fn = Snacks.picker.lazy},
           { text = "Colorschemes" , fn = Snacks.picker.colorschemes},
-          { text = "Select Scratch Buffer"  ,  fn = Snacks.scratch.select },
+          -- { text = "Select Scratch Buffer"  ,  fn = Snacks.scratch.select },
         },"Snacks menu" )
       end
     },
