@@ -117,8 +117,8 @@ local m_snacks = {
         border = "rounded",
         wo = {
           wrap = true,
-          number = false,
-          relativenumber = false,
+          number = true,
+          relativenumber = true,
           -- foldlevel = 9,
         }
       },
@@ -465,6 +465,13 @@ local m_snacks = {
         end
       end,
       desc = "Delete Buffer"
+    },
+    {
+      alt_key("<%s-t>"),
+      function()
+        vim.cmd('vnew')
+      end,
+      desc = "New Vertical Buffer"
     },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },

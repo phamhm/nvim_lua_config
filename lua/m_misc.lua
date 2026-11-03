@@ -15,13 +15,26 @@ return {
     },
   },
   {'nvim-tree/nvim-web-devicons'},
-  {
+  { -- doc: https://github.com/wtfox/jellybeans.nvim
     "wtfox/jellybeans.nvim",
     lazy = false,
     priority = 1000,
-    opts = {},
+    opts = {
+      flat_ui = true
+    },
     config = function()
-      vim.cmd.colorscheme("jellybeans-mono")
+      vim.cmd.colorscheme("jellybeans")
+      local border_list = {
+        "SnacksPickerInputBorder",
+        "SnacksPickerBoxBorder",
+        "SnacksInputBorder",
+        "FloatBorder",
+        "SnacksInputTitle"
+      }
+      local hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
+      for _, border in ipairs(border_list) do
+        vim.api.nvim_set_hl(0, border, { fg= hl.fg})
+      end
     end
   },
   -- {
@@ -128,7 +141,7 @@ return {
             },
             {
               "filename",
-              path = 1,
+              path = 3,
             },
             -- {
             --   F.get_todo,

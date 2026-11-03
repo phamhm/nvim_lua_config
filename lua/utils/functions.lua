@@ -344,4 +344,14 @@ function F.set_title()
   return string.format("%s%s", session, todo)
 end
 
+function F.open_scratch(filename, name)
+  vim.cmd("fclose!")
+  Snacks.scratch({
+    file = vim.fn.expand(filename),
+    name = name,
+    enter = true,
+  })
+end
+
+
 return F

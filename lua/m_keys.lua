@@ -140,13 +140,13 @@ map(
         }
         vim.fn.writefile(new_lines, vim.fn.expand(path))
 
-        -- local session_name = vim.fs.basename( vim.v.this_session )
-        -- if session_name ~= "" then
-        --   local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
-        --   vim.fn.writefile({"", string.format("## [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
-        -- else
-        --   vim.notify("Not in session. No capturing into session notes", vim.log.levels.ERROR)
-        -- end
+        local session_name = vim.fs.basename( vim.v.this_session )
+        if session_name ~= "" then
+          local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+          vim.fn.writefile({"", string.format("# [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
+        else
+          vim.notify("Not in session. No capturing into session notes", vim.log.levels.ERROR)
+        end
       end)
   end,
   { desc = 'Capture text and apped to capture_notes.md' }
@@ -380,3 +380,31 @@ map("n", "<leader>ww",
   end,
   {desc = "My Notes" }
 )
+
+map("n", "<C-1>",
+  function()
+    local session_name = vim.fs.basename( vim.v.this_session )
+    if session_name ~= "" then
+      local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+      F.open_scratch(filename, "Session notes " .. session_name)
+    else
+      vim.notify("Not in a session", vim.log.levels.WARN)
+    end
+  end, {desc = "session note"})
+
+map("n", "<C-2>",
+  function()
+    if F.get_todo_path() ~= "" then
+      local filename = vim.fs.basename(F.get_todo_path())
+      F.open_scratch(filename, "Task")
+    else
+      vim.notify("Start a task", vim.log.levels.WARN)
+    end
+  end, {desc = "session note"})
+
+map("n", "<C-3>",
+  function()
+    local basename = vim.bo.filetype .. ".md"
+    local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
+    F.open_scratch(filename, "FT notes: " .. basename)
+  end, {desc = "session note"})
