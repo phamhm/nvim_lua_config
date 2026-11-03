@@ -9,11 +9,11 @@ vim.keymap.set(
   'n',
   "<leader>mk",
   function()
-    local scratch = Snacks.scratch({
-      ft = "text",
-      name = "keys from utils.lua"
-    })
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, F.get_keys())
+    local bufnr = vim.api.nvim_create_buf(false, true)
+    vim.cmd("vsplit")
+    vim.api.nvim_win_set_buf(0, bufnr)
+
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, F.get_keys())
     vim.cmd("sort")
   end,
   {desc = "utils.keys"}
