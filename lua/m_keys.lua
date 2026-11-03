@@ -396,7 +396,7 @@ map("n", "<C-1>",
 map("n", "<C-2>",
   function()
     if F.get_todo_path() ~= "" then
-      local filename = vim.fs.basename(F.get_todo_path())
+      local filename = F.get_todo_path()
       vim.cmd.vsplit(filename)
     else
       vim.notify("Start a task", vim.log.levels.WARN)
