@@ -469,16 +469,16 @@ local m_snacks = {
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { "<C-w>",
+    { alt_key("<%s-w>"),
       function()
         Snacks.bufdelete()
         if vim.fn.winnr('$') > 1 then
-          vim.cmdc.close()
+          vim.cmd.close()
         end
       end,
       desc = "Delete Buffer"
     },
-    {"<C-t>", vim.cmd.vnew, desc = "New Vertical Buffer" },
+    {alt_key("<%s-t>"), vim.cmd.vnew, desc = "New Vertical Buffer" },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
