@@ -12,6 +12,17 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- Picker explorer actions
+local function m_tcd(picker, item)
+  Snacks.picker.actions.tcd(picker, item)
+  print(picker:cwd())
+end
+
+local function m_explorer_up(picker, item)
+  local explorer_actions = require("snacks.explorer.actions").actions
+  explorer_actions.explorer_up(picker)
+  print(picker:cwd())
+end
+
 local function diff_selected(picker)
   picker:close()
   local selected = picker:selected()
@@ -186,16 +197,18 @@ local m_snacks = {
         explorer = {
           auto_close = true,
           actions = {
-            zip_selected = zip_selected,
-            diff_selected     = diff_selected,
+            zip_selected  = zip_selected,
+            diff_selected = diff_selected,
+            m_tcd         = m_tcd,
+            m_explorer_up = m_explorer_up,
           },
           win = {
             list = {
               keys = {
                 ["Z"] = { 'zip_selected', mode = { "n" } },
                 ["D"] = { 'diff_selected', mode = { "n" } },
-                ["h"] = { 'explorer_up', mode = { "n" } },
-                ["l"] = { 'tcd', mode = { "n" } },
+                ["h"] = { 'm_explorer_up', mode = { "n" } },
+                ["l"] = { "m_tcd", mode = { "n" } },
               }
             }
           },
