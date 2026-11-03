@@ -11,7 +11,7 @@ end
 local function scrach_goto_def()
   local params = vim.lsp.util.make_position_params(0, "utf-8")
 
-  F._inspect(params)
+  -- F._inspect(params)
   local uri = params.textDocument.uri
   if uri and vim.startswith(uri, "file://") then
     uri = uri:gsub("file://", "")

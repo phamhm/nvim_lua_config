@@ -61,7 +61,9 @@ local options = {
   winborder      = "rounded",
   pumborder      = "rounded",
   textwidth      = 80,
-  fillchars      = {fold = ' '}
+  fillchars      = {fold = ' '},
+  undofile       = true,
+  -- undodir        = "" -- <- set where undo history is stored
 }
 for k, v in pairs(options) do
   vim.opt[k] = v
