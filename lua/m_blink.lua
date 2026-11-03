@@ -14,7 +14,14 @@ return {
       ['<C-j>'] = { 'select_next', 'fallback'},
       ['<C-k>'] = { 'select_prev', 'fallback' },
     },
-    completion = { documentation = { auto_show = false } },
+    completion = {
+      documentation = { auto_show = false },
+      menu = {
+        border = "rounded", -- options: "single", "double", "rounded", "solid", "shadow", "none"
+        -- Optional: customize winhighlights
+        -- winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
+      },
+    },
 
     appearance = {
       -- Sets the fallback highlight groups to nvim-cmp's highlight groups

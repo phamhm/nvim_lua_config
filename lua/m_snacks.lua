@@ -412,7 +412,7 @@ local m_snacks = {
     { "<leader>fl", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
     { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
     { "<leader>fu", function() Snacks.picker.undo() end, desc ="Undo History"  },
-    {"<leader>.",
+    {"<leader>fc",
       function()
         F.menu_commands({
           { text = "Toggle Scratch Buffer"  ,  fn = Snacks.scratch },
