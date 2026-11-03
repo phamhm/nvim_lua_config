@@ -87,52 +87,53 @@ local m_snacks = {
       },
     },
     scratch = {
-      root = scratch_root, -- os will clear it.
-      win_by_ft = {
-        markdown = {
-          keys = {
-            ["buffer"] = {
-              "<CR>", -- using <CR> to prevent obsidianFollowLink in floating window
-              function()
-                local full_path = vim.api.nvim_buf_get_name(0)
-                vim.cmd("fclose!")
-                vim.cmd("botright vsplit " .. full_path)
-              end,
-              desc = "Splt R",
-              mode = "n"
-            },
-          },
-        },
-      },
-      win = {
-        keys = {
-          ["q"] = {
-            -- Experience weird error where my saving didn't work, nvim
-            -- indicated something overwote it.
-            -- After c-x all the scratches, the sav worked again.
-            -- there function prevent scratch from saving to the tmp dir.
-            function()
-              local current = vim.api.nvim_buf_get_name(0)
-
-              local bufnr = vim.api.nvim_get_current_buf()
-              vim.api.nvim_buf_delete(bufnr, { force = true })
-              if string.find(current,scratch_root,1, true) then
-                os.remove(current)
-                os.remove(current .. ".meta")
-              end
-            end, desc ="Delete", mode = {"n"}}
-        },
-        min_width = 0,
-        width = 0.6,
-        height = 0.9,
-        border = "rounded",
-        wo = {
-          wrap = true,
-          number = true,
-          relativenumber = true,
-          -- foldlevel = 9,
-        }
-      },
+      enabled = false
+      -- root = scratch_root, -- os will clear it.
+      -- win_by_ft = {
+      --   markdown = {
+      --     keys = {
+      --       ["buffer"] = {
+      --         "<CR>", -- using <CR> to prevent obsidianFollowLink in floating window
+      --         function()
+      --           local full_path = vim.api.nvim_buf_get_name(0)
+      --           vim.cmd("fclose!")
+      --           vim.cmd("botright vsplit " .. full_path)
+      --         end,
+      --         desc = "Splt R",
+      --         mode = "n"
+      --       },
+      --     },
+      --   },
+      -- },
+      -- win = {
+      --   keys = {
+      --     ["q"] = {
+      --       -- Experience weird error where my saving didn't work, nvim
+      --       -- indicated something overwote it.
+      --       -- After c-x all the scratches, the sav worked again.
+      --       -- there function prevent scratch from saving to the tmp dir.
+      --       function()
+      --         local current = vim.api.nvim_buf_get_name(0)
+      --
+      --         local bufnr = vim.api.nvim_get_current_buf()
+      --         vim.api.nvim_buf_delete(bufnr, { force = true })
+      --         if string.find(current,scratch_root,1, true) then
+      --           os.remove(current)
+      --           os.remove(current .. ".meta")
+      --         end
+      --       end, desc ="Delete", mode = {"n"}}
+      --   },
+      --   min_width = 0,
+      --   width = 0.6,
+      --   height = 0.9,
+      --   border = "rounded",
+      --   wo = {
+      --     wrap = true,
+      --     number = true,
+      --     relativenumber = true,
+      --     -- foldlevel = 9,
+      --   }
+      -- },
     },
     explorer = {enabled = true,},
     bigfile = { enabled = true },
