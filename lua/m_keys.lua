@@ -388,6 +388,7 @@ map("n", "<C-1>",
     if session_name ~= "" then
       local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
       vim.cmd.vsplit(filename)
+      vim.notify("Opening session note")
     else
       vim.notify("Not in a session", vim.log.levels.WARN)
     end
@@ -398,8 +399,9 @@ map("n", "<C-2>",
     if F.get_todo_path() ~= "" then
       local filename = F.get_todo_path()
       vim.cmd.vsplit(filename)
+      vim.notify("Opening current task note")
     else
-      vim.notify("Start a task", vim.log.levels.WARN)
+      vim.notify("Can't open. Start a task first.", vim.log.levels.WARN)
     end
   end, {desc = "session note"})
 
@@ -408,7 +410,34 @@ map("n", "<C-3>",
     local basename = vim.bo.filetype .. ".md"
     local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
     vim.cmd.vsplit(filename)
+    vim.notify("Opening file type note")
   end, {desc = "session note"})
+
+map("n", "<C-0>",
+  function()
+    local notes = {}
+    local session_name = vim.fs.basename( vim.v.this_session )
+    if session_name ~= "" then
+      local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+      local fn = function() vim.cmd.vsplit(filename) end
+      table.insert(notes, {text = "Session Note:" .. session_name, fn = fn})
+    end
+
+    if F.get_todo_path() ~= "" then
+      local filename = F.get_todo_path()
+      local fn = function() vim.cmd.vsplit(filename) end
+      table.insert(notes, {text = "Task Note:" .. F.get_todo(), fn = fn})
+    end
+
+    if vim.bo.filetype ~= "" then
+      local basename = vim.bo.filetype .. ".md"
+      local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
+      local fn = function() vim.cmd.vsplit(filename) end
+      table.insert(notes, {text = "FileType Note:" .. basename, fn = fn})
+    end
+
+    F.menu_commands(notes, "Notes", "" )
+  end, {desc = "edit notes"})
 
 
 map("t", "<C-/>", "<cmd>stopinsert<CR>", {desc = "Escape to normal mode"})
