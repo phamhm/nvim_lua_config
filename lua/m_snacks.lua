@@ -144,18 +144,7 @@ local m_snacks = {
       animate = { enabled = false}
     },
     input = { enabled = true  },
-    terminal = {
-      win = {
-        title = "terminal",
-        title_post = "left",
-        border = "rounded",
-        position = "float",
-        keys = {
-          -- Overrides the double-escape behavior to exit instantly
-          term_normal = { "<C-/>", "<cmd>stopinsert<CR>", mode = "t", desc = "Escape to normal mode" },
-        },
-      }
-    },
+    terminal = { enable = false, },
     notifier = {
       enabled = true,
       timeout = 5000,
@@ -483,7 +472,6 @@ local m_snacks = {
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
-    { "<C-/>",      function() vim.cmd("fclose!") Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
     { "<leader>`",  F.generate_bookmarks_picker, desc = "Open Link Picker" }

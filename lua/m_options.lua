@@ -63,6 +63,7 @@ local options = {
   fillchars      = {fold = ' '},
   undofile       = true,
   -- undodir        = "" -- <- set where undo history is stored
+  undodir        = vim.fn.expand("~/.local/share/undodir/")
 }
 for k, v in pairs(options) do
   vim.opt[k] = v

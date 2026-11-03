@@ -409,3 +409,7 @@ map("n", "<C-3>",
     local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
     vim.cmd.vsplit(filename)
   end, {desc = "session note"})
+
+
+map("t", "<C-/>", "<cmd>stopinsert<CR>", {desc = "Escape to normal mode"})
+map("n", "<C-/>", "<cmd>terminal<CR>", {desc = "Escape to normal mode"})
