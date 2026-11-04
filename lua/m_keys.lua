@@ -274,7 +274,6 @@ map("n", "<C-1>",
     if session_name ~= "" then
       local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
       vim.cmd.vsplit(filename)
-      vim.notify("Opening session note")
     else
       vim.notify("Not in a session", vim.log.levels.WARN)
     end
@@ -282,21 +281,9 @@ map("n", "<C-1>",
 
 map("n", "<C-2>",
   function()
-    if F.get_todo_path() ~= "" then
-      local filename = F.get_todo_path()
-      vim.cmd.vsplit(filename)
-      vim.notify("Opening current task note")
-    else
-      vim.notify("Can't open. Start a task first.", vim.log.levels.WARN)
-    end
-  end, {desc = "session note"})
-
-map("n", "<C-3>",
-  function()
     local basename = vim.bo.filetype .. ".md"
     local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
     vim.cmd.vsplit(filename)
-    vim.notify("Opening file type note")
   end, {desc = "session note"})
 
 map("n", "<C-0>",
