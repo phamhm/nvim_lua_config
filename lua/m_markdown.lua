@@ -55,6 +55,37 @@ vim.api.nvim_create_autocmd("FileType", {
     -- map('n', 'gd', vim.lsp.buf.definition, opts("follow markdown link"))
     map('n', '<CR>', F.goto_md_link, opts("follow markdown link"))
 
+    map('n', "<leader>mm",
+      function()
+        vim.ui.input(
+          {prompt="Enter new todo heading"},
+          function(input)
+            local bufnr = vim.api.nvim_get_current_buf()
+            -- Loop through each line of an external file
+
+            local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+            local insert_line
+            local todo_insert_newline = false
+            for i, line in ipairs(lines) do
+              if not vim.startswith(line, "- [") then
+                insert_line = i-1
+                if vim.trim(line) ~= "" then
+                  todo_insert_newline = true
+                end
+                break
+              end
+            end
+
+            local heading = string.format("# %s", input)
+            vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", heading})
+
+            local link = string.format("- [ ] [[%s]]", heading)
+            vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, {link, todo_insert_newline and "" or nil})
+          end
+        )
+      end, opts("new todo heading"))
+
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
     vim.opt_local.textwidth = 80
