@@ -145,7 +145,7 @@ local m_mini = {
             {text = "select", fn = MiniSessions.select},
             {text = "write ", fn = MiniSessions.write},
             {text = "delete", fn = function() MiniSessions.select('delete') end},
-            {text = "save  ", fn = function()
+            {text = "new session", fn = function()
               vim.ui.input({ prompt = 'Session Name: ' }, function(name)
                 if name ~= '' then
                   require('snacks').bufdelete.all()
