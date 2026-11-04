@@ -41,7 +41,7 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown"},
   callback = function()
     -- map("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
-    map("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
+    map("n", "<leader>mm", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
     map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     map({ 'n', 'i' }, '<C-j>', '<Cmd>MDListItemBelow<CR>', opts("Markdown list/number above"))
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
@@ -52,21 +52,15 @@ vim.api.nvim_create_autocmd("FileType", {
 
     map("n", alt_key("<C-%s-f>"), "gwap", opts("format pagraph"))
 
-    map('n', 'gd', vim.lsp.buf.definition, opts("follow markdown link"))
+    -- map('n', 'gd', vim.lsp.buf.definition, opts("follow markdown link"))
+    map('n', '<CR>', F.goto_md_link, opts("follow markdown link"))
 
-    -- Enable soft wrapping
     vim.opt_local.wrap = true
-    -- Wrap lines at word boundaries instead of mid-word
     vim.opt_local.linebreak = true
-    -- Turn off hard wrapping (prevents Neovim from inserting physical newlines)
     vim.opt_local.textwidth = 80
     vim.opt_local.wrapmargin = 0
-    -- Keep indents aligned for wrapped lines (great for nested lists)
     vim.opt_local.breakindent = true
-
     vim.opt_local.spell = false
-
-    -- vim.opt_local.foldlevel = 9  -- <- set this here instead of treesitter autocmd
   end,
 })
 

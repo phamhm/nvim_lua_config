@@ -28,10 +28,10 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', '<leader>1', ":only<CR>",{desc = "only one window"})
-map('n', '<leader>2', ":vsp<CR>",{desc = "vertical split"})
-map('n', '<leader>3', ":sp<CR>",{desc = "horizontal split"})
-map('n', '<leader>0', ":clo<CR>",{desc = "close this buffer :clo"})
+map('n', alt_key('<%s-1>'), ":only<CR>",{desc = "only one window"})
+map('n', alt_key('<%s-2>'), ":vsp<CR>",{desc = "vertical split"})
+map('n', alt_key('<%s-3>'), ":sp<CR>",{desc = "horizontal split"})
+map('n', alt_key('<%s-0>'), ":clo<CR>",{desc = "close this buffer :clo"})
 
 map({'n', 'i', 'v'}, '<C-s>',
   function()
@@ -82,9 +82,9 @@ local function query(query_url)
   end
 end
 
-map("n", "<leader>gy", function()
-  vim.ui.input( { icon=" ",prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
-end, {desc="query youtube"})
+-- map("n", "<leader>gy", function()
+--   vim.ui.input( { icon=" ",prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
+-- end, {desc="query youtube"})
 
 local function google(prompt, default)
   vim.ui.input({
@@ -94,10 +94,10 @@ local function google(prompt, default)
   }, query("https://www.google.com/search?q="))
 end
 
-map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
-map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
+-- map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
+-- map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
 
-map({"n","v" }, "<leader>gg", function()
+map({"n","v" }, alt_key("<%s-l>"), function()
   local current_mode = vim.fn.mode(1)
   local selected_text = ""
   if current_mode == "v" or current_mode ==  "V" then
@@ -112,7 +112,7 @@ end, {desc="googling google"})
 -- capture
 map(
   'n',
-  '<leader>cc',
+  alt_key('<%s-c>'),
   function()
     vim.ui.input({ prompt = 'Quick Capture: ' },
       function(input)
@@ -313,6 +313,8 @@ local function capture_from_register()
     vim.ui.input({ prompt = "Capture reg @+ as filetype"}, function(filetype)
       capture_note(lines, filetype)
     end)
+  elseif reg_p == "" then
+    vim.notify("empty register. nothing to capture.", vim.log.levels.WARN)
   end
 end
 
