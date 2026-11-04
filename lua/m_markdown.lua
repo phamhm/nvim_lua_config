@@ -41,7 +41,7 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown"},
   callback = function()
     -- map("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
-    map("n", "<leader>mm", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
+    map("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
     map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     map({ 'n', 'i' }, '<C-j>', '<Cmd>MDListItemBelow<CR>', opts("Markdown list/number above"))
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
