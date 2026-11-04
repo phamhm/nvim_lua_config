@@ -55,6 +55,11 @@ local m_mini = {
             a = { '@block.outer', },
             i = { '@block.inner', },
           }),
+
+          h = ai.gen_spec.treesitter({
+            a = { '@section.outer', },
+            i = { '@section.inner', },
+          }),
         },
       })
     end
