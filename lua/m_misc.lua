@@ -31,6 +31,7 @@ return {
         "FloatBorder",
         "SnacksInputTitle",
         "BlinkCmpMenuBorder",
+        "LazyGitBorder",
       }
       local hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
       for _, border in ipairs(border_list) do

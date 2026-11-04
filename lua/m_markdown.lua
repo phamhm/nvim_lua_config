@@ -89,13 +89,13 @@ return {
                   local bufnr = vim.api.nvim_get_current_buf()
                   -- Loop through each line of an external file
 
-                  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+                  local lines = vim.api.nvim_buf_get_lines(0, 3, -1, false)
 
-                  local insert_line
+                  local insert_line = 3
                   local todo_insert_newline = false
                   for i, line in ipairs(lines) do
                     if not vim.startswith(line, "- [") then
-                      insert_line = i-1
+                      insert_line = insert_line + i-1
                       if vim.trim(line) ~= "" then
                         todo_insert_newline = true
                       end

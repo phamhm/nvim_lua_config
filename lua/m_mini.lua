@@ -141,15 +141,47 @@ local m_mini = {
       -- {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
       {'<leader>ss',
         function()
+          local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
           local session_commands = {
             {text = "select", fn = MiniSessions.select},
             {text = "write ", fn = MiniSessions.write},
             {text = "delete", fn = function() MiniSessions.select('delete') end},
+            {text = "rebuild", fn = function()
+              local sessions = require("mini.sessions")
+              vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rebuild"},
+                function(session_name)
+                  if session_name and session_name ~= "" then
+                    require('snacks').bufdelete.all()
+                    MiniSessions.write(session_name)
+                    local session_note = string.format("%s/%s.md", session_path, session_name)
+                    local session_path
+                    for line in io.lines(session_note) do
+                      if vim.startswith(line, "session_path:") then
+                        local _, path = unpack(vim.split(line, ":"))
+                        if vim.trim(path) ~= "" then
+                          session_path = path
+                        end
+                        break
+                      end
+                    end
+                    vim.cmd.edit(session_note)
+                    vim.cmd.edit(session_path)
+                  end
+                end)
+            end},
             {text = "new session", fn = function()
-              vim.ui.input({ prompt = 'Session Name: ' }, function(name)
-                if name ~= '' then
+              vim.ui.input({ prompt = 'Session Name: ' }, function(session_name)
+                if session_name and session_name ~= '' then
                   require('snacks').bufdelete.all()
-                  MiniSessions.write(name)
+                  MiniSessions.write(session_name)
+                  local session_note = string.format("%s/%s.md", session_path, session_name)
+                  local yaml = {
+                    "---",
+                    "session_path:",
+                    "---"
+                  }
+                  vim.fn.writefile(yaml, session_note)
+                  vim.cmd.edit(session_note)
                 end
               end)
             end} ,
