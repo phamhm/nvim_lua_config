@@ -357,8 +357,7 @@ function F.goto_md_link()
   local params = vim.lsp.util.make_position_params(0, "utf-8")
   vim.lsp.buf_request(0, "textDocument/definition", params,
     function( err, result, ctx, config )
-      if result and result.uri and vim.startswith(result.uri, "file://") then
-        local uri = result.uri:gsub("file://", "")
+      if result and result.uri then
         vim.lsp.util.jump_to_location(result, "utf-8", true)
       else
         vim.cmd("normal gx")
