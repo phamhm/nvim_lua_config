@@ -360,6 +360,9 @@ map('n', alt_key("<%s-a>"),
           end
         end
 
+        heading = string.gsub(heading, "[^%w_]", " ")
+        heading = vim.trim(heading):gsub("  ", " ")
+
         vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
 
         local link = string.format("- [ ] [[%s]]", "#" .. heading:gsub(" ", "-"))
