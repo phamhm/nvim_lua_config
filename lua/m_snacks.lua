@@ -204,7 +204,7 @@ local m_snacks = {
           },
           layout = {
             hidden = {"input"},
-            preset = "default",
+            -- preset = "default",
           }
         },
         files = {

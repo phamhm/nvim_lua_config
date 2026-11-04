@@ -2,8 +2,8 @@ local F = require("utils.functions")
 local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
 
-local function opts(desc_text)
-  return {desc=desc_text, buffer = true, noremap = false, silent = true}
+local function opts(desc_text, bufnr)
+  return {desc=desc_text, buffer = bufnr or true, noremap = false, silent = true}
 end
 
 local function add_hash()
@@ -32,67 +32,6 @@ local function remove_hash()
     vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { vim.trim(string.sub(current_line, 2)) })
   end
 end
-
--- Example keymap binding to <leader>c in normal mode
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("ProseMode", { clear = true }),
-  -- Target text-focused filetypes (mimicking vim-pencil's default targets)
-  pattern = { "markdown"},
-  callback = function()
-    -- map("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
-    map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
-    map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
-    map({ 'n', 'i' }, '<C-j>', '<Cmd>MDListItemBelow<CR>', opts("Markdown list/number above"))
-    map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
-    map('n', '<C-Space>', '<Cmd>MDTaskToggle<CR>', opts("Markdown task toggle"))
-
-    map('n', '>>', add_hash , opts("promote markdown heading"))
-    map('n', '<<', remove_hash, opts("demote markdown heading"))
-
-    map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph"))
-
-    -- map('n', 'gd', vim.lsp.buf.definition, opts("follow markdown link"))
-    map('n', '<CR>', F.goto_md_link, opts("follow markdown link"))
-
-    map('n', alt_key("<%s-a>"),
-      function()
-        vim.ui.input(
-          {prompt="Enter new todo heading"},
-          function(input)
-            local bufnr = vim.api.nvim_get_current_buf()
-            -- Loop through each line of an external file
-
-            local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-
-            local insert_line
-            local todo_insert_newline = false
-            for i, line in ipairs(lines) do
-              if not vim.startswith(line, "- [") then
-                insert_line = i-1
-                if vim.trim(line) ~= "" then
-                  todo_insert_newline = true
-                end
-                break
-              end
-            end
-
-            local heading = string.format("# %s", input)
-            vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", heading})
-
-            local link = string.format("- [ ] [[%s]]", heading)
-            vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, {link, todo_insert_newline and "" or nil})
-          end
-        )
-      end, opts("new todo heading"))
-
-    vim.opt_local.wrap = true
-    vim.opt_local.linebreak = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.wrapmargin = 0
-    vim.opt_local.breakindent = true
-    vim.opt_local.spell = false
-  end,
-})
 
 return {
   {
@@ -134,11 +73,55 @@ return {
       })
     end
   },
-  {
-    "tadmccorkle/markdown.nvim",
+  { -- https://github.com/jakewvincent/mkdnflow.nvim#statusline-components
+    "jakewvincent/mkdnflow.nvim",
     ft = "markdown", -- or 'event = "VeryLazy"'
     config = function()
-      require('markdown').setup()
+      require('mkdnflow').setup({
+        on_attach = function(bufnr)
+          map("n", "mf", "gwap", opts("format pagraph", bufnr))
+          map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
+          -- map('n', '>>', "<cmd>MkdnDecreaseHeading<CR>" , opts("promote markdown heading", bufnr))
+          -- map('n', '<<', "<cmd>MkdnIncreaseHeading<CR>", opts("demote markdown heading", bufnr))
+
+          map('n', alt_key("<%s-a>"),
+            function()
+              vim.ui.input(
+                {prompt="Enter new todo heading"},
+                function(heading)
+                  local bufnr = vim.api.nvim_get_current_buf()
+                  -- Loop through each line of an external file
+
+                  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+                  local insert_line
+                  local todo_insert_newline = false
+                  for i, line in ipairs(lines) do
+                    if not vim.startswith(line, "- [") then
+                      insert_line = i-1
+                      if vim.trim(line) ~= "" then
+                        todo_insert_newline = true
+                      end
+                      break
+                    end
+                  end
+
+                  vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
+
+                  local link = string.format("- [ ] [[%s]]", "#" .. heading:gsub(" ", "-"))
+                  vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, {link, todo_insert_newline and "" or nil})
+                end
+              )
+            end, opts("new todo heading"))
+
+          vim.opt_local.wrap = true
+          vim.opt_local.linebreak = true
+          vim.opt_local.textwidth = 80
+          vim.opt_local.wrapmargin = 0
+          vim.opt_local.breakindent = true
+          vim.opt_local.spell = false
+        end,
+      })
     end,
   }
 }
