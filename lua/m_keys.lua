@@ -48,8 +48,8 @@ map({'i', 'n'}, alt_key("<%s-n>"), "<cmd>bnext<cr>",{silent = true, desc="buffer
 
 --map("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
 --map("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
-map({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
-map({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
+-- map({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
+-- map({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
 
 -- c-h delete before cursor.
 -- c-l delete after cursor.
@@ -123,7 +123,7 @@ map("v", "Y", function()
   vim.notify("@+="..reg)
 end, {desc = "yank virtual into system clipboard"})
 
-map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
+-- map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
 
 vim.keymap.set('n', '<leader><leader>o', function()
   vim.ui.open(vim.fn.expand('%'))

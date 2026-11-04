@@ -39,68 +39,6 @@ return {
       end
     end
   },
-  -- {
-  --   "webhooked/kanso.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   config = function()
-  --     require('kanso').setup({
-  --       italic = false,
-  --       bold = false,
-  --       commentStyle = { italic = false, bold = false },
-  --       functionStyle = { bold = false },
-  --       keywordStyle = { italic = false, bold = false },
-  --       statementStyle = { bold = false },
-  --       typeStyle = { italic = false, bold = false },
-  --     })
-  --     vim.cmd.colorscheme("kanso-zen")
-  --
-  --     vim.api.nvim_set_hl(0, "SnacksPickerSelected", {
-  --       fg = "#A3E635", -- Bright lime/green text
-  --       bg = "#27272A", -- Dark gray background tint
-  --       bold = true
-  --     })
-  --
-  --     local border_list = {
-  --       "SnacksPickerInputBorder",
-  --       "SnacksPickerBoxBorder",
-  --       "SnacksInputBorder",
-  --       "FloatBorder",
-  --       "SnacksInputTitle"
-  --     }
-  --     local hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
-  --     for _, border in ipairs(border_list) do
-  --       vim.api.nvim_set_hl(0, border, { fg= hl.fg})
-  --     end
-  --     vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#93C572", bold = false })
-  --     -- vim.api.nvim_set_hl(0,  "LineNr", { fg = "#8A9A5B", bold = false })
-  --     local colors = {
-  --       H1 = { fg = 'lightgreen',   }, -- Red
-  --       H2 = { fg = '#fabd2f', }, -- Yellow
-  --       H3 = { fg = '#b8bb26', }, -- Green
-  --       H4 = { fg = '#8ec07c', }, -- Aqua
-  --       H5 = { fg = '#83a598', }, -- Blue
-  --       H6 = { fg = '#d3869b', }, -- Purple
-  --     }
-  --
-  --     for level, hl in pairs(colors) do
-  --       vim.api.nvim_set_hl(0, 'RenderMarkdown' .. level .. 'Bg', hl)
-  --     end
-  --     vim.api.nvim_set_hl(0, 'RenderMarkdownLink', {fg = 'lightgreen'})
-  --     vim.api.nvim_set_hl(0, 'RenderMarkdownLinkTitle', {fg = 'white'})
-  --     vim.api.nvim_set_hl(0, 'markdownLinkText', {fg = 'white', underline = false})
-  --     vim.api.nvim_set_hl(0, 'markdownUrl', {fg = 'white', underline = false})
-  --     -- vim.api.nvim_set_hl(0, '@markup.link.url', {fg = 'white', underline = false})
-  --     vim.api.nvim_set_hl(0, '@markup.link', {fg = 'lightgrey', underline = true})
-  --
-  --     vim.api.nvim_set_hl(0, "Folded", {
-  --       fg = "lightgreen", -- Set a custom subtle foreground color
-  --       bg = "NONE",    -- "NONE" keeps the background transparent/flat
-  --       italic = false,   -- Makes folded lines visually distinct
-  --       bold = true,
-  --     })
-  --   end
-  -- },
   {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-mini/mini.icons' },
@@ -145,10 +83,6 @@ return {
               "filename",
               path = 3,
             },
-            -- {
-            --   F.get_todo,
-            --   color = { fg = '#ff9e64'},
-            -- },
             'branch',
             'diff',
             'diagnostics',
@@ -176,15 +110,4 @@ return {
       }
     end
   },
-  -- {
-  --   "folke/noice.nvim",
-  --   event = "VeryLazy",
-  --   opts = {
-  --     -- add any options here
-  --   },
-  --   dependencies = {
-  --     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-  --     "MunifTanjim/nui.nvim",
-  --   }
-  -- },
 }
