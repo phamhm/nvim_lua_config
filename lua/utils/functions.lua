@@ -334,9 +334,9 @@ end
 function F.set_title()
   local session = vim.trim(vim.v.this_session)
   if session~="" then
-    session = "Session:"..vim.fs.basename(vim.v.this_session)
+    session = " "..vim.fs.basename(vim.v.this_session)
   else
-    session = ""
+    session = "[no session]"
   end
 
   return string.format("%s", session)
