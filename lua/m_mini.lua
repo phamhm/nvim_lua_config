@@ -154,7 +154,12 @@ local m_mini = {
                     require('snacks').bufdelete.all()
                     MiniSessions.write(session_name)
                     local session_note = string.format("%s/%s.md", session_path, session_name)
-                    local session_path
+                    vim.cmd.edit(session_note)
+                    if not vim.uv.fs_stat(session_note) then
+                      return
+                    end
+
+                    local session_path = nil
                     for line in io.lines(session_note) do
                       if vim.startswith(line, "session_path:") then
                         local _, path = unpack(vim.split(line, ":"))
@@ -164,8 +169,9 @@ local m_mini = {
                         break
                       end
                     end
-                    vim.cmd.edit(session_note)
-                    vim.cmd.edit(session_path)
+                    if session_path and session_path ~= "" then
+                      vim.cmd.edit(session_path)
+                    end
                   end
                 end)
             end},
