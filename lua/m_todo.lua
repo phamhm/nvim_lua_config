@@ -257,3 +257,63 @@ function TODO.todo()
 end
 
 F.map("n", "<C-`>", TODO.todo, {desc = "calling todo"})
+
+-- capture
+F.map(
+  'n',
+  alt_key('<%s-c>'),
+  function()
+    vim.ui.input({ prompt = 'Quick Capture: ' },
+      function(input)
+        -- Obsidian new will open the new note.
+        -- this will save my current buffer then switch back to it.
+        local todo_item = input:gsub('/', '')
+        local path = string.format("%s/TODO/%s.md",
+          vim.g.m_notes_path,
+          todo_item:gsub(" ","_")
+        )
+
+        local meta_info = {
+          ["Title"] = todo_item,
+          ["Created"] = os.date("%Y-%m-%d %H%M"),
+          ["Started"] = "",
+          ["Finished"] = "",
+        }
+
+        local meta_json = vim.json.encode(meta_info)
+
+        local new_lines = {
+          meta_json,
+          "",
+          "# "..todo_item
+        }
+        vim.fn.writefile(new_lines, vim.fn.expand(path))
+
+        local session_name = vim.fs.basename( vim.v.this_session )
+        if session_name ~= "" then
+          local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+          vim.fn.writefile({"", string.format("# [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
+        else
+          vim.notify("Not in session. No capturing into session notes", vim.log.levels.ERROR)
+        end
+      end)
+  end,
+  { desc = 'Capture text and apped to capture_notes.md' }
+)
+
+F.map('n', '<leader>vd',
+  function()
+    local today_date = os.date('%Y-%m-%d')
+    local file_path = vim.g.m_notes_path .. "/diary/" .. today_date .. ".md"
+    file_path = vim.fn.expand(file_path)
+    vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
+      local file = io.open(file_path, "a")
+      if file then
+        file:write("- " .. content .. '\n')
+        file:close()
+        print("Saved to " .. file_path)
+      else
+        vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
+      end
+    end)
+  end, { desc = 'Capture to today diary file' })

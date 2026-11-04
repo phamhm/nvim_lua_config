@@ -56,6 +56,6 @@ vim.diagnostic.config({
 })
 
 require('m_keys')
-require('m_todo')
+-- require('m_todo')
 
 local ok, my_module = pcall(require, "m_poweron")

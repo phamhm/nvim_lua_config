@@ -109,66 +109,6 @@ map({"n","v" }, alt_key("<%s-l>"), function()
 end, {desc="googling google"})
 -- end googling, }
 
--- capture
-map(
-  'n',
-  alt_key('<%s-c>'),
-  function()
-    vim.ui.input({ prompt = 'Quick Capture: ' },
-      function(input)
-        -- Obsidian new will open the new note.
-        -- this will save my current buffer then switch back to it.
-        local todo_item = input:gsub('/', '')
-        local path = string.format("%s/TODO/%s.md",
-          vim.g.m_notes_path,
-          todo_item:gsub(" ","_")
-        )
-
-        local meta_info = {
-          ["Title"] = todo_item,
-          ["Created"] = os.date("%Y-%m-%d %H%M"),
-          ["Started"] = "",
-          ["Finished"] = "",
-        }
-
-        local meta_json = vim.json.encode(meta_info)
-
-        local new_lines = {
-          meta_json,
-          "",
-          "# "..todo_item
-        }
-        vim.fn.writefile(new_lines, vim.fn.expand(path))
-
-        local session_name = vim.fs.basename( vim.v.this_session )
-        if session_name ~= "" then
-          local session_path = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
-          vim.fn.writefile({"", string.format("# [[%s]]", todo_item:gsub(" ", "_"))}, vim.fn.expand(session_path), "a")
-        else
-          vim.notify("Not in session. No capturing into session notes", vim.log.levels.ERROR)
-        end
-      end)
-  end,
-  { desc = 'Capture text and apped to capture_notes.md' }
-)
-
-map('n', '<leader>vd',
-  function()
-    local today_date = os.date('%Y-%m-%d')
-    local file_path = vim.g.m_notes_path .. "/diary/" .. today_date .. ".md"
-    file_path = vim.fn.expand(file_path)
-    vim.ui.input({ prompt = "Today Diary Entry:"}, function(content)
-      local file = io.open(file_path, "a")
-      if file then
-        file:write("- " .. content .. '\n')
-        file:close()
-        print("Saved to " .. file_path)
-      else
-        vim.notify("Error: could not write diary entry", vim.log.levels.ERROR)
-      end
-    end)
-  end, { desc = 'Capture to today diary file' })
-
 -- end capture
 
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
@@ -182,30 +122,6 @@ map("v", "Y", function()
 end, {desc = "yank virtual into system clipboard"})
 
 map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
-
--- use Mini.Files locate the file under cursor.
-map('n', '<leader>gf', function()
-  -- Get the file path under the cursor using Neovim's built-in <cfile>
-  local target = vim.fn.expand('<cfile>')
-
-  -- Fallback to the current buffer's directory if <cfile> is empty
-  if target == "" then
-    MiniFiles.open(vim.api.nvim_buf_get_name(0))
-    return
-  end
-
-  -- Resolve full path relative to current working directory if it's not absolute
-  local full_path = vim.fn.fnamemodify(target, ':p')
-
-  -- Check if the target is a directory or a file
-  if vim.fn.isdirectory(full_path) == 1 then
-    MiniFiles.open(full_path)
-  else
-    -- If it's a file, get its parent directory
-    local dir = vim.fn.fnamemodify(full_path, ':h')
-    MiniFiles.open(dir)
-  end
-end, { desc = "Open MiniFiles in directory of file under cursor" })
 
 vim.keymap.set('n', '<leader><leader>o', function()
   vim.ui.open(vim.fn.expand('%'))
@@ -328,38 +244,6 @@ map({"v", "n"}, "<leader>bb",
     end
   end,
   {desc="make notes/bookmark from highlted text"})
-
-map("n", "<leader>fn",
-  function()
-    local paths = {}
-
-    if F.get_todo_path() ~= "" then
-      local basename = vim.fs.basename(F.get_todo_path())
-      paths[basename] = F.get_todo_path()
-    end
-
-    local basename = vim.bo.filetype .. ".md"
-    paths[basename] = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
-
-    local session_name = vim.fs.basename( vim.v.this_session )
-    if session_name ~= "" then
-      paths[session_name .. ".md"] = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
-    end
-
-    vim.ui.select(vim.tbl_keys(paths), {prompt = "Visits"},
-      function(filename)
-        local path = paths[filename]
-        if not path or path == "" then
-          return
-        end
-        local file = vim.fn.expand(path),
-        vim.cmd.edit(file)
-        -- Snacks.scratch({
-        --   name = vim.fs.basename(filename),
-        --   enter = true
-        -- })
-      end)
-  end, {desc = "open filetype note"})
 
 map("n", "<C-w>f", function()
   for _, win in ipairs(vim.api.nvim_list_wins()) do

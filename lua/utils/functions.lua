@@ -334,14 +334,12 @@ end
 function F.set_title()
   local session = vim.trim(vim.v.this_session)
   if session~="" then
-    session = vim.fs.basename(vim.v.this_session).."::"
+    session = "Session:"..vim.fs.basename(vim.v.this_session)
   else
     session = ""
   end
 
-  local todo = F.get_todo()
-
-  return string.format("%s%s", session, todo)
+  return string.format("%s", session)
 end
 
 function F.open_scratch(filename, name)
