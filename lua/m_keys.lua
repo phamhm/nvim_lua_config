@@ -317,3 +317,53 @@ map("n", "<C-0>",
 
 map("t", "<C-/>", "<cmd>stopinsert<CR>", {desc = "Escape to normal mode"})
 map("n", "<C-/>", "<cmd>terminal<CR>", {desc = "Escape to normal mode"})
+
+map('n', alt_key("<%s-a>"),
+  function()
+    local session_name = vim.fs.basename( vim.v.this_session )
+    if session_name == "" then
+      vim.notify("Not in a session", vim.log.levels.WARN)
+      return
+    end
+
+    local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
+
+    local bufnr = vim.fn.bufnr(filename)
+    if bufnr == -1 then
+      vim.cmd.vsplit(filename)
+    else
+      local winid = vim.fn.bufwinid(bufnr)
+      if winid ~= -1 then
+        vim.api.nvim_set_current_win(winid)
+      else
+        vim.cmd(string.format("vertical sbuffer %s", bufnr))
+      end
+    end
+
+    vim.ui.input(
+      {prompt="Insert todo heading  " .. session_name},
+      function(heading)
+        local bufnr = vim.api.nvim_get_current_buf()
+        -- Loop through each line of an external file
+
+        local lines = vim.api.nvim_buf_get_lines(0, 3, -1, false)
+
+        local insert_line = 3
+        local todo_insert_newline = false
+        for i, line in ipairs(lines) do
+          if not vim.startswith(line, "- [") then
+            insert_line = insert_line + i-1
+            if vim.trim(line) ~= "" then
+              todo_insert_newline = true
+            end
+            break
+          end
+        end
+
+        vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
+
+        local link = string.format("- [ ] [[%s]]", "#" .. heading:gsub(" ", "-"))
+        vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, {link, todo_insert_newline and "" or nil})
+      end
+              )
+  end, {desc = "add note to session"})
