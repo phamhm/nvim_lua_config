@@ -33,7 +33,7 @@ map('n', alt_key('<%s-2>'), ":vsp<CR>",{desc = "vertical split"})
 map('n', alt_key('<%s-3>'), ":sp<CR>",{desc = "horizontal split"})
 map('n', alt_key('<%s-0>'), ":clo<CR>",{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, '<C-s>',
+map({'n', 'i', 'v'}, alt_key('<%s-s>'),
   function()
     vim.cmd("stopinsert")
     ts.trim()
@@ -41,6 +41,8 @@ map({'n', 'i', 'v'}, '<C-s>',
     vim.cmd("write")
   end,{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
+map({'i', 'n'}, alt_key("<%s-p>"), "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
+map({'i', 'n'}, alt_key("<%s-n>"), "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
 
 -- end key maps
 
