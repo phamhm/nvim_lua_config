@@ -33,7 +33,6 @@ local function remove_hash()
   end
 end
 
-
 -- Example keymap binding to <leader>c in normal mode
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("ProseMode", { clear = true }),
@@ -41,7 +40,7 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown"},
   callback = function()
     -- map("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts("Markdown Preview Toggle"))
-    map("n", "<leader>mr", "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
+    map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle"))
     map({ 'n', 'i' }, alt_key( '<%s-o>' ), '<Cmd>MDListItemBelow<CR>', opts("Mardown list/number below"))
     map({ 'n', 'i' }, '<C-j>', '<Cmd>MDListItemBelow<CR>', opts("Markdown list/number above"))
     map({ 'n', 'i' }, alt_key( '<%s-O>' ), '<Cmd>MDListItemAbove<CR>', opts("Markdown list/number above"))
@@ -50,12 +49,12 @@ vim.api.nvim_create_autocmd("FileType", {
     map('n', '>>', add_hash , opts("promote markdown heading"))
     map('n', '<<', remove_hash, opts("demote markdown heading"))
 
-    map("n", alt_key("<C-%s-f>"), "gwap", opts("format pagraph"))
+    map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph"))
 
     -- map('n', 'gd', vim.lsp.buf.definition, opts("follow markdown link"))
     map('n', '<CR>', F.goto_md_link, opts("follow markdown link"))
 
-    map('n', "<leader>mm",
+    map('n', alt_key("<%s-a>"),
       function()
         vim.ui.input(
           {prompt="Enter new todo heading"},
