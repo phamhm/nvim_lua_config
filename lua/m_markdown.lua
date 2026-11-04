@@ -47,10 +47,7 @@ return {
         },
       },
     },
-    keys = {
-      -- suggested keymap
-      -- { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
-    },
+    keys = { },
   },
   {
     "iamcco/markdown-preview.nvim",
@@ -79,7 +76,7 @@ return {
     config = function()
       require('mkdnflow').setup({
         on_attach = function(bufnr)
-          map("n", "mf", "gwap", opts("format pagraph", bufnr))
+          map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))
           map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
           -- map('n', '>>', "<cmd>MkdnDecreaseHeading<CR>" , opts("promote markdown heading", bufnr))
           -- map('n', '<<', "<cmd>MkdnIncreaseHeading<CR>", opts("demote markdown heading", bufnr))
