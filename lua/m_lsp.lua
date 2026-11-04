@@ -7,6 +7,7 @@ return {
   config = function()
     -- 1. Initialize mason plugins
     require("mason").setup()
+
     require("mason-lspconfig").setup({
       ensure_installed = {
         "pyright", -- Python LSP
@@ -14,7 +15,8 @@ return {
         "lua_ls", -- Lua/Neovim
         "bashls",
         "marksman",  -- << this broke MiniFiles
-      } -- your desired servers
+      }, -- your desired servers
+      automatic_enable = false,
     })
 
     -- Define the native Marksman configuration
@@ -30,13 +32,17 @@ return {
         },
       },
     })
-    -- Dynamically activate the server
-    vim.lsp.enable('marksman')
+
+    vim.lsp.config('pyright', {
+      filetypes = { 'python'},
+      settings = { },
+    })
 
 
     -- Pass specific server settings directly via vim.lsp.config
     -- Configure lua_ls natively using the 0.11+ API
     vim.lsp.config('lua_ls', {
+      filetypes = {"lua"},
       settings = {
         Lua = {
           runtime = {
@@ -56,5 +62,10 @@ return {
         },
       },
     })
+
+    -- Dynamically activate the server
+    vim.lsp.enable('marksman')
+    vim.lsp.enable('lua_ls')
+    vim.lsp.enable('pyright')
   end,
 }
