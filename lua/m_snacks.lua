@@ -459,14 +459,7 @@ local m_snacks = {
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-    { alt_key("<%s-w>"),
-      function()
-        Snacks.bufdelete()
-        if vim.fn.winnr('$') > 1 then
-          vim.cmd.close()
-        end
-      end,
-      desc = "Delete Buffer"
+    { alt_key("<%s-w>"), function() Snacks.bufdelete() end, desc = "Delete Buffer"
     },
     {alt_key("<%s-t>"), vim.cmd.vnew, desc = "New Vertical Buffer" },
     { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
