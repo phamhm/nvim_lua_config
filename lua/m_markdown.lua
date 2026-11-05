@@ -75,6 +75,11 @@ return {
     ft = "markdown", -- or 'event = "VeryLazy"'
     config = function()
       require('mkdnflow').setup({
+        modules = {
+          links = true,
+          folds = false,
+          foldtext = false,
+        },
         on_attach = function(bufnr)
           map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))
           map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
