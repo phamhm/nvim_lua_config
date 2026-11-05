@@ -35,7 +35,7 @@ return {
     ---@type render.md.UserConfig
     ft = { "markdown.snacks_picker_preview", "markdown"},
     opts = {
-      enabled = false,
+      enabled = true,
       file_types = { 'markdown.snacks_picker_preview', "markdown"},
       anti_conceal = { enabled = false }
     },
@@ -59,6 +59,16 @@ return {
           map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
           map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
           map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
+
+          local markdown_group = vim.api.nvim_create_augroup("MarkdownInsert", { clear = true })
+          -- Automatically enter insert mode when opening or entering a terminal
+          vim.api.nvim_create_autocmd({ "InsertEnter" }, {
+            group = markdown_group,
+            pattern = "*.md",
+            callback = function()
+              vim.cmd("RenderMarkdown disable")
+            end
+          })
 
           vim.opt_local.wrap = true
           vim.opt_local.linebreak = true
