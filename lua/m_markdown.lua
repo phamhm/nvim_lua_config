@@ -53,8 +53,8 @@ return {
         on_attach = function(bufnr)
           map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))
           map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
-          map({'n', 'i'}, '<C-t>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
-          map({'n', 'i'}, '<C-d>', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
+          map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
+          map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
 
 
           vim.opt_local.wrap = true

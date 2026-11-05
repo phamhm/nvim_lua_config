@@ -23,7 +23,11 @@ return {
       flat_ui = true
     },
     config = function()
-      vim.cmd.colorscheme("jellybeans")
+      vim.cmd.colorscheme("jellybeans-muted")
+
+      local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+      vim.api.nvim_set_hl(0, "MiniFilesNormal", { bg = normal_hl.bg})
+
       local border_list = {
         "SnacksPickerInputBorder",
         "SnacksPickerBoxBorder",

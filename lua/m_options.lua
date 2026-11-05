@@ -59,7 +59,7 @@ local options = {
   spellfile      = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
   winborder      = "rounded",
   pumborder      = "rounded",
-  textwidth      = 80,
+  textwidth      = 9999,
   fillchars      = {fold = ' '},
   undofile       = true,
   -- undodir        = "" -- <- set where undo history is stored

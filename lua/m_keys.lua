@@ -20,39 +20,41 @@ vim.keymap.set(
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', alt_key('<%s-q>',2), ":qa!<CR>", {desc="force quit everything"})
-map('n', alt_key('<%s-r>', 2), "<cmd>restart<CR>", {desc="restart nvim"})
+map('n', alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
+-- map('n', alt_key('<%s-r>', 2), "<cmd>restart<CR>", {desc="restart nvim"}) --
+-- restart does weird thing
 
 map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
 map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
-map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
-map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
+-- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
+-- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', alt_key('<%s-1>'), ":only<CR>",{desc = "only one window"})
-map('n', alt_key('<%s-2>'), ":vsp<CR>",{desc = "vertical split"})
-map('n', alt_key('<%s-3>'), ":sp<CR>",{desc = "horizontal split"})
-map('n', alt_key('<%s-0>'), ":clo<CR>",{desc = "close this buffer :clo"})
+map('n', '<C-o>', ":only<CR>",{desc = "only one window"})
+map('n', '<C-t>', ":vsp<CR>",{desc = "vertical split"})
+-- map('n', '<C-s>', ":sp<CR>",{desc = "horizontal split"}) i don't care about
+-- horizonal split
+map('n', '<C-x>',
+  function()
+    Snacks.bufdelete()
+    vim.cmd.close()
+  end,{desc = "close this buffer :clo"})
 
-map({'n', 'i', 'v'}, alt_key('<%s-s>'),
+map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
+-- map('n', alt_key("M", 3), 'q', { desc = 'Remap macro recoring to C-Q' })
+map('n', '<C-q>', function() Snacks.bufdelete() end,{desc = "snakcs buf delete"})
+
+map({'n', 'i', 'v'}, '<C-s>',
   function()
     vim.cmd("stopinsert")
     ts.trim()
     ts.trim_last_lines()
     vim.cmd("write")
   end,{silent = true, desc="save buffer"})
-map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line"})
-map({'i', 'n'}, alt_key("<%s-p>"), "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
-map({'i', 'n'}, alt_key("<%s-n>"), "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
+map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line below"})
+map('i', '<C-k>', "<Esc>O",{silent = true, desc="in middle of line, and still new line above"})
+map({'i', 'n'}, "<C-p>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
+map({'i', 'n'}, "<C-n>", "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
 
--- end key maps
-
---map("i", "<C-f>", "<C-c><Plug>(easymotion-w)", { noremap = true, silent = true, desc = "Open init.lua" })
---map("i", "<C-b>", "<C-c><Plug>(easymotion-b)", { noremap = true, silent = true, desc = "Open init.lua" })
--- map({'n', 'v'}, '<leader><leader>l', '<Plug>(easymotion-wl)', { desc = 'EasyMotion move right on line' })
--- map({'n', 'v'}, '<leader><leader>h', '<Plug>(easymotion-bl)', { desc = 'EasyMotion move left on line' })
-
--- c-h delete before cursor.
--- c-l delete after cursor.
 -- balancing out the universe
 map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})
 
@@ -72,7 +74,7 @@ map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move th
 -- map("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 -- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
-map({ "i", "v", "n", "s" }, "<C-c>", "<C-c><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
+map({ "i", "v", "s", "i"}, "<C-c>", "<C-c><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to google
 local function query(query_url)
@@ -99,7 +101,7 @@ end
 -- map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
 -- map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
 
-map({"n","v" }, alt_key("<%s-l>"), function()
+map({"n","v" }, "<C-l>", function()
   local current_mode = vim.fn.mode(1)
   local selected_text = ""
   if current_mode == "v" or current_mode ==  "V" then
@@ -135,7 +137,7 @@ map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
 
 map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
 
-map('n', alt_key("<leader>cl"), function()
+map('n', "<leader>cl", function()
   F.clear_todo()
   F.clear_status()
 end, {desc = " clear global vim.g"})
@@ -174,9 +176,6 @@ end, {
   silent = true,
   noremap =true
 })
-
-map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
-map('n', '<leader>Q', 'q', { desc = 'Remap macro recoring to C-Q' })
 
 local function capture_note(lines, filetype)
   local leading = {'```'..filetype}
@@ -318,7 +317,7 @@ map("n", "<C-0>",
 map("t", "<C-/>", "<cmd>stopinsert<CR>", {desc = "Escape to normal mode"})
 map("n", "<C-/>", "<cmd>terminal<CR>", {desc = "Escape to normal mode"})
 
-map('n', alt_key("<%s-a>"),
+map('n', "<C-a>",
   function()
     local session_name = vim.fs.basename( vim.v.this_session )
     if session_name == "" then
