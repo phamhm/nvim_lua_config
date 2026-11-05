@@ -55,20 +55,17 @@ return {
     ft = { "markdown" },
     build = "cd app && npm install",
   },
-  {
+  { -- https://github.com/meanderingprogrammer/render-markdown.nvim
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter',},
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     ft = { "markdown.snacks_picker_preview", "markdown"},
     opts = {
+      enabled = false,
       file_types = { 'markdown.snacks_picker_preview', "markdown"},
+      anti_conceal = { enabled = false }
     },
-    config = function()
-      require('render-markdown').setup({
-        anti_conceal = { enabled = false }
-      })
-    end
   },
   { -- https://github.com/jakewvincent/mkdnflow.nvim#statusline-components
     "jakewvincent/mkdnflow.nvim",
