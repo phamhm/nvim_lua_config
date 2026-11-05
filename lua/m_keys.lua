@@ -29,11 +29,13 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
--- horizonal split
-map('n', '<C-x>',
+map('n', '<C-w>x',
   function()
+    -- this is complicated. not sure if i will remember
     Snacks.bufdelete()
-    vim.cmd.close()
+    if #vim.api.nvim_list_wins() > 1 then
+      vim.cmd.close()
+    end
   end,{desc = "close this buffer :clo"})
 
 map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
