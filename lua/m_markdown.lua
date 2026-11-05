@@ -3,34 +3,7 @@ local alt_key = require("utils.functions").format_os_altkey
 local map = require("utils.functions").map
 
 local function opts(desc_text, bufnr)
-  return {desc=desc_text, buffer = bufnr or true, noremap = false, silent = true}
-end
-
-local function add_hash()
-  local line_num = vim.api.nvim_win_get_cursor(0)[1]
-  local current_line = vim.trim(vim.api.nvim_get_current_line())
-  if current_line == "" then
-    return
-  end
-
-  if vim.startswith(current_line, "#") then
-    vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { "#" .. current_line })
-  else
-    vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { "# " .. current_line })
-  end
-end
-
-local function remove_hash()
-  local line_num = vim.api.nvim_win_get_cursor(0)[1]
-  local current_line = vim.trim(vim.api.nvim_get_current_line())
-
-  if current_line == "" then
-    return
-  end
-
-  if vim.startswith(current_line, "#")  then
-    vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, false, { vim.trim(string.sub(current_line, 2)) })
-  end
+  return {desc="Markdown "..desc_text, buffer = bufnr or true, noremap = false, silent = true}
 end
 
 return {
