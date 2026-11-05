@@ -42,7 +42,6 @@ map('n', '<C-x>',
 map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
 -- map('n', alt_key("M", 3), 'q', { desc = 'Remap macro recoring to C-Q' })
 map('n', '<C-q>', function() Snacks.bufdelete() end,{desc = "snakcs buf delete"})
-map('n', '<C-w>w', "<cmd>close<cr>", {desc = "snakcs buf delete"})
 
 map({'n', 'i', 'v'}, '<C-s>',
   function()
