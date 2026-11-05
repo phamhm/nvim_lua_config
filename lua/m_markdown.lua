@@ -7,8 +7,7 @@ local function opts(desc_text, bufnr)
 end
 
 return {
-  {
-    -- [doc](https://github.com/hakonharnes/img-clip.nvim)
+  { -- https://github.com/hakonharnes/img-clip.nvim
     "HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
     opts = {
