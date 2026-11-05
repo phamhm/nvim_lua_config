@@ -147,7 +147,7 @@ local m_snacks = {
     terminal = { enable = false, },
     notifier = {
       enabled = true,
-      timeout = 500,
+      timeout = 1000,
     },
     picker = {
       enabled = true ,

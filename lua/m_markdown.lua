@@ -46,6 +46,7 @@ return {
       require('mkdnflow').setup({
         modules = {
           links    = true,
+          yaml     = true,
           folds    = false,
           foldtext = false,
           conceal  = false,
