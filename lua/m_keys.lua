@@ -29,9 +29,6 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', '<C-o>', ":only<CR>",{desc = "only one window"})
-map('n', '<C-t>', ":vsp<CR>",{desc = "vertical split"})
--- map('n', '<C-s>', ":sp<CR>",{desc = "horizontal split"}) i don't care about
 -- horizonal split
 map('n', '<C-x>',
   function()
