@@ -86,35 +86,6 @@ return {
           map({'n', 'i'}, '<C-t>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
           map({'n', 'i'}, '<C-d>', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
 
-          -- map('n', alt_key("<%s-a>"),
-          --   function()
-          --     vim.ui.input(
-          --       {prompt="Enter new todo heading"},
-          --       function(heading)
-          --         local bufnr = vim.api.nvim_get_current_buf()
-          --         -- Loop through each line of an external file
-          --
-          --         local lines = vim.api.nvim_buf_get_lines(0, 3, -1, false)
-          --
-          --         local insert_line = 3
-          --         local todo_insert_newline = false
-          --         for i, line in ipairs(lines) do
-          --           if not vim.startswith(line, "- [") then
-          --             insert_line = insert_line + i-1
-          --             if vim.trim(line) ~= "" then
-          --               todo_insert_newline = true
-          --             end
-          --             break
-          --           end
-          --         end
-          --
-          --         vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
-          --
-          --         local link = string.format("- [ ] [[%s]]", "#" .. heading:gsub(" ", "-"))
-          --         vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, {link, todo_insert_newline and "" or nil})
-          --       end
-          --     )
-          --   end, opts("new todo heading"))
 
           vim.opt_local.wrap = true
           vim.opt_local.linebreak = true
