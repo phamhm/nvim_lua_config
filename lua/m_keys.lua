@@ -42,6 +42,7 @@ map('n', '<C-x>',
 map({'n', 'x', 'v'}, 'q', '<nop>', { desc = 'Disable macro recording on q' })
 -- map('n', alt_key("M", 3), 'q', { desc = 'Remap macro recoring to C-Q' })
 map('n', '<C-q>', function() Snacks.bufdelete() end,{desc = "snakcs buf delete"})
+map('n', '<C-w>w', "<cmd>close<cr>", {desc = "snakcs buf delete"})
 
 map({'n', 'i', 'v'}, '<C-s>',
   function()
@@ -74,7 +75,7 @@ map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move th
 -- map("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 -- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
-map({ "i", "v", "s", "i"}, "<C-c>", "<C-c><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
+map({ "i", "v", "s", "n"}, "<C-c>", "<C-c><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to google
 local function query(query_url)
@@ -286,33 +287,6 @@ map("n", "<C-2>",
     local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
     vim.cmd.vsplit(filename)
   end, {desc = "session note"})
-
-map("n", "<C-0>",
-  function()
-    local notes = {}
-    local session_name = vim.fs.basename( vim.v.this_session )
-    if session_name ~= "" then
-      local filename = vim.fn.expand(vim.g.m_notes_path .. '/sessions/'..session_name .. ".md")
-      local fn = function() vim.cmd.vsplit(filename) end
-      table.insert(notes, {text = "Session Note:" .. session_name, fn = fn})
-    end
-
-    if F.get_todo_path() ~= "" then
-      local filename = F.get_todo_path()
-      local fn = function() vim.cmd.vsplit(filename) end
-      table.insert(notes, {text = "Task Note:" .. F.get_todo(), fn = fn})
-    end
-
-    if vim.bo.filetype ~= "" then
-      local basename = vim.bo.filetype .. ".md"
-      local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
-      local fn = function() vim.cmd.vsplit(filename) end
-      table.insert(notes, {text = "FileType Note:" .. basename, fn = fn})
-    end
-
-    F.menu_commands(notes, "Notes", "" )
-  end, {desc = "edit notes"})
-
 
 map("t", "<C-/>", "<cmd>stopinsert<CR>", {desc = "Escape to normal mode"})
 map("n", "<C-/>", "<cmd>terminal<CR>", {desc = "Escape to normal mode"})

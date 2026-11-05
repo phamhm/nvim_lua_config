@@ -1,6 +1,6 @@
 local F = require("utils.functions")
-local alt_key = require("utils.functions").format_os_altkey
-local map = require("utils.functions").map
+local alt_key = F.format_os_altkey
+local map = F.map
 
 local function opts(desc_text, bufnr)
   return {desc="Markdown "..desc_text, buffer = bufnr or true, noremap = false, silent = true}
@@ -46,16 +46,19 @@ return {
     config = function()
       require('mkdnflow').setup({
         modules = {
-          links = true,
-          folds = false,
+          links    = true,
+          folds    = false,
           foldtext = false,
+          conceal  = false,
+        },
+        cursor = {
+          jump_patterns = { "%[%[" },
         },
         on_attach = function(bufnr)
           map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))
           map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
           map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
           map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
-
 
           vim.opt_local.wrap = true
           vim.opt_local.linebreak = true
