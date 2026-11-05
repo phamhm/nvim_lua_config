@@ -83,15 +83,15 @@ local m_mini = {
     }
     ) end
   },
-  -- {
-  --   'echasnovski/mini.files',
-  --   config = function() require("mini.files").setup({
-  --     windows = {
-  --       preview=true,
-  --       width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
-  --     }
-  --   }) end
-  -- },
+  {
+    'echasnovski/mini.files',
+    config = function() require("mini.files").setup({
+      windows = {
+        preview=true,
+        width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
+      }
+    }) end
+  },
   -- {
   --   'echasnovski/mini.completion',
   --   config = function()
@@ -138,7 +138,7 @@ local m_mini = {
       verbose = {write = true, read = true}
     }) end,
     keys = {
-      -- {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
+      {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
       {'<leader>ss',
         function()
           local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
@@ -194,7 +194,7 @@ local m_mini = {
           }
 
           F.menu_commands(session_commands, "Session commands", "")
-      end, desc = 'Mini Sessions Management'},
+        end, desc = 'Mini Sessions Management'},
     },
   },
   {
