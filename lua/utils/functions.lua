@@ -338,8 +338,12 @@ function F.set_title()
   else
     session = "[no session]"
   end
+  local filename = vim.fn.expand('%:t')
+  if not filename  or filename == "" then
+    filename = "[no name]"
+  end
 
-  return string.format("%s", session)
+  return string.format("%s::%s", session, filename)
 end
 
 function F.open_scratch(filename, name)

@@ -276,22 +276,21 @@ local m_snacks = {
         preset = "default",
         preview = true,
         layout = {
-          -- box = "vertical",
-          -- backdrop = false,
-          -- row = vim.o.lines - 5,
-          -- col = 0,
-          -- width = 0.5,
-          -- height = 0.5,
-          -- border = "rounded",
-          -- title = " {title} {live} {flags}",
-          -- align = "left",
-          -- title_pos = "left",
-          -- { win = "input", height = 1, border = "none" },
-          -- {
-          --   box = "horizontal",
-          --   { win = "list", border = "none" },
-          --   { win = "preview", title = "{preview}", width = 0.6, border = "left" },
-          -- },
+          min_width = 0,
+          width = 0.9,
+          height = 0.9,
+          box = "horizontal",
+          {
+            box = "vertical",
+            { win = "input", height = 1, border = "rounded" },
+            { win = "list", border = "rounded" },
+          },
+          {
+            win = "preview",
+            title = "{preview}",
+            width = 0.8, -- 70% of the picker width goes to the preview window
+            border = "rounded"
+          },
         },
       }
     },
