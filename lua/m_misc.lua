@@ -22,16 +22,12 @@ return {
   },
   {'nvim-tree/nvim-web-devicons'},
   { -- doc: https://github.com/wtfox/jellybeans.nvim
-    "wtfox/jellybeans.nvim",
+    -- "wtfox/jellybeans.nvim",
+    "vague-theme/vague.nvim",
     lazy = false,
     priority = 1000,
-    opts = {
-      flat_ui = true,
-      italics = false,
-      bold = false,
-    },
     config = function()
-      vim.cmd.colorscheme("jellybeans-muted")
+      vim.cmd.colorscheme("vague")
 
       local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
       vim.iter({
@@ -43,6 +39,7 @@ return {
       end)
 
       vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
+      vim.api.nvim_set_hl(0, 'String', { fg = "grey", bold = false })
 
       local comment_hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
       vim.iter( {
@@ -53,8 +50,10 @@ return {
         "SnacksInputTitle",
         "BlinkCmpMenuBorder",
         "LazyGitBorder",
+        "LspReferenceTarget",
+        "BlinkCmpMenu",
       }):each(function(border)
-        vim.api.nvim_set_hl(0, border, { fg= comment_hl.fg})
+        vim.api.nvim_set_hl(0, border, { fg= "grey"})
       end )
     end
   },

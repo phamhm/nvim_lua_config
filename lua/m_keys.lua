@@ -286,7 +286,7 @@ map("n", "<C-2>",
     vim.cmd.vsplit(filename)
   end, {desc = "session note"})
 
-map("t", "<C-/>", "<cmd>stopinsert<CR>", {desc = "Escape to normal mode"})
+map("t", "<C-/>", ":belowright split | terminal<CR>", {desc = "terminal"})
 map("n", "<C-/>", "<cmd>terminal<CR>", {desc = "Escape to normal mode"})
 
 map('n', "<C-a>",

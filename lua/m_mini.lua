@@ -1,7 +1,5 @@
 local F = require("utils.functions")
 
-local selected_mini_paths = {}
-
 local m_mini = {
   {
     'echasnovski/mini.ai',
@@ -96,16 +94,7 @@ local m_mini = {
           preview=true,
           width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
         },
-        content = {
-          prefix = function(fs_entry)
-            local path = fs_entry.path
-            if vim.list_contains(selected_mini_paths, path) then
-              return " ", ""
-            else
-              return MiniFiles.default_prefix(fs_entry)
-            end
-          end
-        }
+
       })
 
       local minifiles_group = vim.api.nvim_create_augroup("MiniFilesGroup", { clear = true })
@@ -114,21 +103,32 @@ local m_mini = {
         pattern = "MiniFilesBufferCreate",
         callback = function(args)
           local buf_id = args.data.buf_id
+          local selected_mini_paths = {}
+
           -- Helper function for local mappings
           local map_buffer = function(lhs, rhs, desc)
             vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
           end
 
+
+          local prefix =  function(fs_entry)
+            local path = fs_entry.path
+            if vim.list_contains(selected_mini_paths, path) then
+              return " ", ""
+            else
+              return MiniFiles.default_prefix(fs_entry)
+            end
+          end
+
           map_buffer("<tab>",
             function()
-              F._inspect(MiniFiles)
               local path = MiniFiles.get_fs_entry().path
               if not vim.list_contains(selected_mini_paths, path) then
                 table.insert(selected_mini_paths, path)
               else
                 selected_mini_paths = vim.iter(selected_mini_paths):filter(function(i) return i ~= path end):totable()
               end
-              MiniFiles.synchronize()
+              MiniFiles.refresh({ content = { prefix = prefix } })
             end,
             "add files to list")
 
@@ -149,7 +149,7 @@ local m_mini = {
               end
 
               selected_mini_paths = {}
-              MiniFiles.synchronize()
+              MiniFiles.refresh({ content = { prefix = prefix } })
             end,
             "add files to list")
         end,

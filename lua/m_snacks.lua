@@ -435,7 +435,7 @@ local m_snacks = {
     end, desc = "Colorschemes" },
 
     -- LSP
-    { "K", function() vim.lsp.buf.hover({border='rounded'}) end, nowait = true, desc = "LSP Hover Doc" },
+    { "K", function() vim.lsp.buf.hover()  end, nowait = true, desc = "LSP Hover Doc" },
     { "grd", function() Snacks.picker.lsp_definitions() end, desc = "LSP Goto Definition" },
     { "grD", function() Snacks.picker.lsp_declarations() end, desc = "LSP Goto Declaration" },
     { "grr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "LSP References" },

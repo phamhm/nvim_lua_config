@@ -11,6 +11,23 @@ return { --https://github.com/folke/noice.nvim
   },
   config = function()
     require("noice").setup({
+      lsp = {
+        hover = {
+          enabled = true, -- Ensure Noice is handling hover
+          silent = false, -- Set to true to eliminate hover notifications if missing documentation
+        },
+      },
+
+      views = {
+        hover = {
+          border = {
+            style = "rounded", -- Options: "none", "single", "double", "rounded", "solid", "shadow"
+            -- padding = { 0, 1 },
+          },
+          position = { row = 2, col = 0 }, -- Adjusts position relative to the cursor
+        },
+      },
+
       popupmenu = {
         enabled = true,
         ---@type 'nui'|'cmp'
