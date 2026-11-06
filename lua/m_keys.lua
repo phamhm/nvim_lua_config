@@ -51,8 +51,8 @@ map({'n', 'i', 'v'}, '<C-s>',
   end,{silent = true, desc="save buffer"})
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line below"})
 map('i', '<C-k>', "<Esc>O",{silent = true, desc="in middle of line, and still new line above"})
-map({'i', 'n'}, "<C-p>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
-map({'i', 'n'}, "<C-n>", "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
+map({'i', 'n'}, "<C-S-Tab>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
+map({'i', 'n'}, "<C-Tab>", "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
 
 -- balancing out the universe
 map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})
@@ -336,7 +336,7 @@ map('n', "<C-a>",
 
         vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
 
-        local link = string.format("- [ ] [[%s]]", "#" .. heading:gsub(" ", "-"))
+        local link = string.format("- [ ] [%s](#%s)", heading, heading:gsub(" ", "-"):lower())
         vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, {link, todo_insert_newline and "" or nil})
       end
               )
