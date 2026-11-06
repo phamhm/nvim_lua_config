@@ -26,7 +26,9 @@ return {
     lazy = false,
     priority = 1000,
     opts = {
-      flat_ui = true
+      flat_ui = true,
+      italics = false,
+      bold    = false,
     },
     config = function()
       vim.cmd.colorscheme("jellybeans-muted")
@@ -106,7 +108,7 @@ return {
           },
           lualine_y = {
             function()
-              return " " .. os.date("%I:%M%p")
+              return " " .. os.date("%m/%d/%Y %I:%M%p")
             end,
           }, -- saved 'progress'
           lualine_z = {
