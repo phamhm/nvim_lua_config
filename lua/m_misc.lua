@@ -7,7 +7,11 @@ return {
   {
     "folke/flash.nvim",
     event = "VeryLazy",
-    opts = { },
+    opts = {
+      search = {
+        multi_window = false,
+      },
+    },
     keys = {
       { "S", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
       { "T", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },

@@ -2,7 +2,7 @@ local F = require("utils.functions")
 
 local options = {
   backup         = false,                          -- creates a backup file
-  -- prevent yank/delete into "+ and "* registers. use <leader>cc to copy yanked @" into @+
+  -- prevent yank/delete into "+ and "* registers.
   clipboard      = "",
   cmdheight      = 0,                              -- more space in the neovim command line for displaying messages
   completeopt    = { "menuone", "noselect"},       -- mostly just for cmp
