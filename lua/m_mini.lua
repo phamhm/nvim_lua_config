@@ -184,7 +184,7 @@ local m_mini = {
     }) end,
     keys = {
       {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
-      {'<leader>ss',
+      {F.format_os_altkey('<%s-s>'),
         function()
           local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
           local session_commands = {
