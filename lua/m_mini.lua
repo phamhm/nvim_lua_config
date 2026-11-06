@@ -89,6 +89,9 @@ local m_mini = {
     'echasnovski/mini.files',
     config = function()
       require("mini.files").setup({
+        options = {
+          use_as_default_explorer = true
+        },
         windows = {
           preview=true,
           width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40

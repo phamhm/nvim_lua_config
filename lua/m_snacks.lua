@@ -120,7 +120,7 @@ local m_snacks = {
       --   }
       -- },
     },
-    explorer = {enabled = true,},
+    explorer = {enabled = false,},
     bigfile = { enabled = true },
     indent = {
       enabled = true,
