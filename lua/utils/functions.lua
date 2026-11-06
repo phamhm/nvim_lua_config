@@ -375,7 +375,7 @@ function F.tar_files(tar_name, files)
 
   vim.system(cmd, { cwd = path_to_files }, function(obj)
     if obj.code == 0 then
-      vim.notify("Zipped successfully!")
+      vim.notify("Zipped successfully! Result:" .. tar_filename)
     else
       vim.notify("Error zipping files: " .. obj.stderr, vim.log.levels.ERROR)
     end

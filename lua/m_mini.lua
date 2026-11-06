@@ -97,7 +97,7 @@ local m_mini = {
           prefix = function(fs_entry)
             local path = fs_entry.path
             if vim.list_contains(selected_mini_paths, path) then
-              return ' ' .. ">", ""
+              return " ", ""
             else
               return MiniFiles.default_prefix(fs_entry)
             end
@@ -118,8 +118,8 @@ local m_mini = {
 
           map_buffer("<tab>",
             function()
+              F._inspect(MiniFiles)
               local path = MiniFiles.get_fs_entry().path
-              F._inspect(path)
               if not vim.list_contains(selected_mini_paths, path) then
                 table.insert(selected_mini_paths, path)
               else
@@ -131,16 +131,18 @@ local m_mini = {
 
           map_buffer("Z",
             function()
-              if #selected_mini_paths > 0 then
-                local msg = { "CONFIRM FILES TO ZIP" }
-                vim.list_extend(msg, selected_mini_paths)
-                table.insert(msg, " ")
-                msg = table.concat(msg, "\n")
-                local confirm_res = vim.fn.confirm(msg, '&Yes\n&No\n&Cancel', 1, 'Question')
-                if confirm_res == 1 then
-                  local tar_name = os.date("mini_%Y%m%d")
-                  F.tar_files(tar_name, selected_mini_paths)
-                end
+              if #selected_mini_paths == 0 then
+                selected_mini_paths = {MiniFiles.get_fs_entry().path}
+              end
+
+              local msg = { "CONFIRM FILES TO ZIP" }
+              vim.list_extend(msg, selected_mini_paths)
+              table.insert(msg, " ")
+              msg = table.concat(msg, "\n")
+              local confirm_res = vim.fn.confirm(msg, '&Yes\n&No\n&Cancel', 1, 'Question')
+              if confirm_res == 1 then
+                local tar_name = os.date("%Y%m%d_%H%M%S")
+                F.tar_files(tar_name, selected_mini_paths)
               end
 
               selected_mini_paths = {}
@@ -154,7 +156,7 @@ local m_mini = {
         group = minifiles_group,
         pattern = "MiniFilesExplorerClose",
         callback = function()
-          F._inspect("clear out selected mini files")
+          F._inspect("Clear out selected mini files")
           selected_mini_paths = {}
         end,
       })
