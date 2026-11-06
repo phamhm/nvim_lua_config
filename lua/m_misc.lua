@@ -39,7 +39,7 @@ return {
       end)
 
       vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
-      vim.api.nvim_set_hl(0, 'String', { fg = "grey", bold = false })
+      vim.api.nvim_set_hl(0, 'String', { fg = "#F2F2F2", bold = false })
 
       vim.iter( {
         "SnacksPickerInputBorder",
@@ -55,7 +55,7 @@ return {
         vim.api.nvim_set_hl(0, border, { fg= "grey"})
       end )
 
-      vim.api.nvim_set_hl(0, 'Comment', { fg = "darkgreen", bold = true, italic = false })
+      vim.api.nvim_set_hl(0, 'Comment', { fg = "grey", bold = true, italic = false })
     end
   },
   {
