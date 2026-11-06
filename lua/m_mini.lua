@@ -138,18 +138,18 @@ local m_mini = {
                 selected_mini_paths = {MiniFiles.get_fs_entry().path}
               end
 
-              local msg = { "CONFIRM FILES TO ZIP" }
-              vim.list_extend(msg, selected_mini_paths)
-              table.insert(msg, " ")
-              msg = table.concat(msg, "\n")
-              local confirm_res = vim.fn.confirm(msg, '&Yes\n&No\n&Cancel', 1, 'Question')
-              if confirm_res == 1 then
-                local tar_name = os.date("%Y%m%d_%H%M%S")
-                F.tar_files(tar_name, selected_mini_paths)
-              end
+              MiniFiles.close()
+
+              local to_tar = selected_mini_paths
+
+              vim.ui.input({prompt = "New Zip File Name"},
+                function(tar_name)
+                  if tar_name ~= "" then
+                    F.tar_files(tar_name, to_tar)
+                  end
+                end)
 
               selected_mini_paths = {}
-              MiniFiles.refresh({ content = { prefix = prefix } })
             end,
             "add files to list")
         end,
@@ -159,7 +159,6 @@ local m_mini = {
         group = minifiles_group,
         pattern = "MiniFilesExplorerClose",
         callback = function()
-          F._inspect("Clear out selected mini files")
           selected_mini_paths = {}
         end,
       })
