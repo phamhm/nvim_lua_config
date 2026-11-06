@@ -196,23 +196,6 @@ local m_snacks = {
           focus = {},
           layout = {
             hidden = {},
-            layout = {
-              min_width = 0,
-              width = 0.9,
-              height = 0.9,
-              box = "horizontal",
-              {
-                box = "vertical",
-                { win = "input", height = 1, border = "rounded" },
-                { win = "list", border = "rounded" },
-              },
-              {
-                win = "preview",
-                title = "{preview}",
-                width = 0.8, -- 70% of the picker width goes to the preview window
-                border = "rounded"
-              },
-            }
           },
           exclude = {
             ".git",
@@ -426,7 +409,7 @@ local m_snacks = {
     -- seabch
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
-    { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
+    { alt_key('<%s-r>'), function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end
