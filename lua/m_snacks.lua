@@ -46,22 +46,7 @@ local function zip_selected(picker, item)
 
   vim.ui.input({prompt = "tar file name"},
     function(tar_name)
-      local tar_filename = string.format("~/Backups/%s.tar.gz",tar_name)
-      tar_filename = vim.fn.expand(tar_filename)
-      local cmd = {
-        "tar",
-        "-cvzf",
-        tar_filename
-      }
-      vim.list_extend(cmd, filenames)
-
-      vim.system(cmd, { cwd = path_to_files }, function(obj)
-        if obj.code == 0 then
-          vim.notify("Zipped successfully!")
-        else
-          vim.notify("Error zipping files: " .. obj.stderr, vim.log.levels.ERROR)
-        end
-      end)
+      F.tar_files(tar_name, filenames)
     end
   )
 

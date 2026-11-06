@@ -28,13 +28,19 @@ return {
     opts = {
       flat_ui = true,
       italics = false,
-      bold    = false,
+      bold = false,
     },
     config = function()
       vim.cmd.colorscheme("jellybeans-muted")
 
       local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
-      vim.api.nvim_set_hl(0, "MiniFilesNormal", { bg = normal_hl.bg})
+      vim.iter({
+        "MiniFilesNormal",
+        "SnacksPickerList",
+        "SnacksPickerInput",
+      }):each(function(group)
+        vim.api.nvim_set_hl(0, group, { bg = normal_hl.bg})
+      end)
 
       vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
 

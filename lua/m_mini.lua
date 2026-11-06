@@ -1,5 +1,7 @@
 local F = require("utils.functions")
 
+local selected_mini_paths = {}
+
 local m_mini = {
   {
     'echasnovski/mini.ai',
@@ -85,51 +87,81 @@ local m_mini = {
   },
   {
     'echasnovski/mini.files',
-    config = function() require("mini.files").setup({
-      windows = {
-        preview=true,
-        width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
-      }
-    }) end
+    config = function()
+      require("mini.files").setup({
+        windows = {
+          preview=true,
+          width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
+        },
+        content = {
+          prefix = function(fs_entry)
+            local path = fs_entry.path
+            if vim.list_contains(selected_mini_paths, path) then
+              return ' ' .. ">", ""
+            else
+              return MiniFiles.default_prefix(fs_entry)
+            end
+          end
+        }
+      })
+
+      local minifiles_group = vim.api.nvim_create_augroup("MiniFilesGroup", { clear = true })
+      vim.api.nvim_create_autocmd("User", {
+        group = minifiles_group,
+        pattern = "MiniFilesBufferCreate",
+        callback = function(args)
+          local buf_id = args.data.buf_id
+          -- Helper function for local mappings
+          local map_buffer = function(lhs, rhs, desc)
+            vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
+          end
+
+          map_buffer("<tab>",
+            function()
+              local path = MiniFiles.get_fs_entry().path
+              F._inspect(path)
+              if not vim.list_contains(selected_mini_paths, path) then
+                table.insert(selected_mini_paths, path)
+              else
+                selected_mini_paths = vim.iter(selected_mini_paths):filter(function(i) return i ~= path end):totable()
+              end
+              MiniFiles.synchronize()
+            end,
+            "add files to list")
+
+          map_buffer("Z",
+            function()
+              if #selected_mini_paths > 0 then
+                local msg = { "CONFIRM FILES TO ZIP" }
+                vim.list_extend(msg, selected_mini_paths)
+                table.insert(msg, " ")
+                msg = table.concat(msg, "\n")
+                local confirm_res = vim.fn.confirm(msg, '&Yes\n&No\n&Cancel', 1, 'Question')
+                if confirm_res == 1 then
+                  local tar_name = os.date("mini_%Y%m%d")
+                  F.tar_files(tar_name, selected_mini_paths)
+                end
+              end
+
+              selected_mini_paths = {}
+              MiniFiles.synchronize()
+            end,
+            "add files to list")
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("User", {
+        group = minifiles_group,
+        pattern = "MiniFilesExplorerClose",
+        callback = function()
+          F._inspect("clear out selected mini files")
+          selected_mini_paths = {}
+        end,
+      })
+
+
+    end
   },
-  -- {
-  --   'echasnovski/mini.completion',
-  --   config = function()
-  --     require("mini.completion").setup({
-  --       lsp_completion = { auto_setup = true, source_func = 'omnifunc' },
-  --       delay = { completion = 999999, info = 99999, signature = 99999 },
-  --     }) end
-  -- },
-  -- {
-  --   'echasnovski/mini.snippets',
-  --   dependencies = { "rafamadriz/friendly-snippets" },
-  --   config = function()
-  --     local m_snippets =  require("mini.snippets")
-  --
-  --     m_snippets.setup({
-  --       -- Integrates seamlessly with mini.completion's fallback logic
-  --       snippets = {
-  --         m_snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
-  --         m_snippets.gen_loader.from_lang({lang_patterns = {
-  --           markdown_inline = { 'markdown.json' },
-  --         }}),
-  --       },
-  --
-  --       mappings = {
-  --         -- Expand snippet at cursor position. Created globally in Insert mode.
-  --         expand = '<C-.>',
-  --         -- Interact with default `expand.insert` session.
-  --         -- Created for the duration of active session(s)
-  --         jump_next = '<C-n>',
-  --         jump_prev = '<C-p>',
-  --         stop = '<C-c>',
-  --       },
-  --     })
-  --
-  --     -- must be after setup to add snipets to mini.completions
-  --     require("mini.snippets").start_lsp_server()
-  --   end
-  -- },
   {
     'echasnovski/mini.sessions',
     config = function() require("mini.sessions").setup({
