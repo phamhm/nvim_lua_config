@@ -124,6 +124,13 @@ map("v", "Y", function()
   vim.notify("@+="..reg)
 end, {desc = "yank virtual into system clipboard"})
 
+local function regmove(r1, r2) vim.fn.setreg(r1, vim.fn.getreg(r2)) end
+map("n", "yc",
+  function()
+    regmove('+', '"')
+    vim.notify('Copied @" into @+')
+  end, { desc='move @" into @+' })
+
 -- map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
 
 vim.keymap.set('n', '<leader><leader>o', function()

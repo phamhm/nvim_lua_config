@@ -92,7 +92,7 @@ local m_mini = {
         },
         windows = {
           preview=true,
-          width_preview =  80, -- adjusts dynamically or set to a fixed integer like 40
+          width_preview =  70, -- adjusts dynamically or set to a fixed integer like 40
         },
 
       })
@@ -120,13 +120,22 @@ local m_mini = {
             end
           end
 
+          map_buffer("<cr>",
+            function()
+              MiniFiles.go_in()
+              MiniFiles.close()
+            end,
+            "Enter to go in")
+
           map_buffer("<tab>",
             function()
               local path = MiniFiles.get_fs_entry().path
-              if not vim.list_contains(selected_mini_paths, path) then
-                table.insert(selected_mini_paths, path)
+              if vim.list_contains(selected_mini_paths, path) then
+                selected_mini_paths = vim.iter(selected_mini_paths)
+                  :filter(function(i) return i ~= path end)
+                  :totable()
               else
-                selected_mini_paths = vim.iter(selected_mini_paths):filter(function(i) return i ~= path end):totable()
+                table.insert(selected_mini_paths, path)
               end
               MiniFiles.refresh({ content = { prefix = prefix } })
             end,

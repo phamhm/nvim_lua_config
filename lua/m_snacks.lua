@@ -425,7 +425,7 @@ local m_snacks = {
     -- seabch
     { "<leader>sg", function() Snacks.picker.grep({ cwd = vim.fn.getcwd()}) end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
-    { '<leader>r', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
+    { '<C-r>', function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end
@@ -449,7 +449,7 @@ local m_snacks = {
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
-    { "<leader>`",  F.generate_bookmarks_picker, desc = "Open Link Picker" }
+    { "<C-`>",  F.generate_bookmarks_picker, desc = "Open Link Picker" }
   },
   init = function()
     -- 6. Create a user command or keymap to run it
