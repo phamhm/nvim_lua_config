@@ -288,10 +288,10 @@ local m_snacks = {
       desc = "Spelling Suggestions",
     },
     -- Top Pickers & Explorer
-    { "<C-.>", function() Snacks.picker.buffers() end, desc = "Buffers" },
+    { "<C-n>", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command History" },
     -- { "<C-n>", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<C-n>",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
+    { "<C-.>",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { alt_key("<C-%s-e>"), function() Snacks.explorer.reveal() end, desc = "File Explorer" },
     -- { "<C-e>", function() Snacks.explorer.reveal() end, desc = "File Explorer Reveal" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
