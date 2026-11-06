@@ -48,7 +48,6 @@ return {
     })
 
     -- Dynamically activate the server
-    vim.lsp.enable('marksman')
     vim.lsp.enable('lua_ls')
     vim.lsp.enable('pyright')
   end,

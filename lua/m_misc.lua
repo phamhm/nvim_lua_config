@@ -1,5 +1,7 @@
 local F = require('utils.functions')
 
+local number_fg = "lightgreen"
+
 return {
   -- {'easymotion/vim-easymotion'},
   {
@@ -28,7 +30,10 @@ return {
       local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
       vim.api.nvim_set_hl(0, "MiniFilesNormal", { bg = normal_hl.bg})
 
-      local border_list = {
+      vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
+
+      local comment_hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
+      vim.iter( {
         "SnacksPickerInputBorder",
         "SnacksPickerBoxBorder",
         "SnacksInputBorder",
@@ -36,11 +41,9 @@ return {
         "SnacksInputTitle",
         "BlinkCmpMenuBorder",
         "LazyGitBorder",
-      }
-      local hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
-      for _, border in ipairs(border_list) do
-        vim.api.nvim_set_hl(0, border, { fg= hl.fg})
-      end
+      }):each(function(border)
+        vim.api.nvim_set_hl(0, border, { fg= comment_hl.fg})
+      end )
     end
   },
   {
@@ -81,7 +84,7 @@ return {
           lualine_c = {
             {
               'location',
-              color = { fg = 'lightgreen'},
+              color = { fg = number_fg},
             },
             {
               "filename",
