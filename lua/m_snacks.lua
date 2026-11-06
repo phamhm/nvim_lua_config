@@ -254,12 +254,6 @@ local m_snacks = {
           """""""
           ]],
         keys = {
-          { icon = "󰬱 ", key = "w", desc = "Workspace", action = ":lua Snacks.picker.files({cwd = vim.fn.expand('~/Workspace/')})" },
-          -- { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
-          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-          -- { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
-          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
-          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
           { icon = " ", key = "s", desc = "Restore Session", section = "session" },
           { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua require('mini.sessions').select()" },
           { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
