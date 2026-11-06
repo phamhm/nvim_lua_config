@@ -41,7 +41,6 @@ return {
       vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
       vim.api.nvim_set_hl(0, 'String', { fg = "grey", bold = false })
 
-      local comment_hl = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
       vim.iter( {
         "SnacksPickerInputBorder",
         "SnacksPickerBoxBorder",
@@ -55,6 +54,8 @@ return {
       }):each(function(border)
         vim.api.nvim_set_hl(0, border, { fg= "grey"})
       end )
+
+      vim.api.nvim_set_hl(0, 'Comment', { fg = "darkgreen", bold = true, italic = false })
     end
   },
   {
