@@ -220,11 +220,7 @@ local m_mini = {
       verbose = {write = true, read = true}
     }) end,
     keys = {
-      {'<C-e>',
-        function()
-          SELECTED_MINI_PATHS = {}
-          MiniFiles.open(vim.api.nvim_buf_get_name(0))
-        end, desc = 'Open mini.files' },
+      {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
       {F.format_os_altkey("<C-%s-`>"),
         function()
           local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
