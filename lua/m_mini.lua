@@ -1,6 +1,39 @@
 local F = require("utils.functions")
 
-local SELECTED_MINI_PATHS = {}
+local s = {
+  SELECTED_MINI_PATHS = {},
+}
+
+s.toggle = function(path)
+  if vim.list_contains(s.SELECTED_MINI_PATHS, path) then
+    s.SELECTED_MINI_PATHS = vim.iter(s.SELECTED_MINI_PATHS)
+      :filter(function(i) return i ~= path end)
+      :totable()
+  else
+    table.insert(s.SELECTED_MINI_PATHS, path)
+  end
+end
+
+s.prefix =  function(fs_entry)
+  local path = fs_entry.path
+  if vim.list_contains(s.SELECTED_MINI_PATHS, path) then
+    return " ", ""
+  else
+    return require('mini.files').default_prefix(fs_entry)
+  end
+end
+
+s.reset = function()
+  s.SELECTED_MINI_PATHS = {}
+end
+
+s.get_len = function ()
+  return #s.SELECTED_MINI_PATHS
+end
+
+s.get = function()
+  return s.SELECTED_MINI_PATHS
+end
 
 local m_mini = {
   {
@@ -111,15 +144,6 @@ local m_mini = {
             vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
           end
 
-          local prefix =  function(fs_entry)
-            local path = fs_entry.path
-            if vim.list_contains(SELECTED_MINI_PATHS, path) then
-              return " ", ""
-            else
-              return MiniFiles.default_prefix(fs_entry)
-            end
-          end
-
           map_buffer("<cr>",
             function()
               MiniFiles.go_in()
@@ -130,37 +154,30 @@ local m_mini = {
           map_buffer("<tab>",
             function()
               local path = MiniFiles.get_fs_entry().path
-              if vim.list_contains(SELECTED_MINI_PATHS, path) then
-                SELECTED_MINI_PATHS = vim.iter(SELECTED_MINI_PATHS)
-                  :filter(function(i) return i ~= path end)
-                  :totable()
-              else
-                table.insert(SELECTED_MINI_PATHS, path)
-              end
-              MiniFiles.refresh({ content = { prefix = prefix } })
+              s.toggle(path)
+
+              MiniFiles.refresh({ content = { prefix = s.prefix } })
             end,
             "add files to list")
 
           map_buffer("Z",
             function()
-              if #SELECTED_MINI_PATHS == 0 then
-                SELECTED_MINI_PATHS = {MiniFiles.get_fs_entry().path}
-              end
+              local to_tar = s.get_len() >0 and s.get() or { MiniFiles.get_fs_entry().path }
 
               MiniFiles.close()
-
-              local to_tar = SELECTED_MINI_PATHS
+              s.reset()
 
               vim.ui.input({prompt = "New Zip File Name"},
                 function(tar_name)
                   if tar_name ~= "" then
+                    vim.notify("tarring into " .. tar_name)
                     F.tar_files(tar_name, to_tar)
+                  else
+                    vim.notify("No tar name provided", vim.log.levels.WARN)
                   end
                 end)
-
-              SELECTED_MINI_PATHS = {}
             end,
-            "add files to list")
+            "ZIP selected files")
         end,
       })
 
@@ -169,7 +186,7 @@ local m_mini = {
         group = minifiles_group,
         pattern = "MiniFilesExplorerClose",
         callback = function()
-          SELECTED_MINI_PATHS = {}
+          s.reset()
         end,
       })
 
@@ -184,7 +201,11 @@ local m_mini = {
       verbose = {write = true, read = true}
     }) end,
     keys = {
-      {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
+      {'<C-e>',
+        function()
+          SELECTED_MINI_PATHS = {}
+          MiniFiles.open(vim.api.nvim_buf_get_name(0))
+        end, desc = 'Open mini.files' },
       {F.format_os_altkey("<C-%s-`>"),
         function()
           local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
