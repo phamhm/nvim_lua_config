@@ -1,5 +1,7 @@
 local F = require("utils.functions")
 
+local SELECTED_MINI_PATHS = {}
+
 local m_mini = {
   {
     'echasnovski/mini.ai',
@@ -103,17 +105,15 @@ local m_mini = {
         pattern = "MiniFilesBufferCreate",
         callback = function(args)
           local buf_id = args.data.buf_id
-          local selected_mini_paths = {}
 
           -- Helper function for local mappings
           local map_buffer = function(lhs, rhs, desc)
             vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
           end
 
-
           local prefix =  function(fs_entry)
             local path = fs_entry.path
-            if vim.list_contains(selected_mini_paths, path) then
+            if vim.list_contains(SELECTED_MINI_PATHS, path) then
               return " ", ""
             else
               return MiniFiles.default_prefix(fs_entry)
@@ -130,12 +130,12 @@ local m_mini = {
           map_buffer("<tab>",
             function()
               local path = MiniFiles.get_fs_entry().path
-              if vim.list_contains(selected_mini_paths, path) then
-                selected_mini_paths = vim.iter(selected_mini_paths)
+              if vim.list_contains(SELECTED_MINI_PATHS, path) then
+                SELECTED_MINI_PATHS = vim.iter(SELECTED_MINI_PATHS)
                   :filter(function(i) return i ~= path end)
                   :totable()
               else
-                table.insert(selected_mini_paths, path)
+                table.insert(SELECTED_MINI_PATHS, path)
               end
               MiniFiles.refresh({ content = { prefix = prefix } })
             end,
@@ -143,13 +143,13 @@ local m_mini = {
 
           map_buffer("Z",
             function()
-              if #selected_mini_paths == 0 then
-                selected_mini_paths = {MiniFiles.get_fs_entry().path}
+              if #SELECTED_MINI_PATHS == 0 then
+                SELECTED_MINI_PATHS = {MiniFiles.get_fs_entry().path}
               end
 
               MiniFiles.close()
 
-              local to_tar = selected_mini_paths
+              local to_tar = SELECTED_MINI_PATHS
 
               vim.ui.input({prompt = "New Zip File Name"},
                 function(tar_name)
@@ -158,17 +158,18 @@ local m_mini = {
                   end
                 end)
 
-              selected_mini_paths = {}
+              SELECTED_MINI_PATHS = {}
             end,
             "add files to list")
         end,
       })
 
+      -- don't need to call this becasue Buf Create will init
       vim.api.nvim_create_autocmd("User", {
         group = minifiles_group,
         pattern = "MiniFilesExplorerClose",
         callback = function()
-          selected_mini_paths = {}
+          SELECTED_MINI_PATHS = {}
         end,
       })
 
@@ -184,7 +185,7 @@ local m_mini = {
     }) end,
     keys = {
       {'<C-e>', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
-      {"<leader>ss",
+      {F.format_os_altkey("<C-%s-`>"),
         function()
           local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
           local session_commands = {
@@ -204,18 +205,18 @@ local m_mini = {
                       return
                     end
 
-                    local session_path = nil
+                    local yaml_session_path = nil
                     for line in io.lines(session_note) do
-                      if vim.startswith(line, "session_path:") then
+                      if vim.startswith(line, "yaml_session_path:") then
                         local _, path = unpack(vim.split(line, ":"))
                         if vim.trim(path) ~= "" then
-                          session_path = path
+                          yaml_session_path = path
                         end
                         break
                       end
                     end
-                    if session_path and session_path ~= "" then
-                      vim.cmd.edit(session_path)
+                    if yaml_session_path and yaml_session_path ~= "" then
+                      vim.cmd.edit(yaml_session_path)
                     end
                   end
                 end)
