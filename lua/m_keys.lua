@@ -294,8 +294,23 @@ map("n", "<C-2>",
   end, {desc = "session note"})
 
 map("n", "<C-/>", function()
-  vim.cmd("belowright split | terminal")
+  local terminal_bufs = vim.tbl_filter(function(bufnr)
+    return vim.bo[bufnr].buftype == 'terminal'
+  end, vim.api.nvim_list_bufs())
+
+  if #terminal_bufs > 1 then
+    vim.notify(string.format("Too many terminal buffers: %s", #terminal_bufs), vim.log.levels.WARN)
+    return
+  elseif #terminal_bufs == 1 then
+    local bufnr = terminal_bufs[1]
+    vim.cmd("belowright split")
+    vim.api.nvim_win_set_buf(0, bufnr)
+  else
+    vim.cmd("belowright split | terminal")
+  end
   vim.cmd("startinsert")
+
+  -- Print the buffer numbers
 end , {desc = "terminal"})
 map("t", "<C-/>", function() vim.cmd("stopinsert") end, {desc = "Escape to normal mode"})
 
@@ -351,3 +366,20 @@ map('n', "<C-a>",
       end
               )
   end, {desc = "add note to session"})
+
+-- Map =ai to format without losing your cursor position
+vim.keymap.set('n', alt_key("<%s-f>") , function()
+  -- 1. Save the current window and cursor position
+  local current_win = vim.api.nvim_get_current_win()
+  local cursor_pos = vim.api.nvim_win_get_cursor(current_win)
+  -- 2. Format the text block using mini.ai
+  local keys = vim.api.nvim_replace_termcodes('=ai', true, false, true)
+  vim.api.nvim_feedkeys(keys, 'ntm', false)
+  -- 3. Wait for the keystrokes to finish, then snap the cursor back
+  vim.schedule(function()
+    -- Ensure the window still exists before setting the cursor
+    if vim.api.nvim_win_is_valid(current_win) then
+      vim.api.nvim_win_set_cursor(current_win, cursor_pos)
+    end
+  end)
+end, { desc = "Format around inner block (keeps cursor position)" })

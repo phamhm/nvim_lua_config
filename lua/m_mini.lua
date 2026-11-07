@@ -133,7 +133,7 @@ local m_mini = {
           go_in = "<C-l>",
           go_in_plus = "<C-L>",
           go_out = "<C-h>",
-          go_out_plus = "<C-L>",
+          go_out_plus = "<C-H>",
         }
       })
 
@@ -149,12 +149,24 @@ local m_mini = {
             vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
           end
 
+          map_buffer("<C-j>", "<Nop>", "up key")
+
           map_buffer("<cr>",
             function()
-              MiniFiles.go_in()
-              MiniFiles.close()
+              if s.get_len() == 0 then
+                MiniFiles.go_in()
+              else
+                vim.iter(s.get()):each(function(file) vim.cmd.badd(file) end)
+                MiniFiles.close()
+              end
             end,
             "Enter to go in")
+
+          map_buffer("<BS>",
+            function()
+              MiniFiles.go_out()
+            end,
+            "Enter to go out")
 
           map_buffer("<tab>",
             function()
@@ -169,9 +181,6 @@ local m_mini = {
             function()
               local to_tar = s.get_len() >0 and s.get() or { MiniFiles.get_fs_entry().path }
 
-              MiniFiles.close()
-              s.reset()
-
               vim.ui.input({prompt = "New Zip File Name"},
                 function(tar_name)
                   if tar_name ~= "" then
@@ -181,6 +190,8 @@ local m_mini = {
                     vim.notify("No tar name provided", vim.log.levels.WARN)
                   end
                 end)
+
+              MiniFiles.close()
             end,
             "ZIP selected files")
         end,
@@ -189,13 +200,11 @@ local m_mini = {
       -- don't need to call this becasue Buf Create will init
       vim.api.nvim_create_autocmd("User", {
         group = minifiles_group,
-        pattern = "MiniFilesExplorerClose",
+        pattern = {"MiniFilesExplorerClose","MiniFilesExplorerOpen" },
         callback = function()
           s.reset()
         end,
       })
-
-
     end
   },
   {
