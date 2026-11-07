@@ -73,7 +73,7 @@ map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move th
 -- map("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
 -- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
 
-map({ "i", "v", "s", "n"}, "<C-c>", "<C-c><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
+map({ "i", "v", "s", "n"}, "<C-c>", "<Esc><cmd>noh<CR>" , {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to google
 local function query(query_url)
