@@ -156,9 +156,14 @@ local m_mini = {
               if s.get_len() == 0 then
                 MiniFiles.go_in()
               else
-                vim.iter(s.get()):each(function(file) vim.cmd.badd(file) end)
-                MiniFiles.close()
+                vim.iter(s.get())
+                  :each(
+                  function(file)
+                    vim.notify("Buffer added:" .. file)
+                    vim.cmd.badd(file)
+                  end)
               end
+              MiniFiles.close()
             end,
             "Enter to go in")
 
@@ -320,32 +325,5 @@ for _, minimi in ipairs(m_mini) do
     end
   end
 end
-
-
--- use Mini.Files locate the file under cursor.
--- map('n', '<leader>gf', function()
---   -- Get the file path under the cursor using Neovim's built-in <cfile>
---   local target = vim.fn.expand('<cfile>')
---
---   -- Fallback to the current buffer's directory if <cfile> is empty
---   if target == "" then
---     MiniFiles.open(vim.api.nvim_buf_get_name(0))
---     return
---   end
---
---   -- Resolve full path relative to current working directory if it's not absolute
---   local full_path = vim.fn.fnamemodify(target, ':p')
---
---   -- Check if the target is a directory or a file
---   if vim.fn.isdirectory(full_path) == 1 then
---     MiniFiles.open(full_path)
---   else
---     -- If it's a file, get its parent directory
---     local dir = vim.fn.fnamemodify(full_path, ':h')
---     MiniFiles.open(dir)
---   end
--- end, { desc = "Open MiniFiles in directory of file under cursor" })
-
-
 
 return m_mini
