@@ -4,7 +4,7 @@ local options = {
   backup         = false,                          -- creates a backup file
   -- prevent yank/delete into "+ and "* registers.
   clipboard      = "",
-  cmdheight      = 0,                              -- more space in the neovim command line for displaying messages
+  cmdheight      = 1,                              -- more space in the neovim command line for displaying messages
   completeopt    = { "menuone", "noselect"},       -- mostly just for cmp
   conceallevel   = 1,                              -- so that `` is visible in markdown files
   fileencoding   = "utf-8",                        -- the encoding written to a file
@@ -40,7 +40,7 @@ local options = {
   sidescrolloff  = 8,
   magic          = true,
   showcmd        = true,
-  lazyredraw     = false,
+  lazyredraw     = true,
   wildmenu       = true,
   autochdir      = true,
   --laststatus   = 3,

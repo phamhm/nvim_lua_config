@@ -37,7 +37,8 @@ require('lazy').setup({
   require('m_surround'),
   require('m_misc'),
   require('m_blink'),
-  require('m_noice')
+  require('m_multiplecursor'),
+  -- require('m_noice')
 })
 
 -- setup must be called before loading

@@ -146,10 +146,32 @@ local m_mini = {
 
           -- Helper function for local mappings
           local map_buffer = function(lhs, rhs, desc)
-            vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
+            F.map("n", lhs, rhs, { buffer = buf_id, desc = "MiniFiles " .. desc })
           end
 
-          map_buffer("<C-j>", "<Nop>", "up key")
+          map_buffer("<C-j>", "<Nop>", "no op")
+
+          map_buffer("<C-a>",
+            function()
+              buf_id = buf_id or vim.api.nvim_get_current_buf()
+
+              -- Ensure it's a mini.files buffer
+              if vim.bo[buf_id].filetype ~= 'minifiles' then
+                vim.notify("Not a mini.files buffer", vim.log.levels.ERROR)
+                return
+              end
+
+              local line_count = vim.api.nvim_buf_line_count(buf_id)
+              for i = 1, line_count do
+                local entry = MiniFiles.get_fs_entry(buf_id, i)
+                if entry and entry.fs_type == "file" then
+                  local path = entry.path
+                  s.toggle(path)
+                end
+              end
+
+              MiniFiles.refresh({ content = { prefix = s.prefix } })
+            end, "Select all files in the minifiles buffer")
 
           map_buffer("<cr>",
             function()
@@ -170,12 +192,26 @@ local m_mini = {
             end,
             "Enter to go out")
 
+          map_buffer("<C-c>", require('mini.files').close, "Enter to go out")
+          map_buffer("<C-q>", require('mini.files').close, "Enter to go out")
+
           map_buffer("<tab>",
             function()
               local path = MiniFiles.get_fs_entry().path
               s.toggle(path)
 
               vim.cmd('normal! j')
+
+              MiniFiles.refresh({ content = { prefix = s.prefix } })
+            end,
+            "add files to list")
+
+          map_buffer("<S-tab>",
+            function()
+              local path = MiniFiles.get_fs_entry().path
+              s.toggle(path)
+
+              vim.cmd('normal! k')
 
               MiniFiles.refresh({ content = { prefix = s.prefix } })
             end,

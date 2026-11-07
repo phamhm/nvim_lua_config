@@ -52,7 +52,6 @@ map({'n', 'i', 'v'}, '<C-s>',
 map('i', '<C-j>', "<Esc>o",{silent = true, desc="in middle of line, and still new line below"})
 map('i', '<C-k>', "<Esc>O",{silent = true, desc="in middle of line, and still new line above"})
 map({'i', 'n'}, "<C-S-Tab>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
-map({'i', 'n'}, "<C-Tab>", "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
 
 -- balancing out the universe
 map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})

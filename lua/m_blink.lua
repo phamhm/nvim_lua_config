@@ -33,7 +33,7 @@ return {
 
     -- Default list of enabled providers
     sources = {
-      min_keyword_length = 3,
+      min_keyword_length = 9999,
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
   },

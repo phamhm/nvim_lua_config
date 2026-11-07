@@ -53,6 +53,13 @@ local function zip_selected(picker, item)
   -- Combine the 'tar -cvzf <archive> <files...>' command
 end
 
+local m_keys = {
+  [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
+  ["<C-c>"] = { "close", mode = { "i", "n" } },
+  ["<C-q>"] = { "close", mode = { "i", "n" } },
+  ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
+}
+
 local m_snacks = {
   "folke/snacks.nvim",
   priority = 1000,
@@ -168,19 +175,11 @@ local m_snacks = {
           },
           -- in Snacks.picker.files list, <C-s> open the file in Snacks.scratch
           actions = { },
-          win = {
-            list = {
-              keys = { },
-            }
-          }
         }
       },
       win = {
         input = {
-          keys = {
-            [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
-            ["<C-c>"] = { "close", mode = { "i", "n" } },
-          }
+          keys = m_keys,
         },
         list = {
           wo = {
@@ -188,10 +187,7 @@ local m_snacks = {
             number = false,
             relativenumber = false,
           },
-          keys = {
-            [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
-            ["<C-c>"] = { "close", mode = { "i", "n" } },
-          }
+          keys = m_keys,
         },
       },
       layout = {
@@ -277,14 +273,14 @@ local m_snacks = {
       desc = "Spelling Suggestions",
     },
     -- Top Pickers & Explorer
-    { "<C-S-l>", function() Snacks.picker.buffers() end, desc = "Buffers" },
+    { "<C-tab>", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command History" },
     -- { "<C-n>", function() Snacks.picker.notifications() end, desc = "Notification History" },
-    { "<C-.>",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
+    { "<leader>sh",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
     { alt_key("<C-%s-e>"), function() Snacks.explorer.reveal() end, desc = "File Explorer" },
     -- { "<C-e>", function() Snacks.explorer.reveal() end, desc = "File Explorer Reveal" },
     { "<leader>/", function() Snacks.picker.lines() end, desc = "Grep" },
-    { "<leader>ff",function() Snacks.picker.files() end,desc = "Files" },
+    { "<C-.>",function() Snacks.picker.files() end,desc = "Files" },
     { "<leader>fk",function() Snacks.picker.keymaps() end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent() end,desc = "recents" },
     { "<leader>fp",function() Snacks.picker.projects() end,desc = "projects" },
