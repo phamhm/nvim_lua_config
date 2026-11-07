@@ -242,16 +242,11 @@ local m_snacks = {
     dashboard = {
       preset = {
         header = [[
-          boooooo
+          Meowwww
+           /\_/\
+          ( o.o )
+           > ^ <
           __J"L__
-          ,-"`--...--'"-.
-          /  /\       /\   \
-          J  /__\  _  /__\   L
-          |       / \        |
-          J    _  """  _     F
-          \   \\/\_/\//    /
-          "-._\/\_/\/_,-"
-          """""""
           ]],
         keys = {
           { icon = " ", key = "s", desc = "Restore Session", section = "session" },
