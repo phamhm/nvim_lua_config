@@ -156,12 +156,9 @@ local m_mini = {
               if s.get_len() == 0 then
                 MiniFiles.go_in()
               else
+                vim.notify("Buffer added:\n" .. table.concat(s.get(),"\n"))
                 vim.iter(s.get())
-                  :each(
-                  function(file)
-                    vim.notify("Buffer added:" .. file)
-                    vim.cmd.badd(file)
-                  end)
+                  :each( function(file) vim.cmd.badd(file) end)
               end
               MiniFiles.close()
             end,
@@ -177,6 +174,8 @@ local m_mini = {
             function()
               local path = MiniFiles.get_fs_entry().path
               s.toggle(path)
+
+              vim.cmd('normal! j')
 
               MiniFiles.refresh({ content = { prefix = s.prefix } })
             end,
