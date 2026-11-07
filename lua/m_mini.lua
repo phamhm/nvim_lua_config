@@ -129,7 +129,12 @@ local m_mini = {
           preview=true,
           width_preview =  70, -- adjusts dynamically or set to a fixed integer like 40
         },
-
+        mappings = {
+          go_in = "<C-l>",
+          go_in_plus = "<C-L>",
+          go_out = "<C-h>",
+          go_out_plus = "<C-L>",
+        }
       })
 
       local minifiles_group = vim.api.nvim_create_augroup("MiniFilesGroup", { clear = true })
