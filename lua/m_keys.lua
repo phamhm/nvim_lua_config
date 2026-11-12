@@ -148,8 +148,13 @@ end, {desc = "yank virtual into system clipboard"})
 
 -- map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
 
-map('n', '<leader><leader>o', function()
-  vim.ui.open(vim.fn.expand('%'))
+map('n', alt_key("<%s-o>",3), function()
+  local file = vim.fn.expand('%')
+  if vim.endswith(file, ".html") then
+    vim.ui.open(file)
+  else
+    F.WARN("Only open html file:" .. file)
+  end
 end, { desc = 'Open current buffer with system handler' })
 
 -- how to define this but ignore minifiles
