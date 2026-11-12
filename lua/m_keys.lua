@@ -174,7 +174,7 @@ map('i', "<C-p>", function()
   -- if not an image, paste from clipboard @+
   --    after pasting from clipboard, select the pasted block and apply "="
   --    to autoindent
-  -- if an image, call "Obsidian paste_img"
+  -- if an image, call "img_clip"
   local code=1
 
   -- only check if it's markdown because running running a zsh script is slow.

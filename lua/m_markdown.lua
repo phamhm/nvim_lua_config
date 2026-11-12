@@ -79,7 +79,7 @@ return {
 
           map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
           map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
-          map({'n'}, '<leader>mc',
+          map({'n'}, '<leader>sm',
             function()
               Snacks.picker.lines({
                 pattern = "^# | -",
