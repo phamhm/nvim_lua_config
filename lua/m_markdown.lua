@@ -82,7 +82,7 @@ return {
           map({'n'}, '<leader>mc',
             function()
               Snacks.picker.lines({
-                pattern = "^#"
+                pattern = "^# | -",
               })
             end, opts("navigate headers", bufnr))
 

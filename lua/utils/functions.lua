@@ -511,17 +511,17 @@ function F.snacks_grep_markdown(path, m_confirm)
     },
     format = function(item, picker)
       local ret = {}
-      if item.pos then
-        ret[#ret + 1] = { string.format("(%d)", item.pos[1]), "SnacksPickerLineNr" }
-      end
+      -- if item.pos then
+      --   ret[#ret + 1] = { string.format("[%3d] ", item.pos[1]), "SnacksPickerLineNr" }
+      -- end
       ret[#ret + 1] = { item.line or "", "Normal" }
       return ret
     end,
     confirm = m_confirm or function(picker, item)
       picker:close()
       if item then
-        local pos = item.pos
-        F.open_markdown_file(session_note, pos[1], true)
+        local lnum, cnum = unpack(item.pos)
+        F.open_markdown_file(path, lnum, true)
       end
     end
   })
