@@ -120,16 +120,29 @@ end
 
 local function m_grep(picker, item)
   local selected = vim.iter(picker:selected({fallback = true}))
-    :map(function(i) return i._path or i.item or i.text end)
+    :map(function(i)
+      if picker.opts.source == "grep" then
+        local line =  vim.trim(i.line)
+        if vim.startswith(line, "-") then
+          line = line:gsub("^-", "")
+          line = vim.trim(line)
+        end
+        return line
+      else
+        return i._path or i.item or i.text
+      end
+    end)
     :filter(
       function(path)
-        F.NOTIFY(path)
+        path = vim.trim(path)
         local fs_stat = vim.uv.fs_stat(vim.fn.expand(path))
         return fs_stat and vim.list_contains({"file", "directory"}, fs_stat.type)
       end)
     :totable()
 
   if #selected > 0 then
+    vim.cmd("fclose!")
+    F.NOTIFY(selected)
     Snacks.picker.grep({
       dirs = selected,
     })

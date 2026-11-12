@@ -299,7 +299,7 @@ map("n", '<leader>0',
   function()
     local session_path, session_name, session_note = F.get_session_paths()
     if session_name and vim.uv.fs_stat(session_note) then
-      F.markdown_locators(session_note, true)
+      F.snacks_grep_markdown(session_note)
     elseif not session_name or session_name == "" then
       F.ERROR("Not in a session")
     else

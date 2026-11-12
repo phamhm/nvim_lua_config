@@ -502,121 +502,29 @@ function F.get_session_paths()
   return session_path, session_name, session_note
 end
 
-function F.get_markdown_lines(path)
-  local yaml_mark_counter = 0
-  local yaml_lines = {}
-  local headers = {}
-  local lnum = 0
-
-  -- if path is already read into buffer, read from teh buffer
-  -- wil read from non-visible buffer as well.
-  local m_bufnr = -1
-  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    local name = vim.api.nvim_buf_get_name(bufnr)
-    if name == path then
-      m_bufnr = bufnr
-      break
+function F.snacks_grep_markdown(path, m_confirm)
+  Snacks.picker.grep({
+    search = "- ~|#|- \\[",
+    dirs = {path},
+    layout = {
+      hidden = {'input', 'preview'}
+    },
+    format = function(item, picker)
+      local ret = {}
+      if item.pos then
+        ret[#ret + 1] = { string.format("(%d)", item.pos[1]), "SnacksPickerLineNr" }
+      end
+      ret[#ret + 1] = { item.line or "", "Normal" }
+      return ret
+    end,
+    confirm = m_confirm or function(picker, item)
+      picker:close()
+      if item then
+        local pos = item.pos
+        F.open_markdown_file(session_note, pos[1], true)
+      end
     end
-  end
-  local lines
-  if m_bufnr ~= -1 and vim.api.nvim_buf_is_loaded(m_bufnr) then
-    F.NOTIFY("Processing lines from buffer")
-    lines = vim.api.nvim_buf_get_lines(m_bufnr, 0, -1, false)
-  else
-    F.NOTIFY("Processing lines from file")
-    lines = io.lines(path)
-  end
-
-  -- using vim.iter because io.lines is an iterator
-  vim.iter(lines):each(
-    function(line)
-      lnum = lnum + 1
-      if yaml_mark_counter ~= 2 then
-        if line == "---" and lnum == 1 then
-          yaml_mark_counter = 1
-        elseif line == "---" and yaml_mark_counter == 1 then
-          yaml_mark_counter = 2
-        elseif yaml_mark_counter == 1 then
-          table.insert(yaml_lines, line)
-        end
-      end
-
-      -- appending headers and task items
-      if vim.startswith(line, "#") or vim.startswith(vim.trim(line), "- [") then
-        headers[string.format("%s (%s)", line, lnum)] = lnum
-      end
-    end)
-
-  local yaml = require('yaml')
-  local yaml_string = table.concat(yaml_lines, "\n")
-  local locators, err = yaml.parse(yaml_string)
-  locators.headers = headers
-  return locators, err
-end
-
-function F.markdown_locators(path, pinned, ignore_yaml)
-  ignore_yaml = ignore_yaml or false
-  local data, err = F.get_markdown_lines(path)
-
-  if data then
-    local headers = data.headers
-    data.headers = nil
-
-    local sel_opts = vim.iter(vim.tbl_keys(data))
-      :fold({},
-      function(acc, key)
-        local item = data[key]
-        if vim.islist(item) then
-          vim.list_extend(acc, item)
-        else
-          table.insert(acc, item)
-        end
-        return acc
-      end)
-
-    local sorted_header_keys =vim.tbl_keys(headers)
-    table.sort(sorted_header_keys, function(a, b) return headers[a] < headers[b] end)
-
-    if ignore_yaml then
-      sel_opts = sorted_header_keys
-    else
-      sel_opts = vim.list_extend(sel_opts, sorted_header_keys)
-    end
-
-    sel_opts = vim.iter(sel_opts)
-      :fold({},
-      function(acc, locator)
-        local item
-        if vim.startswith(locator, "#") or vim.startswith(vim.trim(locator), "- [") then
-          item = {
-            text = locator,
-            _path = path,
-            fn = function() F.open_markdown_file(path, headers[locator], pinned) end
-          }
-        else
-          local Path = require("plenary.path")
-          locator, count = locator:gsub("/$","") -- remove here, else plenary will shorten the last one
-          item = {
-            text = Path:new(locator):shorten(1) .. (count>0 and "/" or ""),
-            _path = vim.fn.expand(locator),
-            fn = function()
-              vim.cmd.edit(vim.fn.expand(locator))
-            end
-          }
-        end
-        table.insert(acc, item)
-        return acc
-      end
-    )
-
-    local m_actions = {
-    }
-    local m_keys = {
-    }
-    F.menu_commands(sel_opts, vim.fs.basename(path).. " Locators", "",  m_actions, m_keys)
-  else
-    F.ERROR("Yaml parse error")
-  end
+  })
 end
 
 return F
