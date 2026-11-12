@@ -1,0 +1,109 @@
+local F = require("utils.functions")
+
+local options = {
+  backup         = false,                          -- creates a backup file
+  -- prevent yank/delete into "+ and "* registers.
+  clipboard      = "",
+  cmdheight      = 0,                              -- more space in the neovim command line for displaying messages
+  completeopt    = { "menuone", "noselect"},       -- mostly just for cmp
+  conceallevel   = 1,                              -- so that `` is visible in markdown files
+  fileencoding   = "utf-8",                        -- the encoding written to a file
+  hidden         = true,                           -- required to keep multiple buffers and open multiple buffers
+  hlsearch       = true,                           -- highlight all matches on previous search pattern
+  ignorecase     = true,                           -- ignore case in search patterns
+  mouse          = "a",                            -- allow the mouse to be used in neovim
+  pumheight      = 10,                             -- pop up menu height
+  showmode       = true,                           -- we don't need to see things like -- INSERT -- anymore
+  smartcase      = true,                           -- smart case
+  smartindent    = true,                           -- make indenting smarter again
+  autoindent     = true,
+  splitbelow     = true,                           -- force all horizontal splits to go below current window
+  splitright     = true,                           -- force all vertical splits to go to the right of current window
+  swapfile       = false,                          -- creates a swapfile
+  termguicolors  = true,                           -- set term gui colors (most terminals support this)
+  updatetime     = 1000,                            -- faster completion (4000ms default)
+  writebackup    = false,                          -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
+  expandtab      = true,                           -- convert tabs to spaces
+  smarttab       = true,
+  shiftwidth     = 4,                              -- the number of spaces inserted for each indentation
+  tabstop        = 4,                              -- insert 2 spaces for a tab
+  softtabstop    = 4,
+  cursorline     = true,                           -- highlight the current line
+  number         = true,                           -- set numbered lines
+  relativenumber = true,                           -- set relative numbered lines
+  numberwidth    = 4,                              -- set number column width to 2 {default 4}
+  signcolumn     = "yes",                          -- always show the sign column, otherwise it would shift the text each time
+  colorcolumn    = "80",
+  wrap           = false,                          -- display lines as one long line
+  wrapscan       = false,
+  scrolloff      = 8,                              -- is one of my fav
+  sidescrolloff  = 8,
+  magic          = true,
+  showcmd        = true,
+  lazyredraw     = true,
+  wildmenu       = true,
+  autochdir      = true,
+  --laststatus   = 3,
+  spell          = false,
+  spelllang      = 'en_us',
+  autoread       = true,
+  -- shada       = "!,'200,<50,s10,h"   -- this sets how nvim remembers recent files, marks, etc...
+  foldmethod     = "expr",
+  foldexpr       = "v:lua.vim.treesitter.foldexpr()",
+  foldlevel      = 99,
+  foldlevelstart = 99,
+  foldenable     = true,
+  timeoutlen     = 500,
+  statuscolumn   = "",
+  background     = "dark",
+  spellfile      = vim.fn.stdpath('config') .. '/spell/en.utf-8.add',
+  winborder      = "rounded",
+  pumborder      = "rounded",
+  textwidth      = 9999,
+  fillchars      = {fold = ' '},
+  undofile       = true,
+  -- undodir        = "" -- <- set where undo history is stored
+  undodir        = vim.fn.expand("~/.local/share/undodir/")
+}
+for k, v in pairs(options) do
+  vim.opt[k] = v
+end
+
+vim.opt.shortmess:append("cW")
+vim.opt.formatoptions:append('r')
+vim.opt.whichwrap:append('<,>,[,],h,l')
+
+-- 2 spaces tab
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("tab_2_group", {clear = true}),
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua" },
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.softtabstop = 2
+    vim.bo.expandtab = true
+  end,
+})
+
+
+vim.opt.title = true
+vim.opt.titlestring = [[%{v:lua.get_custom_title()}]]
+_G.get_custom_title = F.set_title
+
+-- Define the custom foldtext appearance
+_G.my_fold_text = function()
+  -- Get the text of the first line inside the fold
+  local first_line = vim.fn.getline(vim.v.foldstart)
+
+  -- Calculate how many lines are collapsed
+  local folded_lines = vim.v.foldend - vim.v.foldstart + 1
+
+  -- Create a suffix displaying the count (e.g., " ⋯ [42 lines] ")
+  local suffix = string.format(" ⋯ [%d lines] ", folded_lines)
+
+  return first_line .. suffix
+end
+-- Assign it using the v:lua global wrapper so Vimscript options engine can resolve it
+vim.opt.foldtext = "v:lua.my_fold_text()"
+-- Clean up trailing filler characters so they don't overwrite your custom text
+vim.opt.fillchars:append({ fold = " " })
