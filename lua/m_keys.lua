@@ -134,7 +134,7 @@ end, {desc="googling google"})
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-map({"v", "n"}, "<leader>Y", function()
+map({"v", "n"}, "<C-y>", function()
   if vim.fn.mode() == "n" then
     vim.fn.setreg("+", vim.fn.getreg('"'))
     F.NOTIFY('Copied @" into @+ :'.. vim.fn.getreg('"'))
