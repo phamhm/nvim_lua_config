@@ -163,7 +163,7 @@ map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc 
 --   F.clear_status()
 -- end, {desc = " clear global vim.g"})
 
-map('i', "<C-v>", function()
+map('i', "<C-p>", function()
   -- if markdown, call the scripts/get_clipboard.type.zsh
   --     the zsh has different code dependent on OS.
   -- if not an image, paste from clipboard @+
@@ -362,8 +362,12 @@ map('n', "<C-a>",
       vim.ui.input(
         {prompt="Insert todo heading  " .. session_name},
         function(heading)
-          vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
-          vim.cmd.write()
+          if heading and heading ~= "" then
+            vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
+            vim.cmd.write()
+          else
+            vim.cmd.close()
+          end
         end)
     elseif not session_name or session_name == "" then
       F.ERROR("Not in a session")
