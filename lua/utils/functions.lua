@@ -79,20 +79,7 @@ function F.menu_commands(items, title, pattern, m_actions, m_keys, allow_multipl
       end
 
       vim.iter(items):each(function(i) i.fn() end)
-
     end,
-    matcher = {
-      fuzzy = false, -- use fuzzy matching
-      smartcase = true, -- use smartcase
-      ignorecase = true, -- use ignorecase
-      sort_empty = false, -- sort results when the search string is empty
-      filename_bonus = true, -- give bonus for matching file names (last part of the path)
-      file_pos = true, -- support patterns like `file:line:col` and `file:line`
-      -- the bonusses below, possibly require string concatenation and path normalization,
-      -- so this can have a performance impact for large lists and increase memory usage
-      cwd_bonus = false, -- give bonus for matching files in the cwd
-      frecency = false, -- frecency bonus
-    },
   })
 end
 
@@ -296,8 +283,6 @@ function F.generate_bookmarks_picker()
     F.WARN("No valid Markdown links found in the file")
     return
   end
-
-  local actions, keys = F.gen_picker_actions()
 
   F.menu_commands(items, "Select Bookmark(s) to open", "", nil, nil, true)
 end
