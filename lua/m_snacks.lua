@@ -9,22 +9,33 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-local function set_title(picker, item)
+local function m_set_title(picker, item)
   if picker and picker.list and picker.list.win then
-    picker.list.win:set_title(item and item._path or picker:cwd())
+    local source = picker.init_opts.source
+    local dirs = picker.init_opts.dirs
+    if vim.list_contains({"grep", "explorer"}, source) then
+      if dirs and #dirs == 1 then
+        picker.list.win:set_title(dirs[1])
+      elseif dirs and #dirs > 1 then
+        print("Grepping Multiple Dirs:\n" .. table.concat(dirs, "\n"))
+        picker.list.win:set_title("Grepping Multiple Dirs")
+      else
+        picker.list.win:set_title(item and item._path or picker:cwd())
+      end
+    end
   end
 end
 
 -- Picker explorer actions
 local function m_tcd(picker, item)
   Snacks.picker.actions.tcd(picker, item)
-  set_title(picker, item)
+  m_set_title(picker, item)
 end
 
 local function m_explorer_up(picker, item)
   local explorer_actions = require("snacks.explorer.actions").actions
   explorer_actions.explorer_up(picker)
-  set_title(picker)
+  m_set_title(picker)
 end
 
 local function m_list_up(picker, item)
@@ -34,14 +45,14 @@ local function m_list_up(picker, item)
   end
 
   local next_item = picker.finder.items[idx]
-  set_title(picker, next_item)
+  m_set_title(picker, next_item)
   Snacks.picker.actions.list_up(picker, item)
 end
 
 local function m_list_down(picker, item)
   local idx = item.idx + 1
   local next_item =picker.finder.items[idx]
-  set_title(picker, next_item)
+  m_set_title(picker, next_item)
   Snacks.picker.actions.list_down(picker, item)
 end
 
@@ -142,7 +153,6 @@ local function m_grep(picker, item)
 
   if #selected > 0 then
     vim.cmd("fclose!")
-    F.NOTIFY(selected)
     Snacks.picker.grep({
       dirs = selected,
     })
@@ -157,15 +167,16 @@ local m_actions = {
 
 local m_grep_actions = {
   m_cd_up = function(picker, item)
-    local current_cwd = picker.init_opts.cwd
+    local current_cwd = picker:cwd()
     local new_cwd = vim.fs.dirname(current_cwd)
     F.NOTIFY("Changing cwd to " .. new_cwd)
     picker:set_cwd(new_cwd)
     picker:find()
+    m_set_title(picker)
   end,
 
   m_cd_root = function(picker, item)
-    local markers = { '.git', 'setup.py' }
+    local markers = { '.git', 'setup.py', 'package.json'}
 
     local current_cwd = picker.init_opts.cwd
     local root = vim.fs.root( current_cwd, markers )
@@ -174,6 +185,7 @@ local m_grep_actions = {
 
     picker:set_cwd(root)
     picker:find()
+    m_set_title(picker)
   end
 }
 local m_grep_keys = {
@@ -224,6 +236,9 @@ local m_snacks = {
       timeout = 5000,
     },
     picker = {
+      on_show = function(picker)
+        m_set_title(picker)
+      end,
       enabled = true ,
       hidden=true,
       sources = {
@@ -505,7 +520,6 @@ local m_snacks = {
     { "<leader>sg",
       function()
         local cwd = vim.fn.expand('%:p:h')
-        F.NOTIFY("Grepping cwd=" .. cwd)
         Snacks.picker.grep({ cwd = cwd })
       end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},

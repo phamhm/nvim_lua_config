@@ -31,11 +31,7 @@ return {
       -- Get the current buffer's filetype
       local filetype = vim.bo[0].filetype
       -- Disable for Telescope buffers
-      if vim.startswith(filetype, "snacks_") then
-        return false
-      else
-        return true
-      end
+      return not vim.startswith(filetype, "snacks_") and not vim.startswith(filetype, "mini")
     end
 
 
