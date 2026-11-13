@@ -97,6 +97,9 @@ local function query(query_url)
     if input and input ~="" then
       local query = vim.uri_encode(input)
       vim.ui.open(query_url .. query)
+      local LOG_FILE = string.format("%s/logs/google_%s.md",vim.g.m_notes_path, os.date("%Y-%m-%d"))
+      local log = string.format("[%s] %s", os.date("%H:%M"), input)
+      vim.fn.writefile(log, vim.fn.expand(LOG_FILE), "a")
     end
   end
 end
@@ -116,7 +119,6 @@ end
 -- map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
 -- map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
 
--- nvim 0.13 multiple cursors clear use C-l
 map({"n","v" }, "<C-l>", function()
   local current_mode = vim.fn.mode(1)
   local selected_text = ""
