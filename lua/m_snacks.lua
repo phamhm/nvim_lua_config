@@ -197,10 +197,9 @@ local m_grep_actions = {
   end,
 
   m_cd_root = function(picker, item)
-    local markers = { '.git', 'setup.py', 'package.json'}
+    local markers = { '.git', 'app.py', 'package.json', ".env"}
 
     local current_cwd = picker.init_opts.cwd
-
 
     local current_cwd
     if picker.opts.cwd then
