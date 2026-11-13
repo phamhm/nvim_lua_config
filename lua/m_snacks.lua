@@ -123,7 +123,7 @@ local function m_todo_from_root()
         hidden = {'input', 'preview'}
       },
       on_show = function(picker)
-        picker.list.win:set_title(root)
+        picker.list.win:set_title("TODO Root:" .. root)
       end,
       format = function(item, picker)
         local ret = {}
@@ -140,6 +140,12 @@ local function m_todo_from_root()
             m_todo = todo .. string.rep(" ", math.max(0, todo_len - #todo))
             break
           end
+        end
+
+        if not m_todo or m_todo == "" then
+          F.WARN("unrecognizable m_todo")
+          picker:close()
+          return {}
         end
 
         local hlgroup
@@ -390,8 +396,9 @@ local m_snacks = {
               }
             }
           },
+          focus = "input",
           layout = {
-            -- hidden = {"input"},
+            hidden = {"preview"},
           }
         },
         files = {

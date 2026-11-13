@@ -98,7 +98,7 @@ local function query(query_url)
       vim.ui.open(query_url .. query)
       local LOG_FILE = string.format("%s/logs/google_%s.md",vim.g.m_notes_path, os.date("%Y-%m-%d"))
       local log = string.format("[%s] %s", os.date("%H:%M"), input)
-      vim.fn.writefile({ log }, vim.fn.expand(LOG_FILE), "a")
+      vim.fn.writefile({ vim.trim(log) }, vim.fn.expand(LOG_FILE), "a")
     end
   end
 end
