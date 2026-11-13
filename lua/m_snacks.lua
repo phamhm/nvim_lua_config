@@ -210,34 +210,40 @@ local function m_grep(picker, item)
   if #selected > 0 then
     vim.cmd("fclose!")
     if #selected == 1 then
-      Snacks.picker.grep({
+      Snacks.picker.lines({
         cwd = unpack(selected),
+        layout = {
+          hidden = {"preview"},
+        },
+        on_show = function(picker)
+          picker.list.win:set_title(unpack(selected))
+        end
       })
     else
-      Snacks.picker.grep({
-        dirs = selected,
-      })
+    Snacks.picker.grep({
+    dirs = selected,
+    })
     end
-  else
+    else
     F.ERROR("Didn't select a file/directory to Grep")
-  end
-end
+    end
+    end
 
-local m_actions = {
-  m_grep = m_grep
-}
+    local m_actions = {
+    m_grep = m_grep
+    }
 
-local m_grep_actions = {
-  m_cd_up = function(picker, item)
+    local m_grep_actions = {
+    m_cd_up = function(picker, item)
     local current_cwd
     if picker.opts.cwd then
-      current_cwd = picker.opts.cwd
+    current_cwd = picker.opts.cwd
     elseif picker.opts.dirs then
-      F.ERROR("Can only go up with cwd, not dirs")
-      return
+    F.ERROR("Can only go up with cwd, not dirs")
+    return
     else
-      F.ERROR("Expected picker.opts.cwd/dirs, found none")
-      return
+    F.ERROR("Expected picker.opts.cwd/dirs, found none")
+    return
     end
 
     local new_cwd = vim.fs.dirname(current_cwd)
@@ -245,22 +251,22 @@ local m_grep_actions = {
     picker:set_cwd(new_cwd)
     picker:find()
     m_set_title(picker)
-  end,
+    end,
 
-  m_cd_root = function(picker, item)
+    m_cd_root = function(picker, item)
     local markers = { '.git', 'app.py', 'package.json', ".env"}
 
     local current_cwd = picker.init_opts.cwd
 
     local current_cwd
     if picker.opts.cwd then
-      current_cwd = picker.opts.cwd
+    current_cwd = picker.opts.cwd
     elseif picker.opts.dirs then
-      F.ERROR("Can only go up with cwd, not dirs")
-      return
+    F.ERROR("Can only go up with cwd, not dirs")
+    return
     else
-      F.ERROR("Expected picker.opts.cwd/dirs, found none")
-      return
+    F.ERROR("Expected picker.opts.cwd/dirs, found none")
+    return
     end
 
     local root = vim.fs.root( current_cwd, markers )
@@ -270,237 +276,240 @@ local m_grep_actions = {
     picker:set_cwd(root)
     picker:find()
     m_set_title(picker)
-  end
-}
-local m_grep_keys = {
-  [F.alt_key("<%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
-  [F.alt_key("<%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
-}
+    end
+    }
+    local m_grep_keys = {
+    [F.alt_key("<%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
+    [F.alt_key("<%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
+    }
 
-local m_keys = {
-  [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
-  ["<C-c>"] = { "close", mode = { "i", "n" } },
-  ["<C-q>"] = { "close", mode = { "i", "n" } },
-  ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
-  ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
-  ["<C-g>"] = { "m_grep", mode = { "i", "n" } },
-}
+    local m_keys = {
+    [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
+    ["<C-c>"] = { "close", mode = { "i", "n" } },
+    ["<C-q>"] = { "close", mode = { "i", "n" } },
+    ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
+    ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
+    ["<C-g>"] = { "m_grep", mode = { "i", "n" } },
+    }
 
-local m_snacks = {
-  "folke/snacks.nvim",
-  priority = 1000,
-  lazy = false,
-  ---@type snacks.Config
-  opts = {
+    local m_snacks = {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Config
+    opts = {
     image = {enabled = true, doc = { inline = true , float = true}},
     lazygit = {
-      -- Override default theme colors mapped from Neovim highlights
-      theme = {
-        activeBorderColor = { fg = "MatchParen", bold = false },
-        inactiveBorderColor = { fg = "Comment" },
-      },
-     win = {
-        width = 0.9,
-        height = 0.9,
-      },
+    -- Override default theme colors mapped from Neovim highlights
+    theme = {
+    activeBorderColor = { fg = "MatchParen", bold = false },
+    inactiveBorderColor = { fg = "Comment" },
+    },
+    win = {
+    width = 0.9,
+    height = 0.9,
+    },
     },
     scratch = { enabled = false, root = "/tmp/"},
     explorer = {enabled = true, trash = true},
     bigfile = { enabled = true },
     indent = {
-      enabled = true,
-      indent = { only_scope = true },
-      chunk = { enabled = true },
-      animate = { enabled = false}
+    enabled = true,
+    indent = { only_scope = true },
+    chunk = { enabled = true },
+    animate = { enabled = false}
     },
     input = { enabled = true  },
     terminal = { enable = false, },
     notifier = {
-      enabled = true,
-      timeout = 5000,
+    enabled = true,
+    timeout = 5000,
     },
     picker = {
-      on_show = function(picker)
-        m_set_title(picker)
-      end,
-      enabled = true ,
-      hidden=true,
-      sources = {
-        lsp_symbols = {
-          layout = {
-            -- hidden = {"preview"},
-            preset = "sidebar",
-          },
-        },
-        grep = {
-          actions = m_grep_actions,
-          win = {
-            input = { keys = m_grep_keys },
-            list = { keys = m_grep_keys },
-          },
-          layout = {
-            hidden = {"preview"},
-          }
-        },
-        select = {
-          -- Set the layout preset (e.g., "select", "dropdown", "ivy", "vscode", "telescope")
-          layout = {
-            -- hidden = {"preview", "input"},
-            layout = {
-              box = "vertical",
-              min_width = 0,
-              width = 0.3,
-              height = 0.4,
-              backdrop = false,
-              border = "none",
-              title = " {title} {live} {flags}",
-              -- align = "left",
-              -- title_pos = "left",
-              { win = "input", height = 1, border = "rounded" },
-              {
-                box = "horizontal",
-                { win = "list", border = "rounded", title="{title}" },
-                { win = "preview", title = "{preview}", width = 0.6, border = "rounded" },
-              },
-            }
-          },
-          focus = 'list',
-        },
-        explorer = {
-          auto_close = true,
-          actions = {
-            zip_selected  = zip_selected,
-            diff_selected = diff_selected,
-            m_tcd         = m_tcd,
-            m_explorer_up = m_explorer_up,
-            move_selected = move_selected,
-            list_up = m_list_up,
-            list_down = m_list_down,
-            m_explorer_root = m_explorer_root,
-            m_confirm = m_confirm,
-          },
-          win = {
-            input = {
-              keys = {
-                ["<C-CR>"] = {"jump", mode = {"i", "n"}}
-              }
-            },
-            list = {
-              keys = {
-                ["Z"]     = { 'zip_selected', mode  = { "n" } },
-                ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
-                ["D"]     = { 'diff_selected', mode = { "n" } },
-                ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
-                ["<C-l>"] = { "m_tcd", mode         = { "n" } },
-                ["M"]     = { "move_selected", mode = { "n" } },
-                [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
-              }
-            }
-          },
-          focus = "input",
-          layout = {
-            hidden = {"preview"},
-          }
-        },
-        files = {
-          focus = {},
-          layout = {
-            hidden = {},
-          },
-          exclude = {
-            ".git",
-            "node_modules",
-            ".env",
-            "target",
-            "build",
-            "archive",
-            "assets",
-            ".*env*",
-            "*env*",
-            "*pycache*",
-            "*backup*",
-            "todo_notes",
-            "templates",
-            "DISCARDED", "DONE", "TODO",
-            "attachments"
-          },
-          -- in Snacks.picker.files list, <C-s> open the file in Snacks.scratch
-          actions = { },
-        }
-      },
-      actions = m_actions,
-      win = {
-        input = {
-          keys = m_keys,
-        },
-        list = {
-          wo = {
-            wrap = true,
-            number = false,
-            relativenumber = false,
-          },
-          keys = m_keys,
-        },
-      },
-      layout = {
-        -- options include default, ivy, dropdown, vertical, sidebar, telescope
-        preset = "default",
-        hidden = {"input", "preview"},
-        layout = {
-          min_width = 0,
-          width = 0.7,
-          height = 0.6,
-          box = "horizontal",
-          {
-            box = "vertical",
-            { win = "input", height = 1, border = "rounded" },
-            { win = "list", border = "rounded" },
-          },
-          {
-            win = "preview",
-            title = "{preview}",
-            width = 0.7, -- 70% of the picker width goes to the preview window
-            border = "rounded"
-          },
-        },
-      }
+    on_show = function(picker)
+    m_set_title(picker)
+    end,
+    enabled = true ,
+    hidden=true,
+    sources = {
+    lsp_symbols = {
+    layout = {
+    -- hidden = {"preview"},
+    preset = "sidebar",
+    },
+    },
+    grep = {
+    actions = m_grep_actions,
+    win = {
+    input = { keys = m_grep_keys },
+    list = { keys = m_grep_keys },
+    },
+    layout = {
+    hidden = {"preview"},
+    }
+    },
+    select = {
+    -- Set the layout preset (e.g., "select", "dropdown", "ivy", "vscode", "telescope")
+    layout = {
+    -- hidden = {"preview", "input"},
+    layout = {
+    box = "vertical",
+    min_width = 0,
+    width = 0.3,
+    height = 0.4,
+    backdrop = false,
+    border = "none",
+    title = " {title} {live} {flags}",
+    -- align = "left",
+    -- title_pos = "left",
+    { win = "input", height = 1, border = "rounded" },
+    {
+    box = "horizontal",
+    { win = "list", border = "rounded", title="{title}" },
+    { win = "preview", title = "{preview}", width = 0.6, border = "rounded" },
+    },
+    }
+    },
+    focus = 'list',
+    },
+    explorer = {
+    auto_close = true,
+    actions = {
+    zip_selected  = zip_selected,
+    diff_selected = diff_selected,
+    m_tcd         = m_tcd,
+    m_explorer_up = m_explorer_up,
+    move_selected = move_selected,
+    list_up = m_list_up,
+    list_down = m_list_down,
+    m_explorer_root = m_explorer_root,
+    m_confirm = m_confirm,
+    },
+    win = {
+    input = {
+    keys = {
+    ["<C-CR>"] = {"jump", mode = {"i", "n"}},
+    [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
+    ["<C-h>"] = { 'm_explorer_up', mode = { "n", "i" } },
+    ["<C-l>"] = { "m_tcd", mode         = { "n", "i" } },
+    }
+    },
+    list = {
+    keys = {
+    ["Z"]     = { 'zip_selected', mode  = { "n" } },
+    ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
+    ["D"]     = { 'diff_selected', mode = { "n" } },
+    ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
+    ["<C-l>"] = { "m_tcd", mode         = { "n" } },
+    ["M"]     = { "move_selected", mode = { "n" } },
+    [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
+    }
+    }
+    },
+    focus = "input",
+    layout = {
+    hidden = {"preview"},
+    }
+    },
+    files = {
+    focus = {},
+    layout = {
+    hidden = {},
+    },
+    exclude = {
+    ".git",
+    "node_modules",
+    ".env",
+    "target",
+    "build",
+    "archive",
+    "assets",
+    ".*env*",
+    "*env*",
+    "*pycache*",
+    "*backup*",
+    "todo_notes",
+    "templates",
+    "DISCARDED", "DONE", "TODO",
+    "attachments"
+    },
+    -- in Snacks.picker.files list, <C-s> open the file in Snacks.scratch
+    actions = { },
+    }
+    },
+    actions = m_actions,
+    win = {
+    input = {
+    keys = m_keys,
+    },
+    list = {
+    wo = {
+    wrap = true,
+    number = false,
+    relativenumber = false,
+    },
+    keys = m_keys,
+    },
+    },
+    layout = {
+    -- options include default, ivy, dropdown, vertical, sidebar, telescope
+    preset = "default",
+    hidden = {"input", "preview"},
+    layout = {
+    min_width = 0,
+    width = 0.7,
+    height = 0.6,
+    box = "horizontal",
+    {
+    box = "vertical",
+    { win = "input", height = 1, border = "rounded" },
+    { win = "list", border = "rounded" },
+    },
+    {
+    win = "preview",
+    title = "{preview}",
+    width = 0.7, -- 70% of the picker width goes to the preview window
+    border = "rounded"
+    },
+    },
+    }
     },
     quickfile = { enabled = true },
     scope = { enabled = true },
     scroll = { enabled = true },
     statuscolumn = {
-      enabled = false ,
-      git =  {
-        enabled = true,
-        patterns = { "MiniDiffSign" },
-      }
+    enabled = false ,
+    git =  {
+    enabled = true,
+    patterns = { "MiniDiffSign" },
+    }
     },
     words = { enabled = false },
     styles = {
-      list = {
-        keys = {
-          ["<C-c>"] = { "close", mode = { "i", "n" } },
-        }
-      },
-      input = {
-        -- relative = "editor",
-        -- position = "center",
-        row = vim.o.lines/2-10,
-        keys = {
-          ["<C-c>"] = { "close", mode = { "i", "n" } },
-        }
-      },
+    list = {
+    keys = {
+    ["<C-c>"] = { "close", mode = { "i", "n" } },
+    }
+    },
+    input = {
+    -- relative = "editor",
+    -- position = "center",
+    row = vim.o.lines/2-10,
+    keys = {
+    ["<C-c>"] = { "close", mode = { "i", "n" } },
+    }
+    },
     },
 
     dashboard = {
-      preset = {
-        header = [[
-          Meowwww
-           /\_/\
-          ( o.o )
-           > ^ <
-          __J"L__
-          ]],
+    preset = {
+    header = [[
+    Meowwww
+    /\_/\
+    ( o.o )
+    > ^ <
+    __J"L__
+    ]],
         keys = {
           { icon = " ", key = "s", desc = "Restore Session", section = "session" },
           { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua require('mini.sessions').select()" },
