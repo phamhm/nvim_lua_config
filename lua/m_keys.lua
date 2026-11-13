@@ -1,5 +1,4 @@
 local F = require("utils.functions")
-local alt_key = F.format_os_altkey
 local map = F.map
 local ts = require("mini.trailspace")
 
@@ -21,7 +20,7 @@ map(
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
+map('n', F.alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
 -- map('n', alt_key('<%s-r>', 2), "<cmd>restart<CR>", {desc="restart nvim"}) --
 -- restart does weird thing
 
@@ -70,12 +69,12 @@ map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next le
 
 -- Bringing the whole line up or down
 -- Normal mode
-map('n', alt_key("<C-%s-j>"), ':m .+1<CR>==', { silent = true, desc="move the whole block down" })
-map('i', alt_key("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true, desc="move the whole block down" })
-map('v', alt_key("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true, desc="move the whole block down" })
-map('n', alt_key("<C-%s-k>"), ':m .-2<CR>==', { silent = true, desc="move the whole block up" })
-map('i', alt_key("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true, desc="move the whole block up" })
-map('v', alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move the whole block up" })
+map('n', F.alt_key("<C-%s-j>"), ':m .+1<CR>==', { silent = true, desc="move the whole block down" })
+map('i', F.alt_key("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true, desc="move the whole block down" })
+map('v', F.alt_key("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true, desc="move the whole block down" })
+map('n', F.alt_key("<C-%s-k>"), ':m .-2<CR>==', { silent = true, desc="move the whole block up" })
+map('i', F.alt_key("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true, desc="move the whole block up" })
+map('v', F.alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move the whole block up" })
 
 -- simplify the capture. Don't need to move around.
 -- keeps these here as example of moving with vim command
@@ -91,7 +90,7 @@ map({ "i", "v", "s", "n"}, "<C-c>",
     vim.api.nvim_buf_clear_namespace(0, -1, 0, -1)
   end, {noremap = true, desc="Esc and call no highlight"})
 
--- shortcut to google
+-- shortcut to query
 local function query(query_url)
   return function(input)
     if input and input ~="" then
@@ -99,7 +98,7 @@ local function query(query_url)
       vim.ui.open(query_url .. query)
       local LOG_FILE = string.format("%s/logs/google_%s.md",vim.g.m_notes_path, os.date("%Y-%m-%d"))
       local log = string.format("[%s] %s", os.date("%H:%M"), input)
-      vim.fn.writefile(log, vim.fn.expand(LOG_FILE), "a")
+      vim.fn.writefile({ log }, vim.fn.expand(LOG_FILE), "a")
     end
   end
 end
@@ -127,7 +126,7 @@ map({"n","v" }, "<C-l>", function()
     selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
   end
 
-  google(" oogle", selected_text)
+  google("Google", selected_text)
 end, {desc="googling google"})
 -- end googling, }
 
@@ -150,7 +149,7 @@ end, {desc = "yank virtual into system clipboard"})
 
 -- map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
 
-map('n', alt_key("<%s-o>",3), function()
+map('n', F.alt_key("<%s-o>",3), function()
   local file = vim.fn.expand('%')
   if vim.endswith(file, ".html") then
     vim.ui.open(file)
@@ -387,7 +386,7 @@ map('n', "<C-a>",
   end, {desc = "add note to session"})
 
 -- Map =ai to format without losing your cursor position
-map('n', alt_key("<%s-f>") , function()
+map('n', F.alt_key("<%s-f>") , function()
   -- 1. Save the current window and cursor position
   local current_win = vim.api.nvim_get_current_win()
   local cursor_pos = vim.api.nvim_win_get_cursor(current_win)
@@ -417,9 +416,9 @@ vim.keymap.set('n', 'm', function()
 end, { desc = 'Set mark with notification' })
 
 map("v", ".", function() vim.treesitter.select("parent") end, {desc = "treesitter select parent"})
-map("v", alt_key("<%s-.>"), function() vim.treesitter.select("child") end, {desc = "treesitter select child"})
-map("v", alt_key("<%s-n>"), function() vim.treesitter.select("next") end, {desc = "treesitter select next"})
-map("v", alt_key("<%s-p>"), function() vim.treesitter.select("prev") end, {desc = "treesitter select prev"})
+map("v", F.alt_key("<%s-.>"), function() vim.treesitter.select("child") end, {desc = "treesitter select child"})
+map("v", F.alt_key("<%s-n>"), function() vim.treesitter.select("next") end, {desc = "treesitter select next"})
+map("v", F.alt_key("<%s-p>"), function() vim.treesitter.select("prev") end, {desc = "treesitter select prev"})
 
 map({"v", "n"}, "<C-x><C-e>",
   function()

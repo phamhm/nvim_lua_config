@@ -8,15 +8,15 @@ return {
     mc.setup()
     local map = F.map
     -- Add or skip cursor above/below the main cursor.
-    map({"n", "x"}, F.format_os_altkey("<%s-k>"), function() mc.lineAddCursor(-1) end)
-    map({"n", "x"}, F.format_os_altkey("<%s-j>"), function() mc.lineAddCursor(1) end)
+    map({"n", "x"}, F.alt_key("<%s-k>"), function() mc.lineAddCursor(-1) end)
+    map({"n", "x"}, F.alt_key("<%s-j>"), function() mc.lineAddCursor(1) end)
     map({"n", "x"}, "<leader><up>", function() mc.lineSkipCursor(-1) end)
     map({"n", "x"}, "<leader><down>", function() mc.lineSkipCursor(1) end)
     -- Add or skip adding a new cursor by matching word/selection
-    map({"n", "x"}, F.format_os_altkey("<%s-n>"),function() mc.matchAddCursor(1) end)
-    map({"n", "x"}, F.format_os_altkey("<%s-p>"),function() mc.matchAddCursor(-1) end)
-    map({"n", "x"}, F.format_os_altkey("<%s-s>"),function() mc.matchSkipCursor(1) end)
-    map({"n", "x"}, F.format_os_altkey("<%s-S>"),function() mc.matchSkipCursor(-2) end)
+    map({"n", "x"}, F.alt_key("<%s-n>"),function() mc.matchAddCursor(1) end)
+    map({"n", "x"}, F.alt_key("<%s-p>"),function() mc.matchAddCursor(-1) end)
+    map({"n", "x"}, F.alt_key("<%s-s>"),function() mc.matchSkipCursor(1) end)
+    map({"n", "x"}, F.alt_key("<%s-S>"),function() mc.matchSkipCursor(-2) end)
     -- Add and remove cursors with control + left click.
     -- map("n", "<c-leftmouse>", mc.handleMouse)
     -- map("n", "<c-leftdrag>", mc.handleMouseDrag)

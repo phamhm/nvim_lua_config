@@ -37,7 +37,7 @@ end
 
 -- OSX and Linux call the alt key something different.
 -- this will replace the %s with correct letter for different OSes.
-function F.format_os_altkey(key_formatter, repeat_n)
+function F.alt_key(key_formatter, repeat_n)
   repeat_n = repeat_n or 1
   -- example <C-%s-j> will return <C-D-j> on osx and <C-M-j> on everything else
   local md_key = jit.os == "OSX" and "D" or "M"

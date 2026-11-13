@@ -1,5 +1,5 @@
 local F = require("utils.functions")
-local alt_key = F.format_os_altkey
+local alt_key = F.alt_key
 
 -- disable autocompletion in the windows. will work on vim.ui.open
 vim.api.nvim_create_autocmd("FileType", {

@@ -1,5 +1,5 @@
 local F = require("utils.functions")
-local alt_key = F.format_os_altkey
+local alt_key = F.alt_key
 local map = F.map
 
 local function opts(desc_text, bufnr)
