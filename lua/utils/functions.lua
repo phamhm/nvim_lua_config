@@ -6,7 +6,7 @@ local m_status = ""
 
 F.NOTIFY = function(msg) print(vim.inspect(msg)) end
 F.ERROR  = function(msg) error(vim.inspect(msg)) end
-F.WARN   = function(msg) vim.api.nvim_echo({ { msg, "WarningMsg" } }, true, {}) end
+F.WARN   = function(msg) vim.api.nvim_echo({ { vim.inspect(msg), "WarningMsg" } }, true, {}) end
 F.INFO   = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.INFO) end
 F.DEBUG  = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.DEBUG) end
 F.TRACE  = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.TRACE) end
@@ -34,7 +34,6 @@ function F.map(mode, lhs, rhs, opts)
 end
 
 -- take note_text and write to destination with @c capture time
-
 
 -- OSX and Linux call the alt key something different.
 -- this will replace the %s with correct letter for different OSes.
