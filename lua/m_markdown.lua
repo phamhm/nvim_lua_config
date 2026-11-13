@@ -81,9 +81,8 @@ return {
           map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
           map({'n'}, '<leader>sm',
             function()
-              Snacks.picker.lines({
-                pattern = "^# | -",
-              })
+              local path = vim.fn.expand("%:p")
+              F.snacks_grep_markdown(path)
             end, opts("navigate headers", bufnr))
 
           map("n", "gF", function()

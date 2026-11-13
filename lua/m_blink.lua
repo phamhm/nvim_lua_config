@@ -26,6 +26,19 @@ return {
       min_keyword_length = 3,
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
+
+    enabled = function()
+      -- Get the current buffer's filetype
+      local filetype = vim.bo[0].filetype
+      -- Disable for Telescope buffers
+      if vim.startswith(filetype, "snacks_") then
+        return false
+      else
+        return true
+      end
+    end
+
+
   },
   opts_extend = { "sources.default" },
 }

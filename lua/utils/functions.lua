@@ -471,6 +471,7 @@ function F.open_markdown_file(path, lnum, pinned)
       if bufname:match(vim.pesc(path) .. "$") or bufname:find(path, 1, true) then
         vim.api.nvim_set_current_win(win_id)
         buf_found = true
+        break
       end
     end
 
@@ -504,7 +505,7 @@ end
 
 function F.snacks_grep_markdown(path, m_confirm)
   Snacks.picker.grep({
-    search = "- ~|#|- \\[",
+    search = "- ~|^#|- \\[",
     dirs = {path},
     layout = {
       hidden = {'input', 'preview'}
