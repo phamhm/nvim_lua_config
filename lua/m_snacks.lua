@@ -148,12 +148,7 @@ local function m_todo_from_root()
           return {}
         end
 
-        local hlgroup
-        if m_todo:match("TODO") then
-          hlgroup = "TodoHl" -- DONE: not picking up the red TodoHl group. why?
-        elseif m_todo:match("FIXME") then
-          hlgroup = "FixmeHl"
-        end
+        local hlgroup = vim.trim(m_todo):upper() .. "Hl"
         ret[#ret + 1] = { m_todo or "", hlgroup }
         ret[#ret + 1] = { m_msg or "", "Normal" }
         ret[#ret + 1] = { " " ..item.file or "", "Comment" }
@@ -381,9 +376,15 @@ local m_snacks = {
             move_selected = move_selected,
             list_up = m_list_up,
             list_down = m_list_down,
-            m_explorer_root = m_explorer_root
+            m_explorer_root = m_explorer_root,
+            m_confirm = m_confirm,
           },
           win = {
+            input = {
+              keys = {
+                ["<C-CR>"] = {"jump", mode = {"i", "n"}}
+              }
+            },
             list = {
               keys = {
                 ["Z"]     = { 'zip_selected', mode  = { "n" } },
