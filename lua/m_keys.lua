@@ -48,14 +48,11 @@ map('n', '<C-q>',
 
 map( "n", "<leader>q", 'Q', { desc = 'nvim -1.13 multiple cursors' })
 
-map({'n', 'i', 'v'}, '<C-s>',
-  function()
-    F.m_feedkey("<Esc>")
-    vim.cmd("write!")
-  end,{silent = true, desc="save buffer"})
+map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
 
 map('n', F.alt_key('<C-%s-f>'),
   function()
+    F.NOTIFY("Clean up buffer")
     local mc_ns = vim.api.nvim_create_namespace('nvim.multicursor')
     vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
 

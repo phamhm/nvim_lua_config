@@ -210,7 +210,7 @@ local function m_grep(picker, item)
     :filter(
       function(path)
         path = vim.trim(path)
-        local fs_stat = vim.uv.fs_stat(vim.fn.expand(path))
+        local fs_stat = vim.uv.fs_stat(vim.fs.abspath(path))
         return fs_stat and vim.list_contains({"file", "directory"}, fs_stat.type)
       end)
     :totable()
@@ -237,8 +237,43 @@ local function m_grep(picker, item)
   end
 end
 
+local function m_edit(picker, item)
+  local selected = vim.iter(picker:selected({fallback = true}))
+    :map(function(i)
+      if picker.opts.source == "grep" then
+        local line =  vim.trim(i.line)
+        if vim.startswith(line, "-") then
+          line = line:gsub("^-", "")
+          line = vim.trim(line)
+        end
+        return line
+      else
+        return i._path or i.item or i.text
+      end
+    end)
+    :filter(
+      function(line)
+        line = vim.trim(line)
+        local fs_stat = vim.uv.fs_stat(vim.fs.abspath(line))
+        return fs_stat and vim.list_contains({"file", "directory"}, fs_stat.type)
+      end)
+    :totable()
+
+  if #selected == 1 then
+    vim.cmd("fclose!")
+    vim.cmd.edit(unpack(selected))
+  elseif #selected >1 then
+    vim.cmd("fclose!")
+    F.NOTIFY("Multiple Selected. Switch to Grep")
+    m_grep(picker, item)
+  else
+    F.ERROR("Didn't select a file/directory to open")
+  end
+end
+
 local m_actions = {
-  m_grep = m_grep
+  m_grep = m_grep,
+  m_edit = m_edit ,
 }
 
 local m_grep_actions = {
@@ -298,6 +333,7 @@ local m_keys = {
   ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
   ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
   ["<C-g>"] = { "m_grep", mode = { "i", "n" } },
+  ["<C-e>"] = { "m_edit", mode = { "i", "n" } },
 }
 
 local m_snacks = {
