@@ -39,7 +39,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  require('m_plenary'),
   require('m_snacks'),
   require('m_mini'),
   require('m_lsp'),

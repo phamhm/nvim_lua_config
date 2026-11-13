@@ -314,9 +314,8 @@ function F.set_title()
     filename = "[no name]"
   end
 
-  local Path = require("plenary.path")
   filename = vim.fn.fnamemodify(filename, ":~")
-  filename = Path:new(filename):shorten(3)
+  filename = vim.fn.pathshorten(filename, 3)
 
   return string.format("%s::%s", session, filename)
 end
