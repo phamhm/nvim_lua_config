@@ -463,6 +463,7 @@ end
 
 function F.snacks_grep_markdown(path, m_confirm)
   Snacks.picker.grep({
+    m_source = "grep_markdown",
     search = "- ~|^#|- \\[",
     dirs = {path},
     layout = {

@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- TODO: how to make multiple dirs readable
 local function m_set_title(picker, item)
   if picker and picker.list and picker.list.win then
-    local source = picker.init_opts.source
+    local source = picker.opts.source
     local dirs = picker.opts.dirs
     if vim.list_contains({"grep", "explorer"}, source) then
       if dirs and #dirs == 1 then
@@ -22,8 +22,14 @@ local function m_set_title(picker, item)
         f = vim.fn.fnamemodify(f, ":~")
         picker.list.win:set_title(f)
       elseif dirs and #dirs > 1 then
-        print("Multiple Dirs:\n" .. table.concat(dirs, "\n"))
-        picker.list.win:set_title("Multiple Dirs")
+        local basenames = vim.iter(dirs)
+          :map(function(path) 
+            local parent_dir = vim.fn.fnamemodify(path, ":h:t")
+            local basename = vim.fs.basename(path)
+            return  parent_dir.."/"..basename
+          end)
+          :totable()
+        picker.list.win:set_title(table.concat(basenames, ", "))
       else
         local f = item and item._path or picker:cwd()
         f = vim.fn.fnamemodify(f, ":~")
@@ -194,6 +200,8 @@ local function zip_selected(picker, item)
 end
 
 local function m_grep(picker, item)
+
+  --eLooking at all selected and select only dirs or files
   local selected = vim.iter(picker:selected({fallback = true}))
     :map(function(i)
       if picker.opts.source == "grep" then
