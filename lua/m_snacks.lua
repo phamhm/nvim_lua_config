@@ -12,7 +12,7 @@ vim.api.nvim_create_autocmd("FileType", {
 local function m_set_title(picker, item)
   if picker and picker.list and picker.list.win then
     local source = picker.init_opts.source
-    local dirs = picker.init_opts.dirs
+    local dirs = picker.opts.dirs
     if vim.list_contains({"grep", "explorer"}, source) then
       if dirs and #dirs == 1 then
         local f = unpack(dirs)
@@ -157,9 +157,15 @@ local function m_grep(picker, item)
 
   if #selected > 0 then
     vim.cmd("fclose!")
-    Snacks.picker.grep({
-      dirs = selected,
-    })
+    if #selected == 1 then
+      Snacks.picker.grep({
+        cwd = unpack(selected),
+      })
+    else
+      Snacks.picker.grep({
+        dirs = selected,
+      })
+    end
   else
     F.ERROR("Didn't select a file/directory to Grep")
   end
@@ -171,7 +177,18 @@ local m_actions = {
 
 local m_grep_actions = {
   m_cd_up = function(picker, item)
-    local current_cwd = picker:cwd()
+
+    local current_cwd
+    if picker.opts.cwd then
+      current_cwd = picker.opts.cwd
+    elseif picker.opts.dirs then
+      F.ERROR("Can only go up with cwd, not dirs")
+      return
+    else
+      F.ERROR("Expected picker.opts.cwd/dirs, found none")
+      return
+    end
+
     local new_cwd = vim.fs.dirname(current_cwd)
     F.NOTIFY("Changing cwd to " .. new_cwd)
     picker:set_cwd(new_cwd)
@@ -183,9 +200,22 @@ local m_grep_actions = {
     local markers = { '.git', 'setup.py', 'package.json'}
 
     local current_cwd = picker.init_opts.cwd
+
+
+    local current_cwd
+    if picker.opts.cwd then
+      current_cwd = picker.opts.cwd
+    elseif picker.opts.dirs then
+      F.ERROR("Can only go up with cwd, not dirs")
+      return
+    else
+      F.ERROR("Expected picker.opts.cwd/dirs, found none")
+      return
+    end
+
     local root = vim.fs.root( current_cwd, markers )
 
-    F.NOTIFY("Cd to roo: " .. root)
+    F.NOTIFY("Cd to root: " .. root)
 
     picker:set_cwd(root)
     picker:find()
@@ -224,7 +254,7 @@ local m_snacks = {
         height = 0.9,
       },
     },
-    scratch = { enabled = false },
+    scratch = { enabled = false, root = "/tmp/"},
     explorer = {enabled = true, trash = true},
     bigfile = { enabled = true },
     indent = {

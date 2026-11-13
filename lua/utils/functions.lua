@@ -66,8 +66,8 @@ function F.menu_commands(items, title, pattern, m_actions, m_keys, allow_multipl
       preview = false,
       layout = {
         min_width = 0,
-        width = 0.2,
-        height = 0.2,
+        width = 0.3,
+        height = 0.5,
       }
     },
     confirm = function(picker, item)
