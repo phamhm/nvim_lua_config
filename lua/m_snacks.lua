@@ -1,5 +1,4 @@
 local F = require("utils.functions")
-local alt_key = F.alt_key
 
 -- disable autocompletion in the windows. will work on vim.ui.open
 vim.api.nvim_create_autocmd("FileType", {
@@ -104,6 +103,57 @@ local function m_explorer_root(picker, item)
 
   picker:set_cwd(root)
   picker:find()
+end
+
+local function m_todo_from_root()
+  local todos = {"TODO", "FIXME"}
+  local todo_keys = vim.iter(todos)
+    :map(function(i) return i .. ":" end)
+    :totable()
+  local current_cwd = vim.fn.expand("%:p")
+
+  local markers = { '.git' }
+  local root = vim.fs.root( current_cwd, markers )
+  if root and vim.uv.fs_stat(root) then
+    Snacks.picker.grep({
+      search = table.concat(todo_keys, "|"),
+      cwd = root,
+      layout = {
+        hidden = {'input', 'preview'}
+      },
+      on_show = function(picker)
+        picker.list.win:set_title(root)
+      end,
+      format = function(item, picker)
+        local ret = {}
+        local m_todo
+        local m_msg
+        local todo_len = 5
+        local msg_len = 50
+        for _, todo in ipairs(todos) do
+          if item.line:upper():match(todo..":") then
+            local t = vim.split(item.line, todo .. ":")
+            t = vim.list_slice(t, 2)
+            m_msg = table.concat(t, " ")
+            m_msg = m_msg .. string.rep(" ", math.max(0, msg_len - #m_msg))
+            m_todo = todo .. string.rep(" ", math.max(0, todo_len - #todo))
+            break
+          end
+        end
+
+        local hlgroup
+        if m_todo:match("TODO") then
+          hlgroup = "TodoHl" -- DONE: not picking up the red TodoHl group. why?
+        elseif m_todo:match("FIXME") then
+          hlgroup = "FixmeHl"
+        end
+        ret[#ret + 1] = { m_todo or "", hlgroup }
+        ret[#ret + 1] = { m_msg or "", "Normal" }
+        ret[#ret + 1] = { " " ..item.file or "", "Comment" }
+        return ret
+      end,
+    })
+  end
 end
 
 local function diff_selected(picker)
@@ -221,12 +271,12 @@ local m_grep_actions = {
   end
 }
 local m_grep_keys = {
-  [alt_key("<%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
-  [alt_key("<%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
+  [F.alt_key("<%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
+  [F.alt_key("<%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
 local m_keys = {
-  [alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
+  [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
   ["<C-c>"] = { "close", mode = { "i", "n" } },
   ["<C-q>"] = { "close", mode = { "i", "n" } },
   ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
@@ -335,7 +385,7 @@ local m_snacks = {
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n" } },
                 ["M"]     = { "move_selected", mode = { "n" } },
-                [alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
+                [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
               }
             }
           },
@@ -485,6 +535,7 @@ local m_snacks = {
       end, desc = "File Explorer" },
     -- { "<C-e>", function() Snacks.explorer.reveal() end, desc = "File Explorer Reveal" },
     { "<leader>/", function() Snacks.picker.lines({layout = {hidden = {"preview"}}}) end, desc = "Grep" },
+    { "<leader>ft", m_todo_from_root, desc = "find todo from root" },
     { "<leader>fk",function() Snacks.picker.keymaps({layout = {hidden = {"preview"}}}) end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent({layout = {hidden = {"preview"}}}) end,desc = "recents" },
     { "<leader>fp",function() Snacks.picker.projects() end,desc = "projects" },
@@ -555,7 +606,7 @@ local m_snacks = {
         Snacks.picker.grep({ cwd = cwd })
       end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
-    { alt_key('<%s-r>'), function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
+    { F.alt_key('<%s-r>'), function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end

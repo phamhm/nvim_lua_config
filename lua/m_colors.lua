@@ -8,6 +8,8 @@ local group_styles = {
   ["Statement"]     = { fg = "#EEEEEE", bold = true },
   ["Special"]       = { fg = "#87AFD7", bold = false },
   ["FlashLabel"]       = { fg = "red", bold = true },
+  ["TodoHl"]        = { fg = "red", bold = true },
+  ["FixmeHl"]       = { fg = "cyan", bold = true },
   ["Function"]      = { fg = "#87AFD7" },
   ["Constant"]      = { fg = "#CCCCCC" },
   ["DiffAdd"]       = { fg = "None", bg = "#000022", sp = "None" },
