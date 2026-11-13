@@ -47,8 +47,6 @@ local m_group_styles = {
   ["NvimTreeGitStagedIcon"]  = { fg = "#87AFD7", bg = "None" },
   -- my customs
   ["FlashLabel"]       = { fg = "red", bold = true },
-  ["TODOHl"]        = { fg = "red", bold = true },
-  ["FIXMEHl"]       = { fg = "cyan", bold = true },
 }
 
 

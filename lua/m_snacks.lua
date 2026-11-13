@@ -1,3 +1,5 @@
+-- TODO: clean up diagnostics
+
 local F = require("utils.functions")
 
 -- disable autocompletion in the windows. will work on vim.ui.open
@@ -106,9 +108,15 @@ local function m_explorer_root(picker, item)
   picker:find()
 end
 
+local TODOS = {
+  ["TODO"] = { fg = "pink", bold = true },
+  ["FIXME"] = { fg = "cyan", bold = true },
+}
+for key, style in pairs(TODOS) do
+  vim.api.nvim_set_hl(0, key .. "Hl", style)
+end
 local function m_todo_from_root()
-  local todos = {"TODO", "FIXME"}
-  local todo_keys = vim.iter(todos)
+  local todo_keys = vim.iter(vim.tbl_keys(TODOS))
     :map(function(i) return i .. ":" end)
     :totable()
   local current_cwd = vim.fn.expand("%:p")
@@ -126,17 +134,14 @@ local function m_todo_from_root()
         picker.list.win:set_title("TODO Root:" .. root)
       end,
       format = function(item, picker)
-        local ret = {}
         local m_todo
         local m_msg
         local todo_len = 5
-        local msg_len = 50
-        for _, todo in ipairs(todos) do
+        for todo, _ in pairs(TODOS) do
           if item.line:upper():match(todo..":") then
             local t = vim.split(item.line, todo .. ":")
             t = vim.list_slice(t, 2)
             m_msg = table.concat(t, " ")
-            m_msg = m_msg .. string.rep(" ", math.max(0, msg_len - #m_msg))
             m_todo = todo .. string.rep(" ", math.max(0, todo_len - #todo))
             break
           end
@@ -149,10 +154,12 @@ local function m_todo_from_root()
         end
 
         local hlgroup = vim.trim(m_todo):upper() .. "Hl"
-        ret[#ret + 1] = { m_todo or "", hlgroup }
-        ret[#ret + 1] = { m_msg or "", "Normal" }
-        ret[#ret + 1] = { " " ..item.file or "", "Comment" }
-        return ret
+        local location = string.format("%s %-25s",MiniIcons.get('file', item.file), vim.trim(item.file))
+        return {
+          { m_todo or "", hlgroup },
+          { location, "Comment" },
+          { m_msg or "", "Normal" },
+        }
       end,
     })
   end
