@@ -88,5 +88,5 @@ return { -- doc: https://github.com/wtfox/jellybeans.nvim
     for group, style in pairs(m_group_styles) do
       vim.api.nvim_set_hl(0, group, style)
     end
-  end
-}
+
+  end }

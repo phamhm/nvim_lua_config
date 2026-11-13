@@ -4,7 +4,12 @@ local m_todo =  ""
 local m_todo_path = ""
 local m_status = ""
 
-F.NOTIFY = function(msg) print(vim.inspect(msg)) end
+F.NOTIFY = function(msg)
+  if vim.islist(msg) then
+    msg = table.concat(msg, "\n")
+  end
+  vim.notify(msg)
+end
 F.ERROR  = function(msg) error(vim.inspect(msg)) end
 F.WARN   = function(msg) vim.api.nvim_echo({ { vim.inspect(msg), "WarningMsg" } }, true, {}) end
 F.INFO   = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.INFO) end
