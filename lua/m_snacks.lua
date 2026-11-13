@@ -177,7 +177,6 @@ local m_actions = {
 
 local m_grep_actions = {
   m_cd_up = function(picker, item)
-
     local current_cwd
     if picker.opts.cwd then
       current_cwd = picker.opts.cwd
