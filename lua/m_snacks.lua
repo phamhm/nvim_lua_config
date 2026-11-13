@@ -15,10 +15,10 @@ local function m_set_title(picker, item)
     local dirs = picker.init_opts.dirs
     if vim.list_contains({"grep", "explorer"}, source) then
       if dirs and #dirs == 1 then
-        picker.list.win:set_title(dirs[1])
+        picker.list.win:set_title(unpack(dirs))
       elseif dirs and #dirs > 1 then
-        print("Grepping Multiple Dirs:\n" .. table.concat(dirs, "\n"))
-        picker.list.win:set_title("Grepping Multiple Dirs")
+        print("Multiple Dirs:\n" .. table.concat(dirs, "\n"))
+        picker.list.win:set_title("Multiple Dirs")
       else
         picker.list.win:set_title(item and item._path or picker:cwd())
       end
