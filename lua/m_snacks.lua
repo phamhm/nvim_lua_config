@@ -4,7 +4,8 @@ local F = require("utils.functions")
 
 -- disable autocompletion in the windows. will work on vim.ui.open
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = {"snacks_picker", "snacks_picker_input", "snacks_input"}, -- "snacks_input""snacks_picker_input",
+  group = vim.api.nvim_create_augroup("snacks_no_completion", { clear = true }),
+  pattern = "snacks_*",
   callback = function()
     vim.b.minicompletion_disable = true
   end,
