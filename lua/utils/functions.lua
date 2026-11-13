@@ -46,7 +46,8 @@ function F.format_os_altkey(key_formatter, repeat_n)
   return string.rep(key, repeat_n)
 end
 
-function F.menu_commands(items, title, pattern, m_actions, m_keys)
+function F.menu_commands(items, title, pattern, m_actions, m_keys, allow_multiples)
+  allow_multiples = allow_multiples or false
   m_actions = m_actions or {}
   m_keys = m_keys or {}
   pattern = pattern or ""
@@ -65,15 +66,20 @@ function F.menu_commands(items, title, pattern, m_actions, m_keys)
       preview = false,
       layout = {
         min_width = 0,
-        width = 0.6,
-        height = 0.6,
+        width = 0.2,
+        height = 0.2,
       }
     },
     confirm = function(picker, item)
       picker:close()
-      if item and item.fn then
-        item.fn()
+      local items = picker:selected({ fallback = true })
+      if not allow_multiples and #items > 1 then
+        F.ERROR("Multiple Selection not allowed")
+        return
       end
+
+      vim.iter(items):each(function(i) i.fn() end)
+
     end,
     matcher = {
       fuzzy = false, -- use fuzzy matching
@@ -278,6 +284,12 @@ function F.generate_bookmarks_picker()
     end)
 
   vim.list_extend(items, picker_list_files(vim.g.m_scripts))
+  items = vim.iter(items)
+    :map(
+      function(item)
+        return {text = item.text, fn = function() F.open_md_link(item) end}
+      end)
+    :totable()
 
   -- 4. Open the Snacks picker if we found any links
   if #items == 0 then
@@ -287,49 +299,7 @@ function F.generate_bookmarks_picker()
 
   local actions, keys = F.gen_picker_actions()
 
-  F.m_picker(items, "Select Bookmark(s) to open",actions, keys)
-end
-
--- my custom Snacks.picker.pick for multiple selections
--- User can do multiple selection, and executes all at once
--- default fn_item_handler is the open_item function
-function F.m_picker(items, title, actions, keys)
-  if not actions then
-    F.ERROR("No actions for picker")
-    return
-  end
-
-  if not items or #items==0 then
-    F.NOTIFY("No item to pick")
-    return
-  end
-
-  Snacks.picker.pick({
-    source = "markdown_links",
-    items = items,
-    focus = "input",
-    title = title or "select to run",
-    format = "text", -- Display only the title in the list
-    layout = {
-      hidden = actions.hidden or {"preview", "input"},
-      layout = {
-        min_width = 0,
-        width = 0.3,
-        height =  0.5,
-      }
-    },
-    actions = actions,
-    win = {
-      list = {
-        keys = keys,
-      },
-      input = {
-        keys = keys,
-      },
-    },
-    preview = actions.fn_preview,
-    confirm = actions.fn_confirm,
-  })
+  F.menu_commands(items, "Select Bookmark(s) to open", "", nil, nil, true)
 end
 
 function F.set_title()
