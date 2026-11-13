@@ -49,6 +49,7 @@ require('lazy').setup({
   require('m_misc'),
   require('m_blink'),
   -- require('m_multiplecursor'),
+  require('m_colors')
 })
 
 -- setup must be called before loading
@@ -67,6 +68,5 @@ vim.diagnostic.config({
 })
 
 require('m_keys')
-require('m_colors')
 
 local ok, my_module = pcall(require, "m_poweron")

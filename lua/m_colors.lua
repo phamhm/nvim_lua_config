@@ -1,15 +1,12 @@
-local group_styles = {
-  ["Normal"]        = { fg = "#CCCCCC", bg = "None" },
-  ["NormalFloat"]   = { fg = "#CCCCCC", bg = "None" },
-  ["String"]        = { fg = "#D6DFD4" },
+local m_group_styles = {
+  -- ["Normal"]        = { fg = "#CCCCCC", bg = "None" },
+  -- ["NormalFloat"]   = { fg = "#CCCCCC", bg = "None" },
+  -- ["String"]        = { fg = "#D6DFD4" },
   ["Comment"]       = { fg = "#777777" },
   ["Visual"]        = { fg = "#000000", bg = "#888888"},
   ["Identifier"]    = { fg = "#DDDDDD", bold = true },
   ["Statement"]     = { fg = "#EEEEEE", bold = true },
   ["Special"]       = { fg = "#87AFD7", bold = false },
-  ["FlashLabel"]       = { fg = "red", bold = true },
-  ["TodoHl"]        = { fg = "red", bold = true },
-  ["FixmeHl"]       = { fg = "cyan", bold = true },
   ["Function"]      = { fg = "#87AFD7" },
   ["Constant"]      = { fg = "#CCCCCC" },
   ["DiffAdd"]       = { fg = "None", bg = "#000022", sp = "None" },
@@ -48,47 +45,50 @@ local group_styles = {
   ["NvimTreeGitNewIcon"]     = { fg = "#87AFD7", bg = "None" },
   ["NvimTreeGitRenamedIcon"] = { fg = "#87AFD7", bg = "None" },
   ["NvimTreeGitStagedIcon"]  = { fg = "#87AFD7", bg = "None" },
+  -- my customs
+  ["FlashLabel"]       = { fg = "red", bold = true },
+  ["TodoHl"]        = { fg = "red", bold = true },
+  ["FixmeHl"]       = { fg = "cyan", bold = true },
 }
 
-for group, style in pairs(group_styles) do
-  vim.api.nvim_set_hl(0, group, style)
-end
 
+return { -- doc: https://github.com/wtfox/jellybeans.nvim
+  -- "wtfox/jellybeans.nvim",
+  "vague-theme/vague.nvim",
+  lazy = false,
+  priority = 1000,
+  config = function()
+    -- vim.cmd.colorscheme("vague")
 
--- return { -- doc: https://github.com/wtfox/jellybeans.nvim
---   -- "wtfox/jellybeans.nvim",
---   "vague-theme/vague.nvim",
---   lazy = false,
---   priority = 1000,
---   config = function()
---     vim.cmd.colorscheme("vague")
---
---     local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
---     vim.iter({
---       "MiniFilesNormal",
---       "SnacksPickerList",
---       "SnacksPickerInput",
---     }):each(function(group)
---       vim.api.nvim_set_hl(0, group, { bg = normal_hl.bg})
---     end)
---
---     vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
---     vim.api.nvim_set_hl(0, 'String', { fg = "#F2F2F2", bold = false })
---
---     vim.iter( {
---       "SnacksPickerInputBorder",
---       "SnacksPickerBoxBorder",
---       "SnacksInputBorder",
---       "FloatBorder",
---       "SnacksInputTitle",
---       "BlinkCmpMenuBorder",
---       "LazyGitBorder",
---       "LspReferenceTarget",
---       "BlinkCmpMenu",
---     }):each(function(border)
---       vim.api.nvim_set_hl(0, border, { fg= "grey"})
---     end )
---
---     vim.api.nvim_set_hl(0, 'Comment', { fg = "grey", bold = true, italic = false })
---   end
--- },
+    local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+    vim.iter({
+      "MiniFilesNormal",
+      "SnacksPickerList",
+      "SnacksPickerInput",
+    }):each(function(group)
+      vim.api.nvim_set_hl(0, group, { bg = normal_hl.bg})
+    end)
+
+    -- vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
+    -- vim.api.nvim_set_hl(0, 'String', { fg = "#F2F2F2", bold = false })
+
+    vim.iter( {
+      "SnacksPickerInputBorder",
+      "SnacksPickerBoxBorder",
+      "SnacksInputBorder",
+      "FloatBorder",
+      "SnacksInputTitle",
+      "BlinkCmpMenuBorder",
+      "LazyGitBorder",
+      "LspReferenceTarget",
+      "BlinkCmpMenu",
+    }):each(function(border)
+      vim.api.nvim_set_hl(0, border, { fg= "grey"})
+    end )
+
+    vim.api.nvim_set_hl(0, 'Comment', { fg = "grey", bold = true, italic = false })
+    for group, style in pairs(m_group_styles) do
+      vim.api.nvim_set_hl(0, group, style)
+    end
+  end
+}

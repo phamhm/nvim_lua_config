@@ -8,6 +8,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- TODO: how to make multiple dirs readable
 local function m_set_title(picker, item)
   if picker and picker.list and picker.list.win then
     local source = picker.init_opts.source
