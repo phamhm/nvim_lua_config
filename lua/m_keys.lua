@@ -50,22 +50,21 @@ map( "n", "<leader>q", 'Q', { desc = 'nvim -1.13 multiple cursors' })
 
 map({'n', 'i', 'v'}, '<C-s>',
   function()
-    F.m_feedkey("<ESC>")
-    ts.trim()
-    ts.trim_last_lines()
-    -- 1. Get the namespace ID for Neovim's native multicursor
-    -- 2. Clear that namespace for the current buffer (0) from line 0 to -1 (the end)
+    F.m_feedkey("<Esc>")
+    vim.cmd("write!")
+  end,{silent = true, desc="save buffer"})
+
+map('n', F.alt_key('<C-%s-f>'),
+  function()
     local mc_ns = vim.api.nvim_create_namespace('nvim.multicursor')
     vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
 
+    ts.trim()
+    ts.trim_last_lines()
     if vim.bo.filetype == "markdown"  then
-      -- i dislike those dangling * and -
-      local saved_view = vim.fn.winsaveview()
       vim.cmd([[g/^\s*[\*-]\s*$/d]])
-      vim.fn.winrestview(saved_view)
     end
-    vim.cmd("write")
-  end,{silent = true, desc="save buffer"})
+  end,{silent = true, desc="format buffer"})
 map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="in middle of line, and still new line below"})
 map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="in middle of line, and still new line below"})
 -- map({'i', 'n'}, "<C-S-Tab>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
@@ -94,7 +93,6 @@ map({ "i", "v", "s", "n"}, "<C-c>",
   function()
     F.m_feedkey("<Esc>")
     vim.cmd('nohlsearch')
-    vim.api.nvim_buf_clear_namespace(0, -1, 0, -1)
   end, {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to query
