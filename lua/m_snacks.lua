@@ -342,12 +342,12 @@ local m_grep_keys = {
 
 local m_keys = {
   [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
-  ["<C-c>"] = { "close", mode = { "i", "n" } },
-  ["<C-q>"] = { "close", mode = { "i", "n" } },
+  ["<C-c>"] = { "cancel", mode = { "i", "n" } },
+  ["<C-q>"] = { "cancel", mode = { "i", "n" } },
   ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
   ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
-  [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
-  [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
+  [F.alt_key("<%s-g>")] = { "m_grep", mode = { "i", "n" } },
+  [F.alt_key("<%s-e>")] = { "m_edit", mode = { "i", "n" } },
 }
 
 local m_snacks = {
@@ -451,7 +451,7 @@ local m_snacks = {
             list = {
               keys = {
                 ["Z"]     = { 'zip_selected', mode  = { "n" } },
-                ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
+                -- ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
                 ["D"]     = { 'diff_selected', mode = { "n" } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n" } },
@@ -542,7 +542,7 @@ local m_snacks = {
     styles = {
       list = {
         keys = {
-          ["<C-c>"] = { "close", mode = { "i", "n" } },
+          -- ["<C-c>"] = { "close", mode = { "i", "n" } },
         }
       },
       input = {
@@ -550,7 +550,7 @@ local m_snacks = {
         -- position = "center",
         row = vim.o.lines/2-10,
         keys = {
-          ["<C-c>"] = { "close", mode = { "i", "n" } },
+          -- ["<C-c>"] = { "close", mode = { "i", "n" } },
         }
       },
     },

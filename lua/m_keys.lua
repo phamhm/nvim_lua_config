@@ -465,16 +465,39 @@ map('n', "<C-a>",
   function()
     local session_path, session_name, session_note = F.get_session_paths()
     if session_name and vim.uv.fs_stat(session_note) then
-      F.open_markdown_file(session_note, nil, true)
-
       Snacks.input(
         {prompt="Insert todo heading  " .. session_name},
         function(heading)
           if heading and vim.trim(heading) ~= "" then
-            vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
-            vim.cmd.write()
+            local session_note_abspath = vim.fs.abspath(session_note)
+            local target_buf = nil
+            -- 1. Search all loaded buffers for a matching path
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_loaded(buf) then
+                local buf_name = vim.api.nvim_buf_get_name(buf)
+                if buf_name == session_note_abspath then
+                  target_buf = buf
+                  break
+                end
+              end
+            end
+
+            local m_heading = {"", "# "..heading }
+            if target_buf then
+              vim.api.nvim_buf_set_lines(target_buf, -1, -1, false, m_heading)
+              vim.cmd.write()
+            else
+              if not vim.uv.fs_stat(session_note_abspath) then
+                F.ERROR("Session Note file does NOT exist")
+                return
+              end
+
+              local status = vim.fn.writefile(m_heading, session_note_abspath, "a")
+              if status ~= 0 then
+                F.WARN("Failled to append heading to session note")
+              end
+            end
           end
-          vim.cmd.close()
         end)
     elseif not session_name or session_name == "" then
       F.ERROR("Not in a session")
