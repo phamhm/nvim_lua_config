@@ -29,6 +29,9 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
+
+map("n", "<leader>vn", "<cmd>vnew<cr>", {desc = "new vertical"})
+
 map('n', '<C-q>',
   function()
     -- only delete buffer if there is no other windows with the same buffer
@@ -53,9 +56,6 @@ map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save 
 map('n', F.alt_key('<C-%s-f>'),
   function()
     F.NOTIFY("Clean up buffer")
-    local mc_ns = vim.api.nvim_create_namespace('nvim.multicursor')
-    vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
-
     ts.trim()
     ts.trim_last_lines()
     if vim.bo.filetype == "markdown"  then
@@ -88,8 +88,12 @@ map('v', F.alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move 
 
 map({ "i", "v", "s", "n"}, "<C-c>",
   function()
+    vim.cmd("fclose!")
     F.m_feedkey("<Esc>")
     vim.cmd('nohlsearch')
+
+    local mc_ns = vim.api.nvim_create_namespace('nvim.multicursor')
+    vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
   end, {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to query
@@ -298,7 +302,102 @@ map("n", "<leader>ww",
   {desc = "My Notes" }
 )
 
-map("n", '<leader>0',
+map("n", "<leader>ss", 
+  function() 
+    local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
+    local session_commands = {
+      {text = "select", fn = MiniSessions.select},
+      {text = "save current", fn = MiniSessions.write},
+      {text = "delete", fn = function() MiniSessions.select('delete', {force = true}) end},
+      {text = "rename", fn = function()
+        local sessions = require("mini.sessions")
+        -- 1. select a session to rename
+        -- 2. rename its session file.
+        -- 3. rename its notes file
+        vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rename"},
+          function(old_session_name)
+            local current_session = vim.fs.basename(vim.v.this_session)
+            if current_session == old_session_name then
+              F.WARN("Can't rename current session")
+              return
+            end
+
+            vim.ui.input({prompt = "New Session Name"},
+              function(new_session_name)
+
+                if not new_session_name or new_session_name == "" then
+                  return
+                end
+
+                new_session_name = new_session_name:gsub(" ","_")
+
+                local old_session_path = string.format("%s/%s", MiniSessions.config.directory, old_session_name):gsub("//", "/")
+                local new_session_path = string.format("%s/%s", MiniSessions.config.directory, new_session_name):gsub("//", "/")
+                if vim.uv.fs_stat(old_session_path) then
+                  vim.fn.rename(old_session_path, new_session_path)
+                else
+                  F.NOTIFY("Session not found:" .. old_session_path)
+                  return
+                end
+
+                local old_session_note_path = string.format("%s/%s.md", session_path, old_session_name):gsub("//", "/")
+                local new_session_note_path = string.format("%s/%s.md", session_path, new_session_name):gsub("//", "/")
+                if vim.uv.fs_stat(old_session_note_path) then
+                  vim.fn.rename(old_session_note_path, new_session_note_path)
+                end
+
+              end)
+          end
+        )
+      end},
+      {text = "rebuild", fn = function()
+        local sessions = require("mini.sessions")
+        vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rebuild"},
+          function(session_name)
+            if session_name and session_name ~= "" then
+              require('snacks').bufdelete.all()
+              MiniSessions.write(session_name)
+              local session_note_path = string.format("%s/%s.md", session_path, session_name)
+              vim.cmd.edit(session_note_path)
+              if not vim.uv.fs_stat(session_note_path) then
+                return
+              end
+
+              local data, err = get_yaml(session_note_path)
+              if data then
+                if data.session_path and data.session_path ~= "" then
+                  vim.cmd.edit(data.session_path)
+                end
+                if data.other_paths and #data.other_paths > 0 then
+                  vim.iter(data.other_paths):each(function(path) vim.cmd.badd(path) end)
+                end
+              else
+                F.ERROR("Yaml parse error")
+              end
+            end
+          end)
+      end},
+      {text = "new session", fn = function()
+        vim.ui.input({ prompt = 'Session Name: ' }, function(new_session_name)
+          if new_session_name and new_session_name ~= '' then
+            require('snacks').bufdelete.all()
+            MiniSessions.write(new_session_name)
+            local session_note = string.format("%s/%s.md", session_path, new_session_name)
+            local yaml = {
+              "---",
+              "session_path:",
+              "---"
+            }
+            vim.fn.writefile(yaml, session_note)
+            vim.cmd.edit(session_note)
+          end
+        end)
+      end} ,
+    }
+    F.menu_commands(session_commands, "Session commands", "")
+  end, {desc = "session management"})
+
+map("n", '<leader>sn',
   function()
     local session_path, session_name, session_note = F.get_session_paths()
     if session_name and vim.uv.fs_stat(session_note) then
@@ -390,9 +489,6 @@ map('n', "<C-a>",
 -- Map =ai to format without losing your cursor position
 map('n', F.alt_key("<%s-f>") , function()
   -- 1. Save the current window and cursor position
-  local current_win = vim.api.nvim_get_current_win()
-  local cursor_pos = vim.api.nvim_win_get_cursor(current_win)
-
   -- 2. Format the text block using mini.ai
   F.m_feedkey('=ai', 'ntm')
 
@@ -422,19 +518,18 @@ map("v", F.alt_key("<%s-.>"), function() vim.treesitter.select("child") end, {de
 map("v", F.alt_key("<%s-n>"), function() vim.treesitter.select("next") end, {desc = "treesitter select next"})
 map("v", F.alt_key("<%s-p>"), function() vim.treesitter.select("prev") end, {desc = "treesitter select prev"})
 
-map({"v", "n"}, "<C-x><C-e>",
+map({"v", "n"}, "<leader>xe",
   function()
-    local mode = vim.fn.mode()
-    local selected_text
-    local m_reg = "a"
-    if mode == "n" then
-      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-      vim.fn.setreg(m_reg, lines, "l")
-    else
-      vim.cmd(string.format('normal! "%sy', m_reg))
+    if vim.fn.mode() == "n" then
+      vim.cmd("%lua")
+      return
     end
-    selected_text = vim.fn.getreg(m_reg):gsub("\r?\n", "")
 
+    local start_pos = vim.fn.getpos('v')
+    local end_pos = vim.fn.getpos('.')
+    local lines = vim.fn.getregion(start_pos, end_pos, { type = vim.fn.mode() })
+
+    local selected_text = table.concat(lines, "\n")
     local fn, err = loadstring(selected_text)
     if fn then
       fn()

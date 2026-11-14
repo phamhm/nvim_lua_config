@@ -7,8 +7,8 @@ local m_mini = {
     version = false,
     lazy = false,
     keys = {
-      {"<C-x><C-m>", function() F.NOTIFY(MiniAi.config.search_method) end, desc = "Show MiniAi search method"},
-      {"<C-x><C-a>",
+      {"<leader>xm", function() F.NOTIFY(MiniAi.config.search_method) end, desc = "Show MiniAi search method"},
+      {"<leader>xa",
         function()
           vim.ui.select(
             {
@@ -138,108 +138,8 @@ local m_mini = {
       autowrite = true,
       verbose = {write = true, read = true}
     }) end,
-    keys = {
-      {'<leader>e', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, desc = 'Open mini.files' },
-      {"<leader>3",
-        function()
-          local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
-          local session_commands = {
-            {text = "select", fn = MiniSessions.select},
-            {text = "save current", fn = MiniSessions.write},
-            {text = "delete", fn = function() MiniSessions.select('delete', {force = true}) end},
-            {text = "rename", fn = function()
-              local sessions = require("mini.sessions")
-              -- 1. select a session to rename
-              -- 2. rename its session file.
-              -- 3. rename its notes file
-              vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rename"},
-                function(old_session_name)
-                  local current_session = vim.fs.basename(vim.v.this_session)
-                  if current_session == old_session_name then
-                    F.WARN("Can't rename current session")
-                    return
-                  end
-
-                  vim.ui.input({prompt = "New Session Name"},
-                    function(new_session_name)
-
-                      if not new_session_name or new_session_name == "" then
-                        return
-                      end
-
-                      new_session_name = new_session_name:gsub(" ","_")
-
-                      local old_session_path = string.format("%s/%s", MiniSessions.config.directory, old_session_name):gsub("//", "/")
-                      local new_session_path = string.format("%s/%s", MiniSessions.config.directory, new_session_name):gsub("//", "/")
-                      if vim.uv.fs_stat(old_session_path) then
-                        vim.fn.rename(old_session_path, new_session_path)
-                      else
-                        F.NOTIFY("Session not found:" .. old_session_path)
-                        return
-                      end
-
-                      local old_session_note_path = string.format("%s/%s.md", session_path, old_session_name):gsub("//", "/")
-                      local new_session_note_path = string.format("%s/%s.md", session_path, new_session_name):gsub("//", "/")
-                      if vim.uv.fs_stat(old_session_note_path) then
-                        vim.fn.rename(old_session_note_path, new_session_note_path)
-                      end
-
-                    end)
-                end
-              )
-            end},
-            {text = "rebuild", fn = function()
-              local sessions = require("mini.sessions")
-              vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rebuild"},
-                function(session_name)
-                  if session_name and session_name ~= "" then
-                    require('snacks').bufdelete.all()
-                    MiniSessions.write(session_name)
-                    local session_note_path = string.format("%s/%s.md", session_path, session_name)
-                    vim.cmd.edit(session_note_path)
-                    if not vim.uv.fs_stat(session_note_path) then
-                      return
-                    end
-
-                    local data, err = get_yaml(session_note_path)
-                    if data then
-                      if data.session_path and data.session_path ~= "" then
-                        vim.cmd.edit(data.session_path)
-                      end
-                      if data.other_paths and #data.other_paths > 0 then
-                        vim.iter(data.other_paths):each(function(path) vim.cmd.badd(path) end)
-                      end
-                    else
-                      F.ERROR("Yaml parse error")
-                    end
-                  end
-                end)
-            end},
-            {text = "new session", fn = function()
-              vim.ui.input({ prompt = 'Session Name: ' }, function(new_session_name)
-                if new_session_name and new_session_name ~= '' then
-                  require('snacks').bufdelete.all()
-                  MiniSessions.write(new_session_name)
-                  local session_note = string.format("%s/%s.md", session_path, new_session_name)
-                  local yaml = {
-                    "---",
-                    "session_path:",
-                    "---"
-                  }
-                  vim.fn.writefile(yaml, session_note)
-                  vim.cmd.edit(session_note)
-                end
-              end)
-            end} ,
-          }
-
-    F.menu_commands(session_commands, "Session commands", "")
-  end, desc = 'Sessions Management'},
-},
   },
-  {
-    'echasnovski/mini.trailspace',
-  },
+  { 'echasnovski/mini.trailspace', },
   {
     'echasnovski/mini.splitjoin',
     config = function()

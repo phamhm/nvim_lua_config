@@ -53,10 +53,12 @@ local m_group_styles = {
 return { -- doc: https://github.com/wtfox/jellybeans.nvim
   -- "wtfox/jellybeans.nvim",
   "vague-theme/vague.nvim",
+  -- "folke/tokyonight.nvim",
+
   lazy = false,
   priority = 1000,
   config = function()
-    -- vim.cmd.colorscheme("vague")
+    vim.cmd.colorscheme("vague")
 
     local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
     vim.iter({
@@ -88,5 +90,4 @@ return { -- doc: https://github.com/wtfox/jellybeans.nvim
     for group, style in pairs(m_group_styles) do
       vim.api.nvim_set_hl(0, group, style)
     end
-
   end }

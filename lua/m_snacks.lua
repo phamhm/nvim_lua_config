@@ -368,7 +368,7 @@ local m_snacks = {
     indent = {
       enabled = true,
       indent = { only_scope = true },
-      chunk = { enabled = true },
+      chunk = { enabled = false },
       animate = { enabled = false}
     },
     input = { enabled = true  },
@@ -384,12 +384,7 @@ local m_snacks = {
       enabled = true ,
       hidden=true,
       sources = {
-        lsp_symbols = {
-          layout = {
-            -- hidden = {"preview"},
-            preset = "sidebar",
-          },
-        },
+        lsp_symbols = { layout = { hidden = {"preview"}, }, },
         grep = {
           actions = m_grep_actions,
           win = {
