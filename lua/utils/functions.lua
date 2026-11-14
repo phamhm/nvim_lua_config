@@ -466,8 +466,9 @@ function F.snacks_grep_markdown(path, m_confirm)
     m_source = "grep_markdown",
     search = "- ~|^#|- \\[-]|- \\[\\s]",
     dirs = {path},
+    focus = "list",
     layout = {
-      hidden = {'input', 'preview'}
+      hidden = { 'preview'}
     },
     format = function(item, picker)
       local ret = {}

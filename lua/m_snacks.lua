@@ -445,6 +445,7 @@ local m_snacks = {
             input = {
               keys = {
                 [F.alt_key("<C-%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
+                ["<C-Cr>"] = { "jump", mode = { "n", "i" } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n", "i" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n", "i" } },
               }
@@ -674,17 +675,6 @@ local m_snacks = {
         Snacks.picker.grep({ cwd = cwd })
       end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
-    {
-      F.alt_key('<C-%s-r>'),
-      function() 
-        Snacks.picker.registers({
-          confirm = { "paste", "close" },
-          layout = { hidden = { 'preview'} },
-        }) 
-      end,
-      desc = "Registers",
-      mode = {"i", "n"}
-    },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end

@@ -187,6 +187,30 @@ map({"n", "v"}, "<leader>ry",
   end , 
   {desc = 'Yank line(s) into @"'})
 
+
+map({"n", "i"}, F.alt_key('<C-%s-r>'),
+  function() 
+    Snacks.picker.registers({
+      confirm = { "paste", "close" },
+      layout = { hidden = { 'preview'} },
+      transform = function (item)
+        return item.reg == '"' or item.reg == "+"
+      end
+    }) 
+  end,
+  {desc = '@+ and @" registers only'}
+)
+
+map("n", "<leader>rA",
+  function() 
+    Snacks.picker.registers({
+      confirm = { "paste", "close" },
+      layout = { hidden = { 'preview'} },
+    }) 
+  end,
+  {desc = 'All registers'}
+)
+
 -- end registers manipulation
 
 map('n', F.alt_key("<%s-o>",3), function()
