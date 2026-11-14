@@ -121,7 +121,8 @@ local function m_explorer_root(picker, item)
 end
 
 local TODOS     = {
-  ["TODO"]      = { fg = "pink", bold   = true },
+  ["TODO"]      = { fg = "green", bold   = true },
+  ["NOTE"]      = { fg = "pink", bold   = true },
   ["FIXME"]     = { fg = "cyan", bold   = true },
   ["WARN"]      = { fg = "yellow", bold = true },
   ["IMPORTANT"] = { fg = "red", bold    = true },
@@ -150,7 +151,7 @@ local function m_todo_from_root()
       format = function(item, picker)
         local m_todo
         local m_msg
-        local todo_len = 5
+        local todo_len = 8 
         for todo, _ in pairs(TODOS) do
           if item.line:upper():match(todo..":") then
             local t = vim.split(item.line, todo .. ":")
@@ -345,8 +346,8 @@ local m_keys = {
   ["<C-q>"] = { "close", mode = { "i", "n" } },
   ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
   ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
-  ["<C-g>"] = { "m_grep", mode = { "i", "n" } },
-  ["<C-e>"] = { "m_edit", mode = { "i", "n" } },
+  [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
+  [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
 }
 
 local m_snacks = {

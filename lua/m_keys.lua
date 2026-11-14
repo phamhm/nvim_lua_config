@@ -397,6 +397,7 @@ map("n", "<leader>ss",
     F.menu_commands(session_commands, "Session commands", "")
   end, {desc = "session management"})
 
+-- NOTE: this is getting awakward. stuck with <leader>0
 map("n", '<leader>sn',
   function()
     local session_path, session_name, session_note = F.get_session_paths()
