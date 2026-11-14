@@ -339,8 +339,8 @@ local m_grep_actions = {
   end
 }
 local m_grep_keys = {
-  [F.alt_key("<%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
-  [F.alt_key("<%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
+  [F.alt_key("<C-%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
+  [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
 local m_keys = {
@@ -445,8 +445,7 @@ local m_snacks = {
             input = {
               keys = {
                 ["<C-CR>"] = {"jump", mode = {"i", "n"}},
-                [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
-                [F.alt_key("<%s-u>")] = { "m_explorer_up", mode = { "n", "i" } },
+                [F.alt_key("<C-%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n", "i" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n", "i" } },
               }

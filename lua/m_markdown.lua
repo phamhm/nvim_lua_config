@@ -77,13 +77,13 @@ return {
           map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))
           -- map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
 
-          map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("indent list item", bufnr))
-          map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("deindent list", bufnr))
-          map({'n'}, '<leader>sm',
+          map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("Markdown indent list", bufnr))
+          map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("Markdown deindent list", bufnr))
+          map({'n'}, '<leader>mh',
             function()
               local path = vim.fn.expand("%:p")
               F.snacks_grep_markdown(path)
-            end, opts("navigate headers", bufnr))
+            end, opts("markdown headers", bufnr))
 
           map("n", "gF", function()
             local line = vim.api.nvim_get_current_line()
