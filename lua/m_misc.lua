@@ -22,10 +22,11 @@ return {
         multi_window = false,
       },
       highlight = {
-        backdrop = true,
+        backdrop = false,
         matches = false,
         groups = {
           label = "FlashLabel",
+          current = "FlashLabel",
         },
       },
     },

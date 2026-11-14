@@ -63,8 +63,6 @@ map('n', F.alt_key('<C-%s-f>'),
   end,{silent = true, desc="format buffer"})
 map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="middle of line & new line below"})
 map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="middle of line & new line above"})
--- map({'i', 'n'}, "<C-S-Tab>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
--- map({'i', 'n'}, "<C-Tab>", "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
 
 -- balancing out the universe
 map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})
@@ -159,7 +157,7 @@ map({"n", "v"},
 
     vim.fn.setreg('"',  new_reg )
   end,
-  {desc = 'add lines to the register @"'}
+  {desc = 'Register add lines to @"'}
 )
 
 map({"n"}, "<leader>rc", 
@@ -167,7 +165,7 @@ map({"n"}, "<leader>rc",
     vim.fn.setreg("+", vim.fn.getreg('"'))
     F.NOTIFY('Copied @" into @+ :'.. vim.fn.getreg('"'))
   end , 
-  {desc = 'Copy @" into @+'})
+  {desc = 'Register Copy @" into @+'})
 
 map({"n", "v"}, "<leader>ry", 
   function() 
@@ -185,10 +183,19 @@ map({"n", "v"}, "<leader>ry",
 
     vim.fn.setreg("+", lines)
   end , 
-  {desc = 'Yank line(s) into @"'})
-
+  {desc = 'Register Yank line(s) into @"'})
 
 map({"n", "i"}, F.alt_key('<C-%s-r>'),
+  function() 
+    Snacks.picker.registers({
+      confirm = { "paste", "close" },
+      layout = { hidden = { 'preview'} },
+    }) 
+  end,
+  {desc = 'Select Registers to paste on confirm'}
+)
+
+map("n", "<leader>rR",
   function() 
     Snacks.picker.registers({
       confirm = { "paste", "close" },
@@ -198,20 +205,24 @@ map({"n", "i"}, F.alt_key('<C-%s-r>'),
       end
     }) 
   end,
-  {desc = '@+ and @" registers only'}
+  {desc = 'Registers @" and @+ only'}
 )
-
-map("n", "<leader>rA",
-  function() 
-    Snacks.picker.registers({
-      confirm = { "paste", "close" },
-      layout = { hidden = { 'preview'} },
-    }) 
-  end,
-  {desc = 'All registers'}
-)
-
 -- end registers manipulation
+
+vim.keymap.set({ "n", "x", "o" }, "W", function()
+  local line = vim.fn.line(".")
+  require("flash").jump({
+    search = {
+      mode = "search",
+      max_length = 0, -- Show labels immediately without typing
+    },
+    label = {
+      after = { 0, 0 }, -- Place the label right on the first character of each word
+    },
+    pattern = string.format("\\%%%dl\\<\\w", line),
+  })
+end, { desc = "Flash words on current line" })
+
 
 map('n', F.alt_key("<%s-o>",3), function()
   local file = vim.fn.expand('%')
