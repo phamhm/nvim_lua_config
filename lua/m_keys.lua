@@ -466,15 +466,14 @@ map('n', "<C-a>",
     if session_name and vim.uv.fs_stat(session_note) then
       F.open_markdown_file(session_note, nil, true)
 
-      vim.ui.input(
+      Snacks.input(
         {prompt="Insert todo heading  " .. session_name},
         function(heading)
           if heading and heading ~= "" then
             vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
             vim.cmd.write()
-          else
-            vim.cmd.close()
           end
+          vim.cmd.close()
         end)
     elseif not session_name or session_name == "" then
       F.ERROR("Not in a session")
@@ -489,15 +488,14 @@ map('n', "<C-a>",
 -- Map =ai to format without losing your cursor position
 map('n', F.alt_key("<%s-f>") , function()
   -- 1. Save the current window and cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+
   -- 2. Format the text block using mini.ai
   F.m_feedkey('=ai', 'ntm')
 
   -- 3. Wait for the keystrokes to finish, then snap the cursor back
   vim.schedule(function()
-    -- Ensure the window still exists before setting the cursor
-    if vim.api.nvim_win_is_valid(current_win) then
-      vim.api.nvim_win_set_cursor(current_win, cursor_pos)
-    end
+    vim.api.nvim_win_set_cursor(0, cursor_pos)
   end)
 end, { desc = "Format around inner block (keeps cursor position)" })
 
