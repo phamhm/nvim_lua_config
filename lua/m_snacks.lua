@@ -71,7 +71,6 @@ end
 
 local function move_selected(picker, item)
   local selected = vim.iter(picker:selected()):map(function(selected) return selected._path end):totable()
-  local current_path = item._path
 
   local current_path_dir = item._path
   if vim.uv.fs_stat(current_path_dir).type == "file" then
