@@ -99,7 +99,7 @@ map({ "i", "v", "s", "n"}, "<C-c>",
 local function query(query_url)
   return function(input)
     if input and input ~="" then
-      local query = vim.uri_encode(input)
+      local query = vim.uri.encode(input)
       vim.ui.open(query_url .. query)
       local LOG_FILE = string.format("%s/logs/google_%s.md",vim.g.m_notes_path, os.date("%Y-%m-%d"))
       local log = string.format("[%s] %s", os.date("%H:%M"), input)
