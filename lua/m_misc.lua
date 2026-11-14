@@ -10,6 +10,7 @@ local function multicursor_count()
   end
 end
 
+vim.api.nvim_set_hl(0, "FlashLabel", { fg = "red", bold = true })
 return {
   -- {'easymotion/vim-easymotion'},
   {

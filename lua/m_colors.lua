@@ -1,7 +1,7 @@
 local m_group_styles = {
   -- ["Normal"]        = { fg = "#CCCCCC", bg = "None" },
   -- ["NormalFloat"]   = { fg = "#CCCCCC", bg = "None" },
-  -- ["String"]        = { fg = "#D6DFD4" },
+  ["String"]        = { fg = "#D6DFD4" },
   ["Comment"]       = { fg = "#777777" },
   ["Visual"]        = { fg = "#000000", bg = "#888888"},
   ["Identifier"]    = { fg = "#DDDDDD", bold = true },
@@ -45,8 +45,6 @@ local m_group_styles = {
   -- ["NvimTreeGitNewIcon"]     = { fg = "#87AFD7", bg = "None" },
   -- ["NvimTreeGitRenamedIcon"] = { fg = "#87AFD7", bg = "None" },
   -- ["NvimTreeGitStagedIcon"]  = { fg = "#87AFD7", bg = "None" },
-  -- my customs
-  ["FlashLabel"]       = { fg = "red", bold = true },
 }
 
 
