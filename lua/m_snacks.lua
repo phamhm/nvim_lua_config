@@ -12,7 +12,12 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- TODO: how to make multiple dirs readable
-local function m_set_title(picker, item)
+local function m_set_title(picker, item, path)
+  if path and path ~= "" then
+    picker.list.win:set_title(path)
+    return
+  end
+
   if picker and picker.list and picker.list.win then
     local source = picker.opts.source
     local dirs = picker.opts.dirs
@@ -103,20 +108,23 @@ local function move_selected(picker, item)
   end
 end
 
+-- FIXME: is there another uproot one? 
 local function m_explorer_root(picker, item)
-  local markers = { '.git' }
+  local markers = { '.git', "package.json", ".env" }
 
-  local current_cwd = picker.init_opts.cwd
+  local current_cwd = picker.opts.cwd
   local root = vim.fs.root( current_cwd, markers )
-  F.NOTIFY("root :" .. root)
 
   picker:set_cwd(root)
   picker:find()
+  m_set_title(picker, _, root)
 end
 
-local TODOS = {
-  ["TODO"] = { fg = "pink", bold = true },
-  ["FIXME"] = { fg = "cyan", bold = true },
+local TODOS     = {
+  ["TODO"]      = { fg = "pink", bold   = true },
+  ["FIXME"]     = { fg = "cyan", bold   = true },
+  ["WARN"]      = { fg = "yellow", bold = true },
+  ["IMPORTANT"] = { fg = "red", bold    = true },
 }
 for key, style in pairs(TODOS) do
   vim.api.nvim_set_hl(0, key .. "Hl", style)
@@ -306,8 +314,6 @@ local m_grep_actions = {
   m_cd_root = function(picker, item)
     local markers = { '.git', 'app.py', 'package.json', ".env"}
 
-    local current_cwd = picker.init_opts.cwd
-
     local current_cwd
     if picker.opts.cwd then
       current_cwd = picker.opts.cwd
@@ -436,6 +442,7 @@ local m_snacks = {
               keys = {
                 ["<C-CR>"] = {"jump", mode = {"i", "n"}},
                 [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
+                [F.alt_key("<%s-u>")] = { "m_explorer_up", mode = { "n", "i" } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n", "i" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n", "i" } },
               }
