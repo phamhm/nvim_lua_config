@@ -469,7 +469,7 @@ map('n', "<C-a>",
       Snacks.input(
         {prompt="Insert todo heading  " .. session_name},
         function(heading)
-          if heading and heading ~= "" then
+          if heading and vim.trim(heading) ~= "" then
             vim.api.nvim_buf_set_lines(0, -1, -1, false, {"", "# "..heading })
             vim.cmd.write()
           end
