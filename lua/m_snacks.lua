@@ -431,20 +431,19 @@ local m_snacks = {
         explorer = {
           auto_close = true,
           actions = {
-            zip_selected  = zip_selected,
-            diff_selected = diff_selected,
-            m_tcd         = m_tcd,
-            m_explorer_up = m_explorer_up,
-            move_selected = move_selected,
-            list_up = m_list_up,
-            list_down = m_list_down,
+            zip_selected    = zip_selected,
+            diff_selected   = diff_selected,
+            m_tcd           = m_tcd,
+            m_explorer_up   = m_explorer_up,
+            move_selected   = move_selected,
+            list_up         = m_list_up,
+            list_down       = m_list_down,
             m_explorer_root = m_explorer_root,
-            m_confirm = m_confirm,
+            m_confirm       = m_confirm,
           },
           win = {
             input = {
               keys = {
-                ["<C-CR>"] = {"jump", mode = {"i", "n"}},
                 [F.alt_key("<C-%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n", "i" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n", "i" } },
