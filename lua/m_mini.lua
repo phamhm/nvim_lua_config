@@ -160,17 +160,6 @@ local m_mini = {
       F.map('c', '<C-k>', F.fn_feedkey("<C-p>"), { expr = true, desc = 'Prev history / completion' })
     end,
   },
-  {
-    'nvim-mini/mini-git',
-    version = '*', -- Use main or stable branch
-    lazy=false, -- ministatusline won't work if lazy loaded
-    config = function()
-      require('mini.git').setup()
-    end,
-    keys = {
-      {"<leader>gc", function() MiniGit.show_at_cursor() end, desc = "show git at cursor"}
-    }
-  },
 }
 
 -- {key, fn, desc, mode}
