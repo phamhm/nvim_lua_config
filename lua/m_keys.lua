@@ -20,8 +20,7 @@ map(
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', F.alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
--- map('n', alt_key('<%s-r>', 2), "<cmd>restart<CR>", {desc="restart nvim"}) --
+map('n', F.alt_key('<C-%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
 -- restart does weird thing
 
 map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
@@ -62,8 +61,8 @@ map('n', F.alt_key('<C-%s-f>'),
       vim.cmd([[g/^\s*[\*-]\s*$/d]])
     end
   end,{silent = true, desc="format buffer"})
-map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="in middle of line, and still new line below"})
-map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="in middle of line, and still new line below"})
+map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="middle of line & new line below"})
+map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="middle of line & new line above"})
 -- map({'i', 'n'}, "<C-S-Tab>", "<cmd>bprevious<cr>",{silent = true, desc="buffer previous"})
 -- map({'i', 'n'}, "<C-Tab>", "<cmd>bnext<cr>",{silent = true, desc="buffer next"})
 
@@ -141,19 +140,54 @@ end, {desc="googling google"})
 map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
 map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
 
-map({"v", "n"}, "<C-y>", function()
-  if vim.fn.mode() == "n" then
+-- registers manipulations
+map({"n", "v"},
+  "<leader>ra",
+  function() 
+    F.NOTIFY('Append current line to @"')
+    local lines = ""
+    if vim.fn.mode() == "n" then
+      lines = vim.api.nvim_get_current_line()
+    else
+      local start_pos = vim.fn.getpos('v')
+      local end_pos = vim.fn.getpos('.')
+      lines = vim.fn.getregion(start_pos, end_pos, { type = vim.fn.mode() })
+      lines = table.concat(lines, "\n")
+    end
+
+    local new_reg = string.format("%s\n%s", vim.fn.getreg('"'), lines):gsub("\n\n", "\n")
+
+    vim.fn.setreg('"',  new_reg )
+  end,
+  {desc = 'add lines to the register @"'}
+)
+
+map({"n"}, "<leader>rc", 
+  function() 
     vim.fn.setreg("+", vim.fn.getreg('"'))
     F.NOTIFY('Copied @" into @+ :'.. vim.fn.getreg('"'))
-  else
-    vim.cmd.normal([["+y]])
-    vim.cmd.normal([["*y]])
-    local reg = vim.fn.getreg('+')
-    F.NOTIFY("Yank into @+ :"..reg)
-  end
-end, {desc = "yank virtual into system clipboard"})
+  end , 
+  {desc = 'Copy @" into @+'})
 
--- map("n", "<leader>pp", '"*p', {desc="paste @* clipboard", remap=false})
+map({"n", "v"}, "<leader>ry", 
+  function() 
+    F.NOTIFY('Yank line(s) into @"')
+
+    local lines = ""
+    if vim.fn.mode() == "n" then
+      lines = vim.api.nvim_get_current_line()
+    else
+      local start_pos = vim.fn.getpos('v')
+      local end_pos = vim.fn.getpos('.')
+      lines = vim.fn.getregion(start_pos, end_pos, { type = vim.fn.mode() })
+      lines = table.concat(lines, "\n")
+    end
+
+    vim.fn.setreg("+", lines)
+  end , 
+  {desc = 'Yank line(s) into @"'})
+
+-- end registers manipulation
 
 map('n', F.alt_key("<%s-o>",3), function()
   local file = vim.fn.expand('%')
@@ -175,7 +209,7 @@ map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc 
 --   F.clear_status()
 -- end, {desc = " clear global vim.g"})
 
-map('i', "<C-p>", function()
+map('i', "<C-v>", function()
   -- if markdown, call the scripts/get_clipboard.type.zsh
   --     the zsh has different code dependent on OS.
   -- if not an image, paste from clipboard @+
@@ -187,7 +221,7 @@ map('i', "<C-p>", function()
   -- only check if it's markdown because running running a zsh script is slow.
   if vim.bo.filetype == "markdown" then
     local clip_board_zsh_path = vim.g.m_scripts .. '/get_clipboard_type.zsh'
-    local result = vim.system({ "zsh", vim.fn.expand(clip_board_zsh_path) }, {
+    local result = vim.system({ "zsh", vim.fs.abspath(clip_board_zsh_path) }, {
       text = true, -- Automatically decode stdout/stderr as strings
     }):wait()
    code = result.code
@@ -196,11 +230,21 @@ map('i', "<C-p>", function()
   if code == 1 then
     -- paste from the @+ system clipboard register,
     -- select the pasted line(s) and autoindent
+    local cursor_pos = vim.api.nvim_win_get_cursor(0)
+
     local reg_value = vim.fn.getreg('+')
     local lines = vim.split(reg_value, '[\r\n]+', {})
+
     vim.api.nvim_put(lines, "c", false, true)
+
     vim.cmd("stopinsert")
-    vim.cmd('normal `[V`]=')
+
+    -- vim.cmd('normal `[V`]=')
+    F.m_feedkey('=ai', 'ntm')
+
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(0, cursor_pos)
+    end)
   elseif code == 0 and vim.bo.filetype == "markdown" then
     vim.cmd("PasteImage")
   end
@@ -219,19 +263,7 @@ local function capture_note(lines, filetype)
     local header = {"", string.format("# %s [%s]", input, new_date ), ""}
     local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
 
-    local yaml = {
-      "---",
-      "tags:",
-      " - "..filetype,
-      "---",
-      ""
-    }
-
     local lines_list = {header, leading, lines, ending}
-    local stat = vim.uv.fs_stat(target_file)
-    if stat == nil then
-      lines_list = vim.list_extend(yaml, lines_list)
-    end
 
     local note = vim.iter(lines_list):flatten():totable()
     vim.fn.writefile(note, target_file, "a")
@@ -302,8 +334,8 @@ map("n", "<leader>ww",
   {desc = "My Notes" }
 )
 
-map("n", "<leader>ss", 
-  function() 
+map("n", "<leader>ss",
+  function()
     local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
     local session_commands = {
       {text = "select", fn = MiniSessions.select},
@@ -397,7 +429,6 @@ map("n", "<leader>ss",
     F.menu_commands(session_commands, "Session commands", "")
   end, {desc = "session management"})
 
--- NOTE: this is getting awakward. stuck with <leader>0
 map("n", '<leader>sn',
   function()
     local session_path, session_name, session_note = F.get_session_paths()
@@ -485,7 +516,7 @@ map('n', "<C-a>",
             local m_heading = {"", "# "..heading }
             if target_buf then
               vim.api.nvim_buf_set_lines(target_buf, -1, -1, false, m_heading)
-              vim.cmd.write()
+              vim.api.nvim_buf_call(target_buf, vim.cmd.write )
             else
               if not vim.uv.fs_stat(session_note_abspath) then
                 F.ERROR("Session Note file does NOT exist")

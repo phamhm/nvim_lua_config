@@ -1,5 +1,8 @@
 -- TODO: clean up diagnostics
 
+-- Rules for keys
+-- 1. If prefix C-, only expand Snacks.actions. Don't overwrite them.
+-- 2. Custom Actions starts with C-%s
 local F = require("utils.functions")
 
 -- disable autocompletion in the windows. will work on vim.ui.open
@@ -346,8 +349,8 @@ local m_keys = {
   ["<C-q>"] = { "cancel", mode = { "i", "n" } },
   ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
   ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
-  [F.alt_key("<%s-g>")] = { "m_grep", mode = { "i", "n" } },
-  [F.alt_key("<%s-e>")] = { "m_edit", mode = { "i", "n" } },
+  [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
+  [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
 }
 
 local m_snacks = {
@@ -450,12 +453,12 @@ local m_snacks = {
             },
             list = {
               keys = {
-                ["Z"]     = { 'zip_selected', mode  = { "n" } },
                 -- ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
-                ["D"]     = { 'diff_selected', mode = { "n" } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n" } },
-                ["M"]     = { "move_selected", mode = { "n" } },
+                [F.alt_key("<C-%s-z>")]     = { 'zip_selected', mode  = { "n" } },
+                [F.alt_key("<C-%s-d>")]     = { 'diff_selected', mode = { "n" } },
+                [F.alt_key("<C-%s-m>")]     = { "move_selected", mode = { "n" } },
                 [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
               }
             }
@@ -541,17 +544,13 @@ local m_snacks = {
     words = { enabled = false },
     styles = {
       list = {
-        keys = {
-          -- ["<C-c>"] = { "close", mode = { "i", "n" } },
-        }
+        keys = { }
       },
       input = {
         -- relative = "editor",
         -- position = "center",
         row = vim.o.lines/2-10,
-        keys = {
-          -- ["<C-c>"] = { "close", mode = { "i", "n" } },
-        }
+        keys = { }
       },
     },
 
@@ -594,7 +593,6 @@ local m_snacks = {
     },
     { "<C-S-l>", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<C-Tab>", function() Snacks.picker.buffers() end, desc = "Buffers" },
-    { "<C-S-Tab>", "<cmd>bprevious<cr>", desc = "previous buffer" },
     { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command History" },
     -- { "<C-n>", function() Snacks.picker.notifications() end, desc = "Notification History" },
     { "<leader>sh",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
@@ -678,7 +676,17 @@ local m_snacks = {
         Snacks.picker.grep({ cwd = cwd })
       end, desc = "Grep current file's directory" },
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
-    { F.alt_key('<%s-r>'), function() Snacks.picker.registers({ confirm = {"paste", "close"} } ) end, desc = "Registers" },
+    {
+      F.alt_key('<C-%s-r>'),
+      function() 
+        Snacks.picker.registers({
+          confirm = { "paste", "close" },
+          layout = { hidden = { 'preview'} },
+        }) 
+      end,
+      desc = "Registers",
+      mode = {"i", "n"}
+    },
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)
         if word == "" then return end

@@ -106,7 +106,7 @@ local function picker_list_files(m_path)
         vim.endswith(name, ".rdp")) then
         local full_path = dir_path ..  vim.trim(name)
         table.insert(items, {
-          text = "script:" .. vim.trim(name),    -- What shows up and is searchable in the picker
+          text = " " .. vim.trim(name),    -- What shows up and is searchable in the picker
           link = vim.trim(full_path),     -- Store the URL to use on confirmation
         })
       end
