@@ -26,7 +26,7 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', F.alt_key('<%s-w>'),
+map('n', '<C-q>',
   function()
     -- only delete buffer if there is no other windows with the same buffer
     local bufnr = vim.api.nvim_get_current_buf()
