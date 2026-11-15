@@ -55,7 +55,8 @@ map('n', F.alt_key('<C-%s-f>'),
     if vim.bo.filetype == "markdown"  then
       vim.cmd([[g/^\s*[\*-]\s*$/d]])
     end
-    vim.cmd([[%s/\n\{3,}/\r\r/e]])
+    vim.cmd([[%s/\n\{3,}/\r\r/e]]) -- clean up multiple blank lines
+    vim.cmd('nohlsearch')
   end,{silent = true, desc="format buffer"})
 map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="middle of line & new line below"})
 map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="middle of line & new line above"})
