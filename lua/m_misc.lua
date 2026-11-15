@@ -75,7 +75,14 @@ return {
           lualine_b = {
           },
           lualine_c = {
-            'location',
+            { 'location', padding = {left =0 , right = 0}},
+            {
+              'mode',
+              fmt = function(str)
+                return string.format("[%s]", str:sub(1, 1))
+              end,
+              padding = {left = 1, right = 0}
+            },
             {
               "filename",
               path = 1,
