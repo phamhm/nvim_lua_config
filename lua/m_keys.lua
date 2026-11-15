@@ -527,7 +527,7 @@ map("n", "<C-/>", function()
   vim.cmd("startinsert")
 end , {desc = "Toggle terminal"})
 
-map( "t", "<Esc>", vim.cmd.stopinsert
+map( "t", "<Esc>", vim.cmd.stopinsert,
   {desc = "stop insert"}
 )
 
