@@ -4,9 +4,7 @@ local ts = require("mini.trailspace")
 
 local CAPTURE_NOTE_DIR = vim.fn.expand(vim.g.m_notes_path .. '/CAPTURE_NOTES')
 
-map(
-  'n',
-  "<leader>mk",
+map( 'n', "<leader>mk",
   function()
     Snacks.picker.keymaps({
       layout = {hidden = {"preview"}},
@@ -27,9 +25,6 @@ map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
 map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
-
-
-map("n", "<leader>vn", "<cmd>vnew<cr>", {desc = "new vertical"})
 
 map('n', '<C-q>',
   function()
@@ -163,13 +158,13 @@ map({"n", "v"},
 map({"n"}, "<leader>rc", 
   function() 
     vim.fn.setreg("+", vim.fn.getreg('"'))
-    F.NOTIFY('Copied @" into @+ :'.. vim.fn.getreg('"'))
+    F.NOTIFY('Copied @" into @+ :\n'.. vim.fn.getreg('"'))
   end , 
   {desc = 'Register Copy @" into @+'})
 
 map({"n", "v"}, "<leader>ry", 
   function() 
-    F.NOTIFY('Yank line(s) into @"')
+    F.NOTIFY('Yank line(s) into @+')
 
     local lines = ""
     if vim.fn.mode() == "n" then
@@ -272,14 +267,16 @@ map('i', "<C-v>", function()
 
     vim.api.nvim_put(lines, "c", false, true)
 
-    vim.cmd("stopinsert")
+    if #lines > 1 then
+      vim.cmd("stopinsert")
 
-    -- vim.cmd('normal `[V`]=')
-    F.m_feedkey('=ai', 'ntm')
+      -- vim.cmd('normal `[V`]=')
+      F.m_feedkey('=ai', 'ntm')
 
-    vim.schedule(function()
-      vim.api.nvim_win_set_cursor(0, cursor_pos)
-    end)
+      vim.schedule(function()
+        vim.api.nvim_win_set_cursor(0, cursor_pos)
+      end)
+    end
   elseif code == 0 and vim.bo.filetype == "markdown" then
     vim.cmd("PasteImage")
   end
@@ -449,7 +446,7 @@ map("n", "<leader>ss",
           if new_session_name and new_session_name ~= '' then
             require('snacks').bufdelete.all()
             MiniSessions.write(new_session_name)
-            local session_note = string.format("%s/%s.md", session_path, new_session_name)
+            local _, _, session_note = F.get_session_paths()
             local yaml = {
               "---",
               "session_path:",
@@ -466,21 +463,21 @@ map("n", "<leader>ss",
 
 map("n", '<leader>sn',
   function()
-    local session_path, session_name, session_note = F.get_session_paths()
+    local session_dir, session_name, session_note = F.get_session_paths()
     if session_name and vim.uv.fs_stat(session_note) then
       F.snacks_grep_markdown(session_note)
     elseif not session_name or session_name == "" then
       F.ERROR("Not in a session")
     else
       F.ERROR("SessionNote NOT found:" .. session_note)
-      vim.cmd.edit(session_path)
+      vim.cmd.edit(session_dir)
     end
   end,
   {desc="open session_path"}
 )
 map("n", "<leader>1",
   function()
-    local session_path, session_name, session_note = F.get_session_paths()
+    local session_dir, session_name, session_note = F.get_session_paths()
     local current_file = vim.fn.expand("%:p")
 
     -- close window if in it. Toggle behavior
@@ -495,7 +492,7 @@ map("n", "<leader>1",
       F.ERROR("Not in a session")
     else
       F.ERROR("SessionNote NOT found:" .. session_note)
-      vim.cmd.edit(session_path)
+      vim.cmd.edit(session_dir)
     end
   end, {desc = "session note"})
 
@@ -529,7 +526,7 @@ map("t", "<C-/>", function() vim.cmd("stopinsert") end, {desc = "Escape terminal
 
 map('n', "<C-a>",
   function()
-    local session_path, session_name, session_note = F.get_session_paths()
+    local session_dir, session_name, session_note = F.get_session_paths()
     if session_name and vim.uv.fs_stat(session_note) then
       Snacks.input(
         {prompt="Insert todo heading  " .. session_name},
@@ -570,7 +567,7 @@ map('n', "<C-a>",
       return
     else
       F.ERROR("SessionNote NOT found:" .. session_note)
-      vim.cmd.edit(session_path)
+      vim.cmd.edit(session_dir)
       return
     end
   end, {desc = "add note to session"})

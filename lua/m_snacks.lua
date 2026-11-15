@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- TODO: how to make multiple dirs readable
+-- DONE: how to make multiple dirs readable
 local function m_set_title(picker, item, path)
   if path and path ~= "" then
     picker.list.win:set_title(path)

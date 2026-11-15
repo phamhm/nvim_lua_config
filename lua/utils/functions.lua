@@ -448,6 +448,7 @@ function F.open_markdown_file(path, lnum, pinned)
       vim.wo[win_id].winfixwidth = true
       vim.cmd(string.format("vertical resize %s", note_width))
     end
+    vim.cmd("normal! Gzt")
   else
     F.WARN("Path not found:" .. path)
   end
@@ -455,10 +456,10 @@ end
 
 
 function F.get_session_paths()
-  local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
+  local session_dir = vim.fs.abspath(string.format("%s/sessions/",vim.g.m_notes_path))
   local session_name = vim.fs.basename(vim.v.this_session)
-  local session_note = string.format("%s/%s.md", session_path, session_name):gsub("//", "/")
-  return session_path, session_name, session_note
+  local session_note_path = string.format("%s/%s.md", session_dir, session_name):gsub("//", "/")
+  return session_dir, session_name, session_note_path
 end
 
 function F.snacks_grep_markdown(path, m_confirm)
