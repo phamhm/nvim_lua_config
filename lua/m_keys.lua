@@ -513,16 +513,39 @@ map("n", "<C-/>", function()
     return
   elseif #terminal_bufs == 1 then
     local bufnr = terminal_bufs[1]
-    vim.cmd("belowright split")
-    vim.api.nvim_win_set_buf(0, bufnr)
+    local winid = vim.fn.bufwinid(bufnr)
+    if winid ~= -1 then
+      vim.api.nvim_set_current_win(winid)
+    else
+      vim.cmd("belowright split")
+      vim.api.nvim_win_set_buf(0, bufnr)
+    end
   else
     vim.cmd("belowright split | terminal")
   end
+  vim.cmd(string.format("horizontal resize %d", 10))
   vim.cmd("startinsert")
+end , {desc = "open/find terminal"})
 
-  -- Print the buffer numbers
-end , {desc = "open terminal"})
-map("t", "<C-/>", function() vim.cmd("stopinsert") end, {desc = "Escape terminal to normal mode"})
+map( "t", "<Esc>", vim.cmd.stopinsert
+  {desc = "stop insert"}
+)
+
+map( "t", "<C-w>w", 
+  function() 
+    vim.cmd("stopinsert") 
+    F.m_feedkey("<C-w>w") 
+  end,
+  {desc = "terminal move to other windows"}
+)
+
+map( "t", "<C-/>",
+  function() 
+    vim.cmd("stopinsert") 
+    vim.api.nvim_win_close(0, false)
+  end,
+  {desc = "Open or hide terminal below"}
+)
 
 map('n', "<C-a>",
   function()
@@ -626,7 +649,7 @@ map({"v", "n"}, "<leader>xe",
 
 
 
-vim.keymap.set('n', F.alt_key('<C-down>'),
+vim.keymap.set('n', '<C-down>',
   function()
     if F.count_normal_windows() ~= 2 then
       F.WARN("Viewable windows <> 2")
@@ -642,7 +665,7 @@ vim.keymap.set('n', F.alt_key('<C-down>'),
     end)
   end, { desc = 'Scroll other window down 1 line' })
 
-vim.keymap.set('n', F.alt_key('<C-up>'),
+vim.keymap.set('n', '<C-up>',
   function()
     if F.count_normal_windows() ~= 2 then
       F.WARN("Viewable windows <> 2")

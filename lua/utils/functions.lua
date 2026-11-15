@@ -454,7 +454,6 @@ function F.open_markdown_file(path, lnum, pinned)
   end
 end
 
-
 function F.get_session_paths()
   local session_dir = vim.fs.abspath(string.format("%s/sessions/",vim.g.m_notes_path))
   local session_name = vim.fs.basename(vim.v.this_session)
