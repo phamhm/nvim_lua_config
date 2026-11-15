@@ -525,7 +525,7 @@ map("n", "<C-/>", function()
   end
   vim.cmd(string.format("horizontal resize %d", 10))
   vim.cmd("startinsert")
-end , {desc = "open/find terminal"})
+end , {desc = "Toggle terminal"})
 
 map( "t", "<Esc>", vim.cmd.stopinsert
   {desc = "stop insert"}
