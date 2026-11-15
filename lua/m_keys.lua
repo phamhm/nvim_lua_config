@@ -55,6 +55,7 @@ map('n', F.alt_key('<C-%s-f>'),
     if vim.bo.filetype == "markdown"  then
       vim.cmd([[g/^\s*[\*-]\s*$/d]])
     end
+    vim.cmd([[%s/\n\{3,}/\r\r/e]])
   end,{silent = true, desc="format buffer"})
 map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="middle of line & new line below"})
 map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="middle of line & new line above"})
@@ -217,7 +218,6 @@ vim.keymap.set({ "n", "x", "o" }, "W", function()
     pattern = string.format("\\%%%dl\\<\\w", line),
   })
 end, { desc = "Flash words on current line" })
-
 
 map('n', F.alt_key("<%s-o>",3), function()
   local file = vim.fn.expand('%')
@@ -531,17 +531,17 @@ map( "t", "<Esc>", vim.cmd.stopinsert,
   {desc = "stop insert"}
 )
 
-map( "t", "<C-w>w", 
-  function() 
-    vim.cmd("stopinsert") 
-    F.m_feedkey("<C-w>w") 
+map( "t", "<C-w>w",
+  function()
+    vim.cmd("stopinsert")
+    F.m_feedkey("<C-w>w")
   end,
   {desc = "terminal move to other windows"}
 )
 
 map( "t", "<C-/>",
-  function() 
-    vim.cmd("stopinsert") 
+  function()
+    vim.cmd("stopinsert")
     vim.api.nvim_win_close(0, false)
   end,
   {desc = "Open or hide terminal below"}
@@ -609,7 +609,6 @@ map('n', F.alt_key("<%s-f>") , function()
   end)
 end, { desc = "Format around inner block (keeps cursor position)" })
 
-
 map({"n", "i"}, "<C-t>", "<cmd>t.<cr>", {desc="ex t copy line reserve cursor column"})
 
 vim.keymap.set('n', 'm', function()
@@ -620,7 +619,6 @@ vim.keymap.set('n', 'm', function()
     F.NOTIFY(string.format('Mark set: %s', char))
   end
 end, { desc = 'Set mark with notification' })
-
 
 map({"v", "n"}, "<leader>xe",
   function()
@@ -642,8 +640,6 @@ map({"v", "n"}, "<leader>xe",
     end
 
   end, {desc = "execute highlited text as lua code"})
-
-
 
 vim.keymap.set('n', '<C-down>',
   function()
@@ -677,12 +673,11 @@ vim.keymap.set('n', '<C-up>',
     end)
   end, { desc = 'Scroll other window up 1 line' })
 
-
 -- tresitters
 
 -- Jump to start ('left') or end ('right') of next/previous function ('f')
 local mini_ai_move = function(search_method)
-  return function() 
+  return function()
     local ok, char = pcall(vim.fn.getcharstr)
     if ok and char and char:match('%a') then
       MiniAi.move_cursor("left", "a", char, { search_method = search_method })
@@ -703,26 +698,26 @@ local treesitter_select = function(target)
     if vim.fn.mode() == "n" then
       vim.cmd("normal! v")
     end
-    vim.treesitter.select(target) 
+    vim.treesitter.select(target)
   end
 end
-map({"n", "v"}, F.alt_key("<%s-.>"), 
+map({"n", "v"}, F.alt_key("<%s-.>"),
   treesitter_select("parent"),
   {desc = "treesitter select parent"})
-map({"n", "v"}, F.alt_key("<C-%s-.>"), 
+map({"n", "v"}, F.alt_key("<C-%s-.>"),
   treesitter_select("child"),
   {desc = "treesitter select child"})
-map({"n", "v"}, F.alt_key("<%s-n>"), 
-  treesitter_select("next"), 
+map({"n", "v"}, F.alt_key("<%s-n>"),
+  treesitter_select("next"),
   {desc = "treesitter select next"})
-map({"n", "v"}, F.alt_key("<%s-N>"), 
-  treesitter_select("extend_next"), 
+map({"n", "v"}, F.alt_key("<%s-N>"),
+  treesitter_select("extend_next"),
   {desc = "treesitter select next"})
-map({"n", "v"}, F.alt_key("<%s-p>"), 
-  treesitter_select("prev"), 
+map({"n", "v"}, F.alt_key("<%s-p>"),
+  treesitter_select("prev"),
   {desc = "treesitter select prev"})
-map({"n", "v"}, F.alt_key("<%s-P>"), 
-  treesitter_select("extend_prev"), 
+map({"n", "v"}, F.alt_key("<%s-P>"),
+  treesitter_select("extend_prev"),
   {desc = "treesitter select prev"})
 
 -- end treesitter
