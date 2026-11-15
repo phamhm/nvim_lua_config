@@ -623,3 +623,37 @@ map({"v", "n"}, "<leader>xe",
     end
 
   end, {desc = "execute highlited text as lua code"})
+
+
+
+vim.keymap.set('n', F.alt_key('<C-down>'), 
+  function() 
+    if F.count_normal_windows() ~= 2 then
+      F.WARN("Viewable windows <> 2")
+      return
+    end
+
+    local current_win_id = vim.api.nvim_get_current_win()
+
+    local cursor_pos = vim.api.nvim_win_get_cursor(current_win_id)
+    F.m_feedkey('<c-w>w<c-e><c-w>wh')
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(current_win_id, cursor_pos)
+    end)
+  end, { desc = 'Scroll other window down 1 line' })
+
+vim.keymap.set('n', F.alt_key('<C-up>'), 
+  function() 
+    if F.count_normal_windows() ~= 2 then
+      F.WARN("Viewable windows <> 2")
+      return
+    end
+
+    local win_id = vim.api.nvim_get_current_win()
+
+    local cursor_pos = vim.api.nvim_win_get_cursor(win_id)
+    F.m_feedkey('<c-w>w<c-y><c-w>wh')
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(win_id, cursor_pos)
+    end)
+  end, { desc = 'Scroll other window up 1 line' })

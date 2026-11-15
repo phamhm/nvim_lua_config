@@ -489,4 +489,16 @@ function F.snacks_grep_markdown(path, m_confirm)
   })
 end
 
+function F.count_normal_windows()
+  local count = 0
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local config = vim.api.nvim_win_get_config(win)
+    -- Floating windows have a non-empty 'relative' field; normal splits have ""
+    if config.relative == "" then
+      count = count + 1
+    end
+  end
+  return count
+end
+
 return F
