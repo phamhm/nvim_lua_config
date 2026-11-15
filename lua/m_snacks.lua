@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- DONE: how to make multiple dirs readable
+-- TODO: how to make multiple dirs readable
 local function m_set_title(picker, item, path)
   if path and path ~= "" then
     picker.list.win:set_title(path)
@@ -385,7 +385,6 @@ local m_snacks = {
     notifier = {
       enabled = true,
       timeout = 5000,
-      top_down = false,
     },
     picker = {
       on_show = function(picker)
@@ -514,13 +513,13 @@ local m_snacks = {
         hidden = {"input", "preview"},
         layout = {
           min_width = 0,
-          width = 0.4,
+          width = 0.7,
           height = 0.6,
           box = "horizontal",
           {
             box = "vertical",
-            { win = "list", border = "rounded" },
             { win = "input", height = 1, border = "rounded" },
+            { win = "list", border = "rounded" },
           },
           {
             win = "preview",
