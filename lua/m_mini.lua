@@ -37,8 +37,8 @@ local m_mini = {
       ai.setup({
         search_method = "cover_or_next",
         mappings = {
-          goto_left = '[[',
-          goto_right = ']]', -- really don't like this
+          goto_left = '',
+          goto_right = '', -- really don't like this
         },
         n_lines = 200, -- Extend search scope for larger textobjects. 50 is fine
         custom_textobjects = {

@@ -621,10 +621,6 @@ vim.keymap.set('n', 'm', function()
   end
 end, { desc = 'Set mark with notification' })
 
-map("v", ".", function() vim.treesitter.select("parent") end, {desc = "treesitter select parent"})
-map("v", F.alt_key("<%s-.>"), function() vim.treesitter.select("child") end, {desc = "treesitter select child"})
-map("v", F.alt_key("<%s-n>"), function() vim.treesitter.select("next") end, {desc = "treesitter select next"})
-map("v", F.alt_key("<%s-p>"), function() vim.treesitter.select("prev") end, {desc = "treesitter select prev"})
 
 map({"v", "n"}, "<leader>xe",
   function()
@@ -680,3 +676,45 @@ vim.keymap.set('n', '<C-up>',
       vim.api.nvim_win_set_cursor(win_id, cursor_pos)
     end)
   end, { desc = 'Scroll other window up 1 line' })
+
+
+-- tresitters
+
+-- Jump to start ('left') or end ('right') of next/previous function ('f')
+vim.keymap.set( { 'n', 'x', 'o' }, ']]',
+  function() 
+    local ok, char = pcall(vim.fn.getcharstr)
+    if ok and char and char:match('%a') then
+      MiniAi.move_cursor("left", "a", char, { search_method = "next" })
+    end
+  end,
+  { desc = 'treesitter next mini ai start' }
+)
+vim.keymap.set( { 'n', 'x', 'o' }, '[[',
+  function() 
+    local ok, char = pcall(vim.fn.getcharstr)
+    if ok and char and char:match('%a') then
+      MiniAi.move_cursor("left", "a", char, { search_method = "prev" })
+    end
+  end,
+  { desc = 'treesitter prev mini ai start' }
+)
+
+map({"n", "v"}, F.alt_key("<%s-.>"), 
+  function() 
+    if vim.fn.mode() == "n" then
+      vim.cmd("normal! v")
+    end
+    vim.treesitter.select("parent") 
+  end, {desc = "treesitter select parent"})
+map({"n", "v"}, F.alt_key("<C-%s-.>"), 
+  function() 
+    if vim.fn.mode() == "n" then
+      vim.cmd("normal! v")
+    end
+    vim.treesitter.select("child") 
+  end, {desc = "treesitter select child"})
+map("v", F.alt_key("<%s-n>"), function() vim.treesitter.select("next") end, {desc = "treesitter select next"})
+map("v", F.alt_key("<%s-p>"), function() vim.treesitter.select("prev") end, {desc = "treesitter select prev"})
+
+-- end treesitter
