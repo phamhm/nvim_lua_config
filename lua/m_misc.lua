@@ -81,7 +81,7 @@ return {
               fmt = function(str)
                 return string.format("[%s]", str:sub(1, 1))
               end,
-              padding = {left = 0, right = 0}
+              padding = {left = 1, right = 0}
             },
             {
               "filename",

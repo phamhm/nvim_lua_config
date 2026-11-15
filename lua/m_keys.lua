@@ -710,7 +710,7 @@ map({"n", "v"}, F.alt_key("<%s-.>"),
   treesitter_select("parent"),
   {desc = "treesitter select parent"})
 map({"n", "v"}, F.alt_key("<C-%s-.>"), 
-  treesitter_select(child),
+  treesitter_select("child"),
   {desc = "treesitter select child"})
 map({"n", "v"}, F.alt_key("<%s-n>"), 
   treesitter_select("next"), 
