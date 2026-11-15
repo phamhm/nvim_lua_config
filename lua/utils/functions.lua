@@ -417,7 +417,7 @@ function F.open_markdown_file(path, lnum, pinned)
   if pinned == nil then
     pinned = true
   end
-  local note_width = 60
+  local note_width = 70
   local buf_found = false
   if path ~= "" then
     path = vim.fn.expand(path)
