@@ -1,5 +1,3 @@
-local F = require('utils.functions')
-
 local function multicursor_count()
   local ns = vim.api.nvim_create_namespace('nvim.multicursor')
   local mc_count = #vim.api.nvim_buf_get_extmarks(0, ns, 0, -1, {})

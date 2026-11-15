@@ -4,17 +4,15 @@ local m_todo =  ""
 local m_todo_path = ""
 local m_status = ""
 
-F.NOTIFY = function(msg)
-  if vim.islist(msg) then
-    msg = table.concat(msg, "\n")
-  end
-  vim.notify(msg)
+local function f_msg(msg)
+  return vim.islist(msg) and table.concat(msg, "\n") or msg
 end
-F.ERROR  = function(msg) error(vim.inspect(msg)) end
-F.WARN   = function(msg) vim.api.nvim_echo({ { vim.inspect(msg), "WarningMsg" } }, true, {}) end
-F.INFO   = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.INFO) end
-F.DEBUG  = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.DEBUG) end
-F.TRACE  = function(msg) vim.notify(vim.inspect(msg), vim.log.levels.TRACE) end
+F.NOTIFY = function(msg) vim.notify(f_msg(msg), vim.log.levels.WARN) end
+F.ERROR  = function(msg) error(f_msg(msg)) end
+F.WARN   = function(msg) vim.notify(f_msg(msg), vim.log.levels.WARN) end
+F.INFO   = function(msg) vim.notify(f_msg(msg), vim.log.levels.INFO) end
+F.DEBUG  = function(msg) vim.notify(f_msg(msg), vim.log.levels.DEBUG) end
+F.TRACE  = function(msg) vim.notify(f_msg(msg), vim.log.levels.TRACE) end
 
 function F.map(mode, lhs, rhs, opts)
   if opts == nil then
@@ -442,13 +440,14 @@ function F.open_markdown_file(path, lnum, pinned)
 
     if lnum ~= nil then
       vim.api.nvim_win_set_cursor(win_id, {lnum, 0})
+    else
+      vim.cmd("normal! Gzt")
     end
     if pinned then
       vim.wo[win_id].winpinned = true
       vim.wo[win_id].winfixwidth = true
       vim.cmd(string.format("vertical resize %s", note_width))
     end
-    vim.cmd("normal! Gzt")
   else
     F.WARN("Path not found:" .. path)
   end

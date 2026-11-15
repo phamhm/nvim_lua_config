@@ -385,6 +385,7 @@ local m_snacks = {
     notifier = {
       enabled = true,
       timeout = 5000,
+      top_down = false,
     },
     picker = {
       on_show = function(picker)
@@ -513,13 +514,13 @@ local m_snacks = {
         hidden = {"input", "preview"},
         layout = {
           min_width = 0,
-          width = 0.7,
+          width = 0.4,
           height = 0.6,
           box = "horizontal",
           {
             box = "vertical",
-            { win = "input", height = 1, border = "rounded" },
             { win = "list", border = "rounded" },
+            { win = "input", height = 1, border = "rounded" },
           },
           {
             win = "preview",
