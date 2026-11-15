@@ -99,16 +99,6 @@ return {
             end
           end, opts("Open markdown link or fallback to gF"))
 
-          -- local markdown_group = vim.api.nvim_create_augroup("MarkdownInsert", { clear = true })
-          -- -- Automatically enter insert mode when opening or entering a terminal
-          -- vim.api.nvim_create_autocmd({ "InsertEnter" }, {
-          --   group = markdown_group,
-          --   pattern = "*.md",
-          --   callback = function()
-          --     vim.cmd("RenderMarkdown disable")
-          --   end
-          -- })
-
           vim.opt_local.wrap           = true
           vim.opt_local.linebreak      = true
           vim.opt_local.breakindent    = true

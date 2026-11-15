@@ -26,7 +26,7 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', '<C-q>',
+map('n', F.alt_key('<%s-w>'),
   function()
     -- only delete buffer if there is no other windows with the same buffer
     local bufnr = vim.api.nvim_get_current_buf()
@@ -136,7 +136,7 @@ map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle co
 -- registers manipulations
 map({"n", "v"},
   "<leader>ra",
-  function() 
+  function()
     F.NOTIFY('Append current line to @"')
     local lines = ""
     if vim.fn.mode() == "n" then
@@ -155,15 +155,15 @@ map({"n", "v"},
   {desc = 'Register add lines to @"'}
 )
 
-map({"n"}, "<leader>rc", 
-  function() 
+map({"n"}, "<leader>rc",
+  function()
     vim.fn.setreg("+", vim.fn.getreg('"'))
     F.NOTIFY('Copied @" into @+ :\n'.. vim.fn.getreg('"'))
-  end , 
+  end ,
   {desc = 'Register Copy @" into @+'})
 
-map({"n", "v"}, "<leader>ry", 
-  function() 
+map({"n", "v"}, "<leader>ry",
+  function()
     F.NOTIFY('Yank line(s) into @+')
 
     local lines = ""
@@ -177,28 +177,28 @@ map({"n", "v"}, "<leader>ry",
     end
 
     vim.fn.setreg("+", lines)
-  end , 
+  end ,
   {desc = 'Register Yank line(s) into @"'})
 
 map({"n", "i"}, F.alt_key('<C-%s-r>'),
-  function() 
+  function()
     Snacks.picker.registers({
       confirm = { "paste", "close" },
       layout = { hidden = { 'preview'} },
-    }) 
+    })
   end,
   {desc = 'Select Registers to paste on confirm'}
 )
 
 map("n", "<leader>rR",
-  function() 
+  function()
     Snacks.picker.registers({
       confirm = { "paste", "close" },
       layout = { hidden = { 'preview'} },
       transform = function (item)
         return item.reg == '"' or item.reg == "+"
       end
-    }) 
+    })
   end,
   {desc = 'Registers @" and @+ only'}
 )
@@ -626,8 +626,8 @@ map({"v", "n"}, "<leader>xe",
 
 
 
-vim.keymap.set('n', F.alt_key('<C-down>'), 
-  function() 
+vim.keymap.set('n', F.alt_key('<C-down>'),
+  function()
     if F.count_normal_windows() ~= 2 then
       F.WARN("Viewable windows <> 2")
       return
@@ -642,8 +642,8 @@ vim.keymap.set('n', F.alt_key('<C-down>'),
     end)
   end, { desc = 'Scroll other window down 1 line' })
 
-vim.keymap.set('n', F.alt_key('<C-up>'), 
-  function() 
+vim.keymap.set('n', F.alt_key('<C-up>'),
+  function()
     if F.count_normal_windows() ~= 2 then
       F.WARN("Viewable windows <> 2")
       return
