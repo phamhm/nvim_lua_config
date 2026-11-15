@@ -681,40 +681,48 @@ vim.keymap.set('n', '<C-up>',
 -- tresitters
 
 -- Jump to start ('left') or end ('right') of next/previous function ('f')
-vim.keymap.set( { 'n', 'x', 'o' }, ']]',
-  function() 
+local mini_ai_move = function(search_method)
+  return function() 
     local ok, char = pcall(vim.fn.getcharstr)
     if ok and char and char:match('%a') then
-      MiniAi.move_cursor("left", "a", char, { search_method = "next" })
+      MiniAi.move_cursor("left", "a", char, { search_method = search_method })
     end
-  end,
+  end
+end
+vim.keymap.set({ 'n', 'x', 'o' }, ']]',
+  mini_ai_move("next"),
   { desc = 'treesitter next mini ai start' }
 )
 vim.keymap.set( { 'n', 'x', 'o' }, '[[',
-  function() 
-    local ok, char = pcall(vim.fn.getcharstr)
-    if ok and char and char:match('%a') then
-      MiniAi.move_cursor("left", "a", char, { search_method = "prev" })
-    end
-  end,
+  mini_ai_move("prev"),
   { desc = 'treesitter prev mini ai start' }
 )
 
+local treesitter_select = function(target)
+  return function()
+    if vim.fn.mode() == "n" then
+      vim.cmd("normal! v")
+    end
+    vim.treesitter.select(target) 
+  end
+end
 map({"n", "v"}, F.alt_key("<%s-.>"), 
-  function() 
-    if vim.fn.mode() == "n" then
-      vim.cmd("normal! v")
-    end
-    vim.treesitter.select("parent") 
-  end, {desc = "treesitter select parent"})
+  treesitter_select("parent"),
+  {desc = "treesitter select parent"})
 map({"n", "v"}, F.alt_key("<C-%s-.>"), 
-  function() 
-    if vim.fn.mode() == "n" then
-      vim.cmd("normal! v")
-    end
-    vim.treesitter.select("child") 
-  end, {desc = "treesitter select child"})
-map("v", F.alt_key("<%s-n>"), function() vim.treesitter.select("next") end, {desc = "treesitter select next"})
-map("v", F.alt_key("<%s-p>"), function() vim.treesitter.select("prev") end, {desc = "treesitter select prev"})
+  treesitter_select(child),
+  {desc = "treesitter select child"})
+map({"n", "v"}, F.alt_key("<%s-n>"), 
+  treesitter_select("next"), 
+  {desc = "treesitter select next"})
+map({"n", "v"}, F.alt_key("<%s-N>"), 
+  treesitter_select("extend_next"), 
+  {desc = "treesitter select next"})
+map({"n", "v"}, F.alt_key("<%s-p>"), 
+  treesitter_select("prev"), 
+  {desc = "treesitter select prev"})
+map({"n", "v"}, F.alt_key("<%s-P>"), 
+  treesitter_select("extend_prev"), 
+  {desc = "treesitter select prev"})
 
 -- end treesitter
