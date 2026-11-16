@@ -85,6 +85,10 @@ return {
               "filename",
               path = 1,
             },
+            {
+              "filetype",
+              icon_only = true,
+            },
             'branch',
             'diff',
             'diagnostics',

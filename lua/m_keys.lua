@@ -97,8 +97,8 @@ map({ "i", "v", "s", "n"}, "<C-c>",
 local function query(query_url)
   return function(input)
     if input and input ~="" then
-      local query = vim.uri.encode(input)
-      vim.ui.open(query_url .. query)
+      local encoded_input = vim.uri.encode(input)
+      vim.ui.open(query_url .. encoded_input)
       local LOG_FILE = string.format("%s/logs/google_%s.md",vim.g.m_notes_path, os.date("%Y-%m-%d"))
       local log = string.format("[%s] %s", os.date("%H:%M"), input)
       vim.fn.writefile({ vim.trim(log) }, vim.fn.expand(LOG_FILE), "a")
@@ -298,11 +298,9 @@ local function capture_from_register()
     end)
   elseif reg_p ~= "" then
     F.NOTIFY("Capturing note from @p:" .. reg_p)
-    lines = vim.split(reg_p, '\n', {plain = true})
+    local lines = vim.split(reg_p, '\n', {plain = true})
     local filetype = vim.bo.filetype
-    vim.ui.input({ prompt = "Capture reg @+ as filetype:" .. filetype}, function(filetype)
-      capture_note(lines, filetype)
-    end)
+    capture_note(lines, filetype)
   elseif reg_p == "" then
     F.WARN("empty register. nothing to capture.")
   end
@@ -412,7 +410,7 @@ map("n", "<leader>ss",
                   vim.iter(data.other_paths):each(function(path) vim.cmd.badd(path) end)
                 end
               else
-                F.ERROR("Yaml parse error")
+                F.ERROR("Yaml parse error: " .. vim.inspect(err))
               end
             end
           end)
@@ -474,7 +472,6 @@ map("n", "<leader>1",
 
 map("n", "<leader>2",
   function()
-    local basename = vim.bo.filetype .. ".md"
     local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
     vim.cmd.vsplit(filename)
   end, {desc = "file type note"})
