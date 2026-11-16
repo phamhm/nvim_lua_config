@@ -18,7 +18,7 @@ map( 'n', "<leader>mk",
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', F.alt_key('<C-%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
+map('n', F.alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
 -- restart does weird thing
 
 map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
