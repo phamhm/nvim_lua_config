@@ -353,7 +353,7 @@ local m_grep_actions = {
   end
 }
 local m_grep_keys = {
-  [F.alt_key("<C-%s-u>")] = {"m_cd_up", mode = {"i", "n"}},
+  [F.alt_key("<C-h>")] = {"m_cd_up", mode = {"i", "n"}},
   [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
@@ -619,8 +619,7 @@ local m_snacks = {
         })
       end, desc = "File Explorer" },
     -- { "<C-e>", function() Snacks.explorer.reveal() end, desc = "File Explorer Reveal" },
-    { "/", function() Snacks.picker.lines({layout = {hidden = {"preview"}}}) end, desc = "snacks picker lines" },
-    { "<leader>/", "/", desc = "vim find / " },
+    { "<leader>/", function() Snacks.picker.lines({layout = {hidden = {"preview"}}}) end, desc = "snacks picker lines" },
     { "<leader>ft", m_todo_from_root, desc = "find todo from root" },
     { "<leader>fk",function() Snacks.picker.keymaps({layout = {hidden = {"preview"}}}) end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent({layout = {hidden = {"preview"}}}) end,desc = "recents" },

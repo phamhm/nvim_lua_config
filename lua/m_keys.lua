@@ -93,9 +93,6 @@ map({ "i", "v", "s", "n"}, "<C-c>",
     vim.cmd("fclose!")
     F.m_feedkey("<Esc>")
     vim.cmd('nohlsearch')
-
-    local mc_ns = vim.api.nvim_create_namespace('nvim.multicursor')
-    vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
   end, {noremap = true, desc="Esc and call no highlight"})
 
 -- shortcut to query
@@ -126,7 +123,7 @@ end
 -- map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
 -- map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
 
-map({"n","v" }, "<C-l>", function()
+map({"n","v" }, F.alt_key("<%s-l>"), function()
   local current_mode = vim.fn.mode(1)
   local selected_text = ""
   if current_mode == "v" or current_mode ==  "V" then
@@ -513,7 +510,8 @@ map("n", "<leader>2",
 
 map("n", "<C-/>", function()
   local terminal_bufs = vim.tbl_filter(function(bufnr)
-    return vim.bo[bufnr].buftype == 'terminal'
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    return vim.bo[bufnr].buftype == 'terminal' or vim.startswith(name, "term:")
   end, vim.api.nvim_list_bufs())
 
   if #terminal_bufs > 1 then
