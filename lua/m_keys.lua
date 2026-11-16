@@ -43,8 +43,6 @@ map('n', '<C-q>',
     end
   end,{desc = "delete buffer and close windows"})
 
-map( "n", "<leader>q", 'Q', { desc = 'nvim -1.13 multiple cursors' })
-
 map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
 
 map({"v", 'n' }, F.alt_key('<C-%s-f>'),
@@ -108,30 +106,17 @@ local function query(query_url)
   end
 end
 
--- map("n", "<leader>gy", function()
---   vim.ui.input( { icon=" ",prompt = "Youtube:"}, query("https://www.youtube.com/results?search_query="))
--- end, {desc="query youtube"})
-
-local function google(prompt, default)
-  vim.ui.input({
-    icon = "󰊭 ",
-    prompt = prompt,
-    default = default .. ' ',
-  }, query("https://www.google.com/search?q="))
-end
-
 -- map("n", "<leader>gr", function()  google(" Reddit", "reddit") end, {desc="query reddit"})
 -- map("n", "<leader>gv", function()  google(" nvim", "nvim lua") end, {desc="query nvimn"})
 
 map({"n","v" }, F.alt_key("<%s-l>"), function()
-  local current_mode = vim.fn.mode(1)
-  local selected_text = ""
-  if current_mode == "v" or current_mode ==  "V" then
-    vim.cmd('noautocmd normal! "vy') -- yank selected into register v
-    selected_text = vim.fn.getreg('v'):gsub("\r?\n", "")
-  end
+  local selected_text = table.concat(F.get_visual_lines(), "\n")
 
-  google("Google", selected_text)
+  vim.ui.input({
+    icon = "󰊭 ",
+    prompt = "󰊭 Google",
+    default = vim.trim(selected_text),
+  }, query("https://www.google.com/search?q="))
 end, {desc="googling google"})
 -- end googling, }
 
@@ -148,16 +133,14 @@ map({"n", "v"},
     if vim.fn.mode() == "n" then
       lines = vim.api.nvim_get_current_line()
     else
-      local start_pos = vim.fn.getpos('v')
-      local end_pos = vim.fn.getpos('.')
-      lines = vim.fn.getregion(start_pos, end_pos, { type = vim.fn.mode() })
-      lines = table.concat(lines, "\n")
+      local visual_lines = F.get_visual_lines()
+      lines = table.concat(visual_lines, "\n")
     end
 
     local new_reg = string.format("%s\n%s", vim.fn.getreg('"'), lines):gsub("\n\n", "\n")
 
     vim.fn.setreg('"',  new_reg )
-    F.NOTIFY({'Append current line to @"', new_reg})
+    F.NOTIFY({'Append line(s) to @"', new_reg})
   end,
   {desc = 'Register add lines to @"'}
 )
@@ -175,10 +158,8 @@ map({"n", "v"}, "<leader>ry",
     if vim.fn.mode() == "n" then
       lines = vim.api.nvim_get_current_line()
     else
-      local start_pos = vim.fn.getpos('v')
-      local end_pos = vim.fn.getpos('.')
-      lines = vim.fn.getregion(start_pos, end_pos, { type = vim.fn.mode() })
-      lines = table.concat(lines, "\n")
+      local visual_lines = F.get_visual_lines()
+      lines = table.concat(visual_lines, "\n")
     end
 
     vim.fn.setreg("+", lines)
@@ -308,11 +289,8 @@ local function capture_note(lines, filetype)
 end
 
 local function capture_highlighted_block()
-  local s_pos = vim.fn.getpos("v")
-  local e_pos = vim.fn.getpos(".")
-
   -- Get the tert lines within that region
-  local lines = vim.fn.getregion(s_pos, e_pos, { type = vim.fn.mode() })
+  local lines = F.get_visual_lines() 
   local filetype = vim.bo.filetype
   capture_note(lines, filetype)
 end
@@ -633,9 +611,7 @@ map({"v", "n"}, "<leader>xe",
       return
     end
 
-    local start_pos = vim.fn.getpos('v')
-    local end_pos = vim.fn.getpos('.')
-    local lines = vim.fn.getregion(start_pos, end_pos, { type = vim.fn.mode() })
+    local lines = F.get_visual_lines()
 
     local selected_text = table.concat(lines, "\n")
     local fn, err = loadstring(selected_text)

@@ -512,4 +512,19 @@ function F.get_root_dir(current_cwd)
   return vim.fs.root( current_cwd, markers )
 end
 
+-- get visual lines and return a table of those lines. 
+-- if not visual mode, then return an empty table.
+function F.get_visual_lines()
+  -- Get the tert lines within that region
+  local mode = vim.api.nvim_get_mode().mode
+  if mode == 'v' or mode == 'V' or mode == '\22' then
+    return vim.fn.getregion(
+      vim.fn.getpos("v"), 
+      vim.fn.getpos(".") , 
+      { type = mode })
+  else
+    return {}
+  end
+end
+
 return F
