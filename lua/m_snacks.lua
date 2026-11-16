@@ -14,6 +14,24 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+local function m_yank_selected(picker, item)
+  local selected = vim.iter(picker:selected({fallback = true}))
+  :map(
+      function(i)
+        local text = i.text
+        if i.file and i.pos then
+          local row, col = unpack(i.pos)
+          local prefix = string.format("%s:%d:%d:", i.file, row, col+1)
+          text = text:gsub(prefix, "", 1)
+        end
+        return text
+      end):totable()
+
+  local lines = table.concat(selected, "\n")
+  vim.fn.setreg('"', lines)
+  F.NOTIFY({'Yank selected into @"', lines})
+end
+
 -- TODO: how to make multiple dirs readable
 local function m_set_title(picker, item, path)
   if path and path ~= "" then
@@ -31,7 +49,7 @@ local function m_set_title(picker, item, path)
         picker.list.win:set_title(f)
       elseif dirs and #dirs > 1 then
         local basenames = vim.iter(dirs)
-          :map(function(path) 
+          :map(function(path)
             local parent_dir = vim.fn.fnamemodify(path, ":h:t")
             local basename = vim.fs.basename(path)
             return  parent_dir.."/"..basename
@@ -111,7 +129,7 @@ local function move_selected(picker, item)
   end
 end
 
--- FIXME: is there another uproot one? 
+-- FIXME: is there another uproot one?
 local function m_explorer_root(picker, item)
   local markers = { '.git', "package.json", ".env" }
 
@@ -154,7 +172,7 @@ local function m_todo_from_root()
       format = function(item, picker)
         local m_todo
         local m_msg
-        local todo_len = 8 
+        local todo_len = 8
         for todo, _ in pairs(TODOS) do
           if item.line:upper():match(todo..":") then
             local t = vim.split(item.line, todo .. ":")
@@ -293,6 +311,7 @@ end
 local m_actions = {
   m_grep = m_grep,
   m_edit = m_edit ,
+  m_yank_selected = m_yank_selected ,
 }
 
 local m_grep_actions = {
@@ -351,6 +370,7 @@ local m_keys = {
   ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
   [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
   [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
+  [F.alt_key("<C-%s-y>")] = { "m_yank_selected", mode = {"i", "n"}},
 }
 
 local m_snacks = {
@@ -543,7 +563,8 @@ local m_snacks = {
     words = { enabled = false },
     styles = {
       list = {
-        keys = { }
+        keys = {
+        }
       },
       input = {
         -- relative = "editor",

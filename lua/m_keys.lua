@@ -47,8 +47,13 @@ map( "n", "<leader>q", 'Q', { desc = 'nvim -1.13 multiple cursors' })
 
 map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
 
-map('n', F.alt_key('<C-%s-f>'),
+map({"v", 'n' }, F.alt_key('<C-%s-f>'),
   function()
+    vim.cmd.stopinsert()
+
+    local current_win_id = vim.api.nvim_get_current_win()
+    local cursor_pos = vim.api.nvim_win_get_cursor(current_win_id)
+
     F.NOTIFY("Clean up buffer")
     ts.trim()
     ts.trim_last_lines()
@@ -57,7 +62,10 @@ map('n', F.alt_key('<C-%s-f>'),
     end
     vim.cmd([[%s/\n\{3,}/\r\r/e]]) -- clean up multiple blank lines
     vim.cmd('nohlsearch')
+
+    vim.api.nvim_win_set_cursor(current_win_id, cursor_pos)
   end,{silent = true, desc="format buffer"})
+
 map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="middle of line & new line below"})
 map({'i', 'n'}, '<C-k>', function() vim.cmd("normal O") end,{silent = true, desc="middle of line & new line above"})
 

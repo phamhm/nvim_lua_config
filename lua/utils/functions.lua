@@ -5,7 +5,13 @@ local m_todo_path = ""
 local m_status = ""
 
 local function f_msg(msg)
-  return vim.islist(msg) and table.concat(msg, "\n") or msg
+  if vim.islist(msg) then
+    return table.concat(msg, "\n")
+  elseif type(msg) == "table" then
+    return vim.inspect(msg)
+  else
+    return msg
+  end
 end
 F.NOTIFY = function(msg) vim.notify(f_msg(msg), vim.log.levels.WARN) end
 F.ERROR  = function(msg) error(f_msg(msg)) end
