@@ -483,7 +483,7 @@ map("n", "<leader>1",
 
     -- close window if in it. Toggle behavior
     if current_file == session_note and #vim.api.nvim_list_wins() > 1 then
-      vim.cmd.close()
+      vim.cmd.wincmd("w")
       return
     end
 
