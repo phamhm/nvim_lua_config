@@ -72,7 +72,7 @@ function F.menu_commands(items, title, pattern, m_actions, m_keys, allow_multipl
       list = {keys = m_keys},
     },
     layout = {
-      preview = false,
+      hidden = {"preview"},
       layout = {
         min_width = 0,
         width = 0.3,
