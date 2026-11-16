@@ -131,10 +131,8 @@ end
 
 -- FIXME: is there another uproot one?
 local function m_explorer_root(picker, item)
-  local markers = { '.git', "package.json", ".env" }
-
   local current_cwd = picker.opts.cwd
-  local root = vim.fs.root( current_cwd, markers )
+  local root = F.get_root_dir(current_cwd)
 
   picker:set_cwd(root)
   picker:find()
@@ -157,8 +155,7 @@ local function m_todo_from_root()
     :totable()
   local current_cwd = vim.fn.expand("%:p")
 
-  local markers = { '.git' }
-  local root = vim.fs.root( current_cwd, markers )
+  local root = F.get_root_dir(current_cwd)
   if root and vim.uv.fs_stat(root) then
     Snacks.picker.grep({
       search = table.concat(todo_keys, "|"),
@@ -335,8 +332,6 @@ local m_grep_actions = {
   end,
 
   m_cd_root = function(picker, item)
-    local markers = { '.git', 'app.py', 'package.json', ".env"}
-
     local current_cwd
     if picker.opts.cwd then
       current_cwd = picker.opts.cwd
@@ -348,7 +343,7 @@ local m_grep_actions = {
       return
     end
 
-    local root = vim.fs.root( current_cwd, markers )
+    local root = F.get_root_dir(current_cwd)
 
     F.NOTIFY("Cd to root: " .. root)
 
@@ -624,7 +619,8 @@ local m_snacks = {
         })
       end, desc = "File Explorer" },
     -- { "<C-e>", function() Snacks.explorer.reveal() end, desc = "File Explorer Reveal" },
-    { "<leader>/", function() Snacks.picker.lines({layout = {hidden = {"preview"}}}) end, desc = "Grep" },
+    { "/", function() Snacks.picker.lines({layout = {hidden = {"preview"}}}) end, desc = "snacks picker lines" },
+    { "<leader>/", "/", desc = "vim find / " },
     { "<leader>ft", m_todo_from_root, desc = "find todo from root" },
     { "<leader>fk",function() Snacks.picker.keymaps({layout = {hidden = {"preview"}}}) end,desc = "keymaps" },
     { "<leader>fo",function() Snacks.picker.recent({layout = {hidden = {"preview"}}}) end,desc = "recents" },
@@ -695,6 +691,11 @@ local m_snacks = {
         local cwd = vim.fn.expand('%:p:h')
         Snacks.picker.grep({ cwd = cwd })
       end, desc = "Grep current file's directory" },
+    { "<leader>sG",
+      function()
+        Snacks.picker.grep({ cwd = F.get_root_dir() })
+      end, desc = "Grep root" },
+
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
     { "<leader>mp", function()
       vim.ui.input({prompt = "Man page"}, function(word)

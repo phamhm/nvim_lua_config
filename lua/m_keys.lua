@@ -50,11 +50,8 @@ map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save 
 map({"v", 'n' }, F.alt_key('<C-%s-f>'),
   function()
     vim.cmd.stopinsert()
+    local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
-    local current_win_id = vim.api.nvim_get_current_win()
-    local cursor_pos = vim.api.nvim_win_get_cursor(current_win_id)
-
-    F.NOTIFY("Clean up buffer")
     ts.trim()
     ts.trim_last_lines()
     if vim.bo.filetype == "markdown"  then
@@ -63,7 +60,10 @@ map({"v", 'n' }, F.alt_key('<C-%s-f>'),
     vim.cmd([[%s/\n\{3,}/\r\r/e]]) -- clean up multiple blank lines
     vim.cmd('nohlsearch')
 
-    vim.api.nvim_win_set_cursor(current_win_id, cursor_pos)
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(0, cursor_pos)
+    end)
+    F.NOTIFY({"Clean up buffer", "-trim/last lines", "-remove mult empty lines"})
   end,{silent = true, desc="format buffer"})
 
 map({'i', 'n'}, '<C-j>', function() vim.cmd("normal o") end,{silent = true, desc="middle of line & new line below"})
@@ -147,7 +147,6 @@ map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle co
 map({"n", "v"},
   "<leader>ra",
   function()
-    F.NOTIFY('Append current line to @"')
     local lines = ""
     if vim.fn.mode() == "n" then
       lines = vim.api.nvim_get_current_line()
@@ -161,6 +160,7 @@ map({"n", "v"},
     local new_reg = string.format("%s\n%s", vim.fn.getreg('"'), lines):gsub("\n\n", "\n")
 
     vim.fn.setreg('"',  new_reg )
+    F.NOTIFY({'Append current line to @"', new_reg})
   end,
   {desc = 'Register add lines to @"'}
 )
@@ -168,14 +168,12 @@ map({"n", "v"},
 map({"n"}, "<leader>rc",
   function()
     vim.fn.setreg("+", vim.fn.getreg('"'))
-    F.NOTIFY('Copied @" into @+ :\n'.. vim.fn.getreg('"'))
+    F.NOTIFY({'Copied @" into @+ :', vim.fn.getreg('"')})
   end ,
   {desc = 'Register Copy @" into @+'})
 
 map({"n", "v"}, "<leader>ry",
   function()
-    F.NOTIFY('Yank line(s) into @+')
-
     local lines = ""
     if vim.fn.mode() == "n" then
       lines = vim.api.nvim_get_current_line()
@@ -187,6 +185,7 @@ map({"n", "v"}, "<leader>ry",
     end
 
     vim.fn.setreg("+", lines)
+    F.NOTIFY({'Yank line(s) into @+', lines})
   end ,
   {desc = 'Register Yank line(s) into @"'})
 

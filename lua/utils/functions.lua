@@ -13,7 +13,7 @@ local function f_msg(msg)
     return msg
   end
 end
-F.NOTIFY = function(msg) vim.notify(f_msg(msg), vim.log.levels.WARN) end
+F.NOTIFY = function(msg) vim.notify(f_msg(msg)) end
 F.ERROR  = function(msg) error(f_msg(msg)) end
 F.WARN   = function(msg) vim.notify(f_msg(msg), vim.log.levels.WARN) end
 F.INFO   = function(msg) vim.notify(f_msg(msg), vim.log.levels.INFO) end
@@ -373,7 +373,6 @@ local function find_common_path(paths, sep)
   return prefix
 end
 
-
 function F.tar_files(tar_name, files)
   local tar_filename = string.format("~/Backups/%s.tar.gz",tar_name)
   local common_path = find_common_path(files)
@@ -503,6 +502,14 @@ function F.count_normal_windows()
     end
   end
   return count
+end
+
+function F.get_root_dir(current_cwd)
+  current_cwd = current_cwd or vim.fn.expand("%:p")
+
+  local markers = { '.git', "package.json", ".env" }
+
+  return vim.fs.root( current_cwd, markers )
 end
 
 return F
