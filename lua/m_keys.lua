@@ -158,8 +158,7 @@ map({"n", "v"}, "<leader>ry",
     if vim.fn.mode() == "n" then
       lines = vim.api.nvim_get_current_line()
     else
-      local visual_lines = F.get_visual_lines()
-      lines = table.concat(visual_lines, "\n")
+      lines = table.concat(F.get_visual_lines(), "\n")
     end
 
     vim.fn.setreg("+", lines)
@@ -288,13 +287,6 @@ local function capture_note(lines, filetype)
   end)
 end
 
-local function capture_highlighted_block()
-  -- Get the tert lines within that region
-  local lines = F.get_visual_lines() 
-  local filetype = vim.bo.filetype
-  capture_note(lines, filetype)
-end
-
 local function capture_from_register()
   local reg_p = vim.trim(vim.fn.getreg('+'))
   if vim.startswith(reg_p, "http") then
@@ -307,7 +299,8 @@ local function capture_from_register()
   elseif reg_p ~= "" then
     F.NOTIFY("Capturing note from @p:" .. reg_p)
     lines = vim.split(reg_p, '\n', {plain = true})
-    vim.ui.input({ prompt = "Capture reg @+ as filetype"}, function(filetype)
+    local filetype = vim.bo.filetype
+    vim.ui.input({ prompt = "Capture reg @+ as filetype:" .. filetype}, function(filetype)
       capture_note(lines, filetype)
     end)
   elseif reg_p == "" then
@@ -321,7 +314,7 @@ map({"v", "n"}, "<leader>bb",
     if mode == "n" then
       capture_from_register()
     elseif  mode == 'v' or mode == 'V' or mode == '\22' then
-      capture_highlighted_block()
+      capture_note(F.get_visual_lines(), vim.bo.filetype)
     end
   end,
   {desc="make notes/bookmark from highlted text"})
