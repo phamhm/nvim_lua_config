@@ -693,37 +693,37 @@ map({"n", "v"}, F.alt_key("<%s-P>"),
 
 -- end treesitter
 
+local function save_bufs_then_act(action)
+  local fn = action
+  if type(action) ~= "function" then
+    fn = function()
+      vim.cmd(action)
+    end
+  end
 
-local function bufdelete_modified()
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].modified then
-      vim.cmd(string.format("buffer %d |only", buf))
-      local name = vim.api.nvim_buf_get_name(0)
-      if name and name ~= "" then
-        vim.cmd.write()
-      else
-        Snacks.bufdelete({buf = buf})
+  return function()
+    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified then
+        vim.api.nvim_buf_call(bufnr, function()
+          local name = vim.api.nvim_buf_get_name(bufnr)
+          if name and name ~= "" then
+            vim.cmd.update()
+          else
+            local uuid = vim.fn.system('uuidgen'):gsub('\n', ''):lower()
+            local tmp_name = string.format("/tmp/%s.txt", uuid)
+            vim.cmd.write(tmp_name)
+          end
+        end)
       end
     end
+    fn()
   end
 end
 
 map('n', F.alt_key('<%s-q>',3),
-  function()
-    local choice = vim.fn.confirm("Close All?", "&Yes\n&No", 2)
-    if choice == 1 then
-      bufdelete_modified()
-      vim.cmd("qa!")
-    end
-  end,
+  save_bufs_then_act("qa!"),
   {desc="force quit everything"})
 
 map("n", F.alt_key("<%s-r>", 3),
-  function()
-    local choice = vim.fn.confirm("Restart?", "&Yes\n&No", 2)
-    if choice == 1 then
-      bufdelete_modified()
-      vim.cmd.restart()
-    end
-  end,
+  save_bufs_then_act(vim.cmd.restart),
   {desc = "restart nvim"})
