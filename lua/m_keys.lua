@@ -693,3 +693,16 @@ map({"n", "v"}, F.alt_key("<%s-P>"),
   {desc = "treesitter select prev"})
 
 -- end treesitter
+
+map("n", F.alt_key("<%s-r>", 3), 
+ function()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].modified then
+        F.WARN("Save modifed buffer?")
+        vim.cmd(string.format("buffer %d |only", buf))
+        Snacks.bufdelete({buf = buf})
+      end
+    end
+    vim.cmd.restart()
+  end,
+  {desc = "restart nvim"})
