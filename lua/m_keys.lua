@@ -18,7 +18,6 @@ map( 'n', "<leader>mk",
 )
 
 -- map('n', '<leader>vn', ":vnew<CR>", {})
-map('n', F.alt_key('<%s-q>',3), ":qa!<CR>", {desc="force quit everything"})
 -- restart does weird thing
 
 map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
@@ -694,19 +693,37 @@ map({"n", "v"}, F.alt_key("<%s-P>"),
 
 -- end treesitter
 
+
+local function bufdelete_modified()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].modified then
+      vim.cmd(string.format("buffer %d |only", buf))
+      local name = vim.api.nvim_buf_get_name(0)
+      if name and name ~= "" then
+        vim.cmd.write()
+      else
+        Snacks.bufdelete({buf = buf})
+      end
+    end
+  end
+end
+
+map('n', F.alt_key('<%s-q>',3),
+  function()
+    local choice = vim.fn.confirm("Close All?", "&Yes\n&No", 2)
+    if choice == 1 then
+      bufdelete_modified()
+      vim.cmd("qa!")
+    end
+  end,
+  {desc="force quit everything"})
+
 map("n", F.alt_key("<%s-r>", 3),
   function()
-    vim.ui.select({"Yes", "No"}, {prompt = "Restart?"},
-      function (choice)
-        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].modified then
-            vim.cmd(string.format("buffer %d |only", buf))
-            Snacks.bufdelete({buf = buf})
-          end
-        end
-        if choice and choice == "Yes" then
-          vim.cmd.restart()
-        end
-      end)
+    local choice = vim.fn.confirm("Restart?", "&Yes\n&No", 2)
+    if choice == 1 then
+      bufdelete_modified()
+      vim.cmd.restart()
+    end
   end,
   {desc = "restart nvim"})
