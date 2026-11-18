@@ -733,7 +733,11 @@ local m_snacks = {
     { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     -- { alt_key("<C-w>", 2), function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-    { "<leader>lg", function() Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) end, desc = "Lazygit" },
+    { "<leader>lg", F.save_bufs_then_act(
+      function() 
+        Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) 
+      end
+    ), desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     -- { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },

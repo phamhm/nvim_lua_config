@@ -643,16 +643,7 @@ function get_treesitter(bufnr, ft, query)
   local query = vim.treesitter.query.parse(ft, query)
   for _, node in query:iter_captures(root, bufnr, 0, -1) do
     local text = vim.treesitter.get_node_text(node, bufnr)
-    local lines = vim.split(vim.trim(text), "\n")
-    if lines[#lines] == "---" then
-      table.remove(lines)
-    end
-    -- Check and remove the first element
-    if lines[1] == "---" then
-      table.remove(lines, 1)
-    end
-
-    table.insert(res, table.concat(lines, "\n"))
+    table.insert(res, text)
   end
   return res
 end

@@ -404,7 +404,6 @@ map("n", "<leader>ss",
               end
               local bufnr = vim.fn.bufnr(session_note_path)
 
-
               local frontformatter, err = F.get_md_frontformatter(bufnr)
               if frontformatter then
                 if frontformatter.main and frontformatter.main ~= "" then
