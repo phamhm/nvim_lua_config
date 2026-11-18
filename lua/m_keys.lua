@@ -25,7 +25,7 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', '<leader>q',
+map('n', '<C-q>',
   function()
     -- only delete buffer if there is no other windows with the same buffer
     local bufnr = vim.api.nvim_get_current_buf()
@@ -42,7 +42,7 @@ map('n', '<leader>q',
     end
   end,{desc = "delete buffer and close windows"})
 
-map('n', '<leader>Q',
+map('n', '<leader>q',
   function()
    F.pick_win_action("q!")
   end,{desc = "select a window to close"})
