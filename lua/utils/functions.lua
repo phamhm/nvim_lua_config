@@ -336,6 +336,9 @@ function F.goto_md_link()
 end
 
 local function find_common_path(paths, sep)
+  if #paths == 1 then
+    return vim.fs.dirname(unpack(paths))
+  end
   sep = sep or "/"
   if not paths or #paths == 0 then return "" end
   -- Helper function to split a string by separator
@@ -380,9 +383,14 @@ function F.tar_files(tar_name, files)
   files = vim.iter(files)
     :map(function(file)
       local path, count = string.gsub(file, "^" .. common_path, ""):gsub("^/", "")
-      return path
+      return path ~= "" and path or nil
     end)
     :totable()
+
+  -- take everything under the common path
+  if #files == 0 then
+    files = {"."}
+  end
 
   tar_filename = vim.fn.expand(tar_filename)
   local cmd = {
@@ -401,7 +409,6 @@ function F.tar_files(tar_name, files)
       F.ERROR("Error zipping files: " .. obj.stderr)
     end
   end)
-
 end
 
 function F.m_feedkey(key, modes)

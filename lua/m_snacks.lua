@@ -210,12 +210,20 @@ local function diff_selected(picker)
   end
 end
 
-local function zip_selected(picker, item)
-  local path_to_files = vim.fn.fnamemodify(item._path, ":h")
-
+local function tar_selected(picker, item)
   local filenames = vim.iter(picker:selected({fallback = true}))
     :map(function(i) return i._path end)
     :totable()
+
+  -- TODO: if only ONE file is selected, error out. 
+  -- if ONE dir is selected, let through and tar everything under the dir. 
+  if #filenames == 1 then
+    local selected = unpack(filenames)
+    if vim.uv.fs_stat(selected).type == "file" then
+      F.WARN("Not tarring one file")
+      return
+    end
+  end
 
   vim.ui.input({prompt = "tar file name"},
     function(tar_name)
@@ -458,7 +466,7 @@ local m_snacks = {
         explorer = {
           auto_close = true,
           actions = {
-            zip_selected    = zip_selected,
+            tar_selected    = tar_selected,
             diff_selected   = diff_selected,
             m_tcd           = m_tcd,
             m_explorer_up   = m_explorer_up,
@@ -482,7 +490,7 @@ local m_snacks = {
                 -- ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
                 ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n" } },
-                [F.alt_key("<C-%s-z>")]     = { 'zip_selected', mode  = { "n" } },
+                [F.alt_key("Z")]     = { 'tar_selected', mode  = { "n" } },
                 [F.alt_key("<C-%s-d>")]     = { 'diff_selected', mode = { "n" } },
                 [F.alt_key("<C-%s-p>")]     = { "m_move_selected", mode = { "n" } },
                 [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
