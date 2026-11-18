@@ -42,6 +42,9 @@ return {
         cursor = {
           jump_patterns = { "%[%[" },
         },
+        mappings = {
+          MkdnToggleToDo = {{'n', 'v'}, '<leader>tt'} -- Remaps to <leader>tt
+        },
         on_attach = function(bufnr)
           map({"n", "i" }, alt_key("<%s-t>"), "<cmd>MkdnTableFormat<CR>", opts("format table", bufnr))
           map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))

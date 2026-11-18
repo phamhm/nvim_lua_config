@@ -76,7 +76,7 @@ vim.opt.whichwrap:append('<,>,[,],h,l')
 -- 2 spaces tab
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("tab_2_group", {clear = true}),
-  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua" },
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "lua", "markdown"},
   callback = function()
     vim.bo.tabstop = 2
     vim.bo.shiftwidth = 2
