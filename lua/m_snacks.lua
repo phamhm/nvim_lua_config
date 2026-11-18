@@ -357,7 +357,8 @@ local m_grep_keys = {
   [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
-local function get_m_keys(default_keys)
+-- this function take the default value, and map it to the alt key that works on both osx and linux
+local function set_m_keys(default_keys)
   local remap_keys = vim.iter(default_keys)   
     :filter(function(key, _) return string.find(key, "M-", 1, true) end)
     :fold({}, function(acc, key, val) 
@@ -747,9 +748,9 @@ local m_snacks = {
   config = function(_, opts)
     local config = require('snacks.picker.config').get()
 
-    opts.picker.win.input.keys = get_m_keys(config.win.input.keys)
+    opts.picker.win.input.keys = set_m_keys(config.win.input.keys)
 
-    opts.picker.win.list.keys = get_m_keys(config.win.list.keys)
+    opts.picker.win.list.keys = set_m_keys(config.win.list.keys)
 
     require("snacks").setup(opts)
   end
