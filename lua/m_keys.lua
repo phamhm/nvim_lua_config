@@ -709,9 +709,8 @@ local function save_bufs_then_act(action)
           if name and name ~= "" then
             vim.cmd.update()
           else
-            local uuid = vim.fn.system('uuidgen'):gsub('\n', ''):lower()
-            local tmp_name = string.format("/tmp/%s.txt", uuid)
-            vim.cmd.write(tmp_name)
+            local tmp_name = vim.fn.tempname():gsub("/", "_")
+            vim.cmd.write("/tmp/" .. tmp_name .. ".txt")
           end
         end)
       end
