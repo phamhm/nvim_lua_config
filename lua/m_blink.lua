@@ -34,7 +34,6 @@ return {
       return not vim.startswith(filetype, "snacks_") and not vim.startswith(filetype, "mini")
     end
 
-
   },
   opts_extend = { "sources.default" },
 }

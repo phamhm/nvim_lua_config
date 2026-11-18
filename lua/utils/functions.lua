@@ -519,19 +519,128 @@ function F.get_root_dir(current_cwd)
   return vim.fs.root( current_cwd, markers )
 end
 
--- get visual lines and return a table of those lines. 
+-- get visual lines and return a table of those lines.
 -- if not visual mode, then return an empty table.
 function F.get_visual_lines()
   -- Get the tert lines within that region
   local mode = vim.api.nvim_get_mode().mode
   if mode == 'v' or mode == 'V' or mode == '\22' then
     return vim.fn.getregion(
-      vim.fn.getpos("v"), 
-      vim.fn.getpos(".") , 
+      vim.fn.getpos("v"),
+      vim.fn.getpos(".") ,
       { type = mode })
   else
     return {}
   end
 end
 
+function F.pick_win_action(action)
+  vim.cmd("fclose!")
+
+  local fn = nil
+  if type(action) == "function" then
+    fn = action
+  else
+    fn = function()
+      vim.cmd(action)
+    end
+  end
+
+  local wins = vim.tbl_filter(function(win)
+    return vim.api.nvim_win_get_config(win).focusable
+  end, vim.api.nvim_tabpage_list_wins(0))
+  -- Skip picking if there is only one window
+  if #wins <= 1 then
+    return
+  end
+  local floats = {}
+  local win_map = {}
+  -- 2. Create a centered floating badge for each window
+  for i, win in ipairs(wins) do
+    local label = tostring(i)
+    win_map[label] = win
+    -- Create a temporary scratch buffer for the number
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { " " .. label .. " " })
+    -- Calculate the center of the target window
+    local width = vim.api.nvim_win_get_width(win)
+    local height = vim.api.nvim_win_get_height(win)
+    local row = math.floor(height / 2) - 1
+    local col = math.floor((width - 3) / 2)
+    -- Open the floating window relative to the target window
+    local float_win = vim.api.nvim_open_win(buf, false, {
+      relative = "win",
+      win = win,
+      row = math.max(0, row),
+      col = math.max(0, col),
+      width = 3,
+      height = 1,
+      style = "minimal",
+      border = "rounded",
+      focusable = false,
+      zindex = 250,
+    })
+    -- Apply high-visibility styling
+    vim.api.nvim_set_option_value("winhl", "Normal:Search,FloatBorder:Search", { win = float_win })
+    table.insert(floats, { win = float_win, buf = buf })
+  end
+  -- 3. Force a screen redraw so the floating numbers appear before blocking for input
+  vim.cmd("redraw")
+  -- 4. Wait for a single character input
+  local ok, char = pcall(vim.fn.getcharstr)
+  -- 5. Clean up all floating windows and buffers
+  for _, item in ipairs(floats) do
+    if vim.api.nvim_win_is_valid(item.win) then
+      vim.api.nvim_win_close(item.win, true)
+    end
+    if vim.api.nvim_buf_is_valid(item.buf) then
+      vim.api.nvim_buf_delete(item.buf, { force = true })
+    end
+  end
+  -- 6. Jump to the selected window if the key matched
+  if ok and win_map[char] and vim.api.nvim_win_is_valid(win_map[char]) then
+    -- vim.api.nvim_set_current_win(win_map[char])
+    vim.api.nvim_win_call(win_map[char], fn)
+  end
+end
+
+function F.save_bufs_then_act(action)
+  local fn = action
+  if type(action) ~= "function" then
+    fn = function()
+      vim.cmd(action)
+    end
+  end
+
+  return function()
+    vim.iter(vim.api.nvim_list_bufs())
+      :filter(function(bufnr)
+        return vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified
+      end)
+      :each(function(bufnr)
+      vim.api.nvim_buf_call(bufnr, function()
+        local name = vim.api.nvim_buf_get_name(bufnr)
+        if name and name ~= "" then
+          vim.cmd.update()
+        else
+          local f_name = vim.fn.tempname():gsub("/", "_")
+          local tmp_name = string.format("/tmp/%s.txt", f_name)
+          vim.cmd.write(tmp_name)
+        end
+      end)
+    end)
+    fn()
+  end
+end
 return F
+
+
+
+
+
+
+
+
+
+
+

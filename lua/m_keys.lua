@@ -25,7 +25,7 @@ map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
 -- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
-map('n', '<C-q>',
+map('n', '<leader>q',
   function()
     -- only delete buffer if there is no other windows with the same buffer
     local bufnr = vim.api.nvim_get_current_buf()
@@ -42,7 +42,13 @@ map('n', '<C-q>',
     end
   end,{desc = "delete buffer and close windows"})
 
+map('n', '<leader>Q',
+  function()
+   F.pick_win_action("q!")
+  end,{desc = "select a window to close"})
+
 map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
+map('n', '<C-S>',F.save_bufs_then_act(vim.cmd.write),{silent = true, desc="save buffers"})
 
 map({"v", 'n' }, F.alt_key('<C-%s-f>'),
   function()
@@ -693,39 +699,10 @@ map({"n", "v"}, F.alt_key("<%s-P>"),
 
 -- end treesitter
 
-local function save_bufs_then_act(action)
-  local fn = action
-  if type(action) ~= "function" then
-    fn = function()
-      vim.cmd(action)
-    end
-  end
-
-  return function()
-    vim.iter(vim.api.nvim_list_bufs())
-      :filter(function(bufnr)
-        return vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified
-      end)
-      :each(function(bufnr)
-      vim.api.nvim_buf_call(bufnr, function()
-        local name = vim.api.nvim_buf_get_name(bufnr)
-        if name and name ~= "" then
-          vim.cmd.update()
-        else
-          local f_name = vim.fn.tempname():gsub("/", "_")
-          local tmp_name = string.format("/tmp/%s.txt", f_name)
-          vim.cmd.write(tmp_name)
-        end
-      end)
-    end)
-    fn()
-  end
-end
-
 map('n', F.alt_key('<%s-q>',3),
-  save_bufs_then_act("qa!"),
+  F.save_bufs_then_act("qa!"),
   {desc="force quit everything"})
 
 map("n", F.alt_key("<%s-r>", 3),
-  save_bufs_then_act(vim.cmd.restart),
+  F.save_bufs_then_act(vim.cmd.restart),
   {desc = "restart nvim"})
