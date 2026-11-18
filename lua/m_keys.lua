@@ -704,7 +704,7 @@ local function save_bufs_then_act(action)
   return function()
     vim.iter(vim.api.nvim_list_bufs())
       :filter(function(bufnr)
-        return  vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified
+        return vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified
       end)
       :each(function(bufnr)
       vim.api.nvim_buf_call(bufnr, function()
