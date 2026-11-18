@@ -95,7 +95,7 @@ local function m_list_down(picker, item)
   Snacks.picker.actions.list_down(picker, item)
 end
 
-local function move_selected(picker, item)
+local function m_move_selected(picker, item)
   local selected = vim.iter(picker:selected()):map(function(selected) return selected._path end):totable()
 
   local current_path_dir = item._path
@@ -357,16 +357,27 @@ local m_grep_keys = {
   [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
-local m_keys = {
-  [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
-  ["<C-c>"] = { "cancel", mode = { "i", "n" } },
-  ["<C-q>"] = { "cancel", mode = { "i", "n" } },
-  ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
-  ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
-  [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
-  [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
-  [F.alt_key("<C-%s-y>")] = { "m_yank_selected", mode = {"i", "n"}},
-}
+local function get_m_keys(default_keys)
+  local remap_keys = vim.iter(default_keys)   
+    :filter(function(key, _) return string.find(key, "M-", 1, true) end)
+    :fold({}, function(acc, key, val) 
+    local new_key = F.alt_key(key:gsub("M%-", "%%s-"))
+    acc[new_key] = val
+    return acc
+  end)
+
+  local m_input_list_keys = {
+    [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
+    ["<C-c>"] = { "cancel", mode = { "i", "n" } },
+    ["<C-q>"] = { "cancel", mode = { "i", "n" } },
+    ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
+    ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-y>")] = { "m_yank_selected", mode = {"i", "n"}},
+  }
+  return vim.tbl_deep_extend('force', remap_keys, m_input_list_keys)
+end
 
 local m_snacks = {
   "folke/snacks.nvim",
@@ -450,7 +461,7 @@ local m_snacks = {
             diff_selected   = diff_selected,
             m_tcd           = m_tcd,
             m_explorer_up   = m_explorer_up,
-            move_selected   = move_selected,
+            m_move_selected   = m_move_selected,
             list_up         = m_list_up,
             list_down       = m_list_down,
             m_explorer_root = m_explorer_root,
@@ -472,7 +483,7 @@ local m_snacks = {
                 ["<C-l>"] = { "m_tcd", mode         = { "n" } },
                 [F.alt_key("<C-%s-z>")]     = { 'zip_selected', mode  = { "n" } },
                 [F.alt_key("<C-%s-d>")]     = { 'diff_selected', mode = { "n" } },
-                [F.alt_key("<C-%s-m>")]     = { "move_selected", mode = { "n" } },
+                [F.alt_key("<C-%s-p>")]     = { "m_move_selected", mode = { "n" } },
                 [F.alt_key("<%s-r>")] = { "m_explorer_root", mode = { "n" } },
               }
             }
@@ -511,15 +522,15 @@ local m_snacks = {
       actions = m_actions,
       win = {
         input = {
-          keys = m_keys,
+          keys = {}
         },
         list = {
+          keys = {},
           wo = {
             wrap = true,
             number = false,
             relativenumber = false,
           },
-          keys = m_keys,
         },
       },
       layout = {
@@ -733,6 +744,15 @@ local m_snacks = {
       end,
     })
   end,
+  config = function(_, opts)
+    local config = require('snacks.picker.config').get()
+
+    opts.picker.win.input.keys = get_m_keys(config.win.input.keys)
+
+    opts.picker.win.list.keys = get_m_keys(config.win.list.keys)
+
+    require("snacks").setup(opts)
+  end
 }
 
 if m_snacks.keys then
