@@ -634,15 +634,56 @@ function F.save_bufs_then_act(action)
     fn()
   end
 end
+
+function get_treesitter(bufnr, ft, query)
+  local res = {}
+  local parser = vim.treesitter.get_parser(bufnr, ft)
+  local tree = parser:parse()[1]
+  local root = tree:root()
+  local query = vim.treesitter.query.parse(ft, query)
+  for _, node in query:iter_captures(root, bufnr, 0, -1) do
+    local text = vim.treesitter.get_node_text(node, bufnr)
+    local lines = vim.split(vim.trim(text), "\n")
+    if lines[#lines] == "---" then
+      table.remove(lines)
+    end
+    -- Check and remove the first element
+    if lines[1] == "---" then
+      table.remove(lines, 1)
+    end
+
+    table.insert(res, table.concat(lines, "\n"))
+  end
+  return res
+end
+
+function F.get_md_frontformatter(bufnr)
+  local yaml = require('yaml')
+
+  local ft = "markdown"
+  local query =  "(minus_metadata) @metadata"
+  local res = get_treesitter(bufnr, ft, query)
+  local m_yaml =  table.concat(res,"\n")
+
+  local data, err = yaml.parse(m_yaml)
+  if data then
+    return data
+  else
+    print("Parse error:", err)
+    return nil
+  end
+end
+
+function F.get_md_headings(bufnr)
+  local yaml = require('yaml')
+
+  local ft = "markdown"
+  local query = [[
+  (atx_heading
+    (atx_h1_marker)
+    heading_content: (_) @h1_text)
+  ]]
+  return get_treesitter(bufnr, ft, query)
+end
+
 return F
-
-
-
-
-
-
-
-
-
-
-

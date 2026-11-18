@@ -402,14 +402,13 @@ map("n", "<leader>ss",
               if not vim.uv.fs_stat(session_note_path) then
                 return
               end
+              local bufnr = vim.fn.bufnr(session_note_path)
 
-              local data, err = get_yaml(session_note_path)
-              if data then
-                if data.session_path and data.session_path ~= "" then
-                  vim.cmd.edit(data.session_path)
-                end
-                if data.other_paths and #data.other_paths > 0 then
-                  vim.iter(data.other_paths):each(function(path) vim.cmd.badd(path) end)
+
+              local frontformatter, err = F.get_md_frontformatter(bufnr)
+              if frontformatter then
+                if frontformatter.main and frontformatter.main ~= "" then
+                  vim.cmd.edit(frontformatter.main)
                 end
               else
                 F.ERROR("Yaml parse error: " .. vim.inspect(err))

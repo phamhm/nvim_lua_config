@@ -27,6 +27,10 @@ return {
     ft = { "markdown" },
     build = "cd app && npm install",
   },
+  -- Plugin spec
+  {
+    'jedi-knights/yaml.nvim',
+  },
   { -- https://github.com/jakewvincent/mkdnflow.nvim#statusline-components
     "jakewvincent/mkdnflow.nvim",
     ft = "markdown", -- or 'event = "VeryLazy"'
