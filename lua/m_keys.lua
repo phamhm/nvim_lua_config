@@ -703,17 +703,17 @@ local function save_bufs_then_act(action)
 
   return function()
     vim.iter(vim.api.nvim_list_bufs())
-      :filter(function(bufnr) 
-        return  vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified  
+      :filter(function(bufnr)
+        return  vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified
       end)
-      :each(function(bufnr) 
+      :each(function(bufnr)
       vim.api.nvim_buf_call(bufnr, function()
         local name = vim.api.nvim_buf_get_name(bufnr)
         if name and name ~= "" then
           vim.cmd.update()
         else
-          local name = vim.fn.tempname():gsub("/", "_")
-          local tmp_name = string.format("/tmp/%s.txt", name)
+          local f_name = vim.fn.tempname():gsub("/", "_")
+          local tmp_name = string.format("/tmp/%s.txt", f_name)
           vim.cmd.write(tmp_name)
         end
       end)
