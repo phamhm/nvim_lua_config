@@ -217,8 +217,10 @@ local function diff_selected(picker)
 end
 
 local function tar_selected(picker, item)
+  local selected = picker:selected({fallback = true})
+  local count= 0
   local filenames = vim.iter(picker:selected({fallback = true}))
-    :map(function(i) return i._path end)
+    :map( function(i) return i.file end)
     :totable()
 
   -- TODO: if only ONE file is selected, error out.
