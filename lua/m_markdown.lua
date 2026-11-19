@@ -39,9 +39,9 @@ return {
         modules = {
           links    = true,
           yaml     = true,
+          conceal  = true,
           folds    = false,
           foldtext = false,
-          conceal  = false,
         },
         cursor = {
           jump_patterns = { "%[%[" },
@@ -83,6 +83,7 @@ return {
           vim.opt_local.number         = false
           vim.opt_local.relativenumber = false
           vim.opt_local.colorcolumn    = ""
+          vim.opt_local.conceallevel = 0
         end,
       })
     end,

@@ -21,25 +21,13 @@ F.DEBUG  = function(msg) vim.notify(f_msg(msg), vim.log.levels.DEBUG) end
 F.TRACE  = function(msg) vim.notify(f_msg(msg), vim.log.levels.TRACE) end
 
 function F.map(mode, lhs, rhs, opts)
-  if opts == nil then
-    opts = {silent = true, noremap = true, desc = "[no description]"}
-  else
-    if opts.silent == nil then
-      opts.silent = true
-    end
-    if opts.noremap == nil then
-      opts.noremap = true
-    end
-    if opts.desc == nil then
-      opts.desc = "[no description]"
-    end
-  end
+  local m_opts = vim.tbl_deep_extend("force", {silent = true, noremap = true, desc = "[no description]"} , opts or {})
 
   opts.desc = "[hp]" .. opts.desc
 
   -- local key = lhs .."=".. (opts and opts.desc or "no description")
   -- F.save_keys(lhs, rhs, opts.desc, mode, "m_keys")
-  vim.keymap.set(mode, lhs, rhs, opts)
+  vim.keymap.set(mode, lhs, rhs, m_opts)
 end
 
 -- take note_text and write to destination with @c capture time
