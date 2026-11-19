@@ -31,6 +31,13 @@ return {
   {
     'jedi-knights/yaml.nvim',
   },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      enabled = false,
+      anti_conceal = {enabled = false},
+    }
+  },
   { -- https://github.com/jakewvincent/mkdnflow.nvim#statusline-components
     "jakewvincent/mkdnflow.nvim",
     ft = "markdown", -- or 'event = "VeryLazy"'
@@ -52,7 +59,7 @@ return {
         on_attach = function(bufnr)
           map({"n", "i" }, alt_key("<%s-t>"), "<cmd>MkdnTableFormat<CR>", opts("format table", bufnr))
           map("n", alt_key("<%s-f>"), "gwap", opts("format pagraph", bufnr))
-          -- map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
+          map("n", alt_key("<%s-m>"), "<cmd>RenderMarkdown toggle<CR>", opts("Render Markdown Toggle", bufnr))
 
           map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("Markdown indent list", bufnr))
           map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("Markdown deindent list", bufnr))

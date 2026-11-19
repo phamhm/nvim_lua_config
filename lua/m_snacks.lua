@@ -34,12 +34,12 @@ end
 
 -- TODO: how to make multiple dirs readable
 local function m_set_title(picker, item, path)
-  if path and path ~= "" then
-    picker.list.win:set_title(path)
-    return
-  end
-
   if picker and picker.list and picker.list.win then
+    if path and path ~= "" then
+      picker.list.win:set_title(path)
+      return nil
+    end
+
     local source = picker.opts.source
     local dirs = picker.opts.dirs
     if vim.list_contains({"grep", "explorer"}, source) then
@@ -131,12 +131,14 @@ end
 
 -- FIXME: is there another uproot one?
 local function m_explorer_root(picker, item)
-  local current_cwd = picker.opts.cwd
-  local root = F.get_root_dir(current_cwd)
+  -- local current_cwd = picker.opts.cwd
+  local root = F.get_root()
 
+  local Tree = require("snacks.explorer.tree")
+  Tree:refresh(root)
   picker:set_cwd(root)
-  picker:find()
-  m_set_title(picker, _, root)
+  picker:refresh()
+  m_set_title(picker, nil, root)
 end
 
 local TODOS     = {
@@ -155,7 +157,7 @@ local function m_todo_from_root()
     :totable()
   local current_cwd = vim.fn.expand("%:p")
 
-  local root = F.get_root_dir(current_cwd)
+  local root = F.get_root()
   if root and vim.uv.fs_stat(root) then
     Snacks.picker.grep({
       search = table.concat(todo_keys, "|"),
@@ -340,20 +342,7 @@ local m_grep_actions = {
   end,
 
   m_cd_root = function(picker, item)
-    local current_cwd
-    if picker.opts.cwd then
-      current_cwd = picker.opts.cwd
-    elseif picker.opts.dirs then
-      F.ERROR("Can only go up with cwd, not dirs")
-      return
-    else
-      F.ERROR("Expected picker.opts.cwd/dirs, found none")
-      return
-    end
-
-    local root = F.get_root_dir(current_cwd)
-
-    F.NOTIFY("Cd to root: " .. root)
+    local root = F.get_root()
 
     picker:set_cwd(root)
     picker:find()
@@ -423,6 +412,7 @@ local m_snacks = {
     },
     picker = {
       on_show = function(picker)
+        F.NOTIFY("on show set title")
         m_set_title(picker)
       end,
       enabled = true ,
@@ -712,27 +702,7 @@ local m_snacks = {
       end, desc = "Grep current file's directory" },
     { "<leader>sG",
       function()
-        local session_dir, _, session_note_path = F.get_session_info()
-        if session_dir and session_dir ~= "" then
-          local bufnr = vim.fn.bufadd(session_note_path)
-          vim.bo[bufnr].buflisted = true
-          if not vim.api.nvim_buf_is_loaded(bufnr) then
-            vim.fn.bufload(bufnr)
-          end
-
-          local frontfoormatter = F.get_md_frontformatter(bufnr)
-          if frontfoormatter  then
-            local root = frontfoormatter.root or frontfoormatter.main
-            if root then
-              Snacks.picker.grep({ cwd = root })
-              return
-            else
-              F.WARN("No Session note main/root found. go to dir root")
-            end
-          end
-        end
-
-        Snacks.picker.grep({ cwd = F.get_root_dir() })
+        Snacks.picker.grep({ cwd = F.get_root() })
       end, desc = "Grep Session root or dir root" },
 
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},

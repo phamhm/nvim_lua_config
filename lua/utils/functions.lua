@@ -512,6 +512,28 @@ function F.get_root_dir(current_cwd)
   return vim.fs.root( current_cwd, markers )
 end
 
+function F.get_session_root()
+  local session_dir, _, session_note_path = F.get_session_info()
+  local session_root = nil
+  if session_dir and session_dir ~= "" then
+    local bufnr = vim.fn.bufadd(session_note_path)
+    vim.bo[bufnr].buflisted = true
+    if not vim.api.nvim_buf_is_loaded(bufnr) then
+      vim.fn.bufload(bufnr)
+    end
+
+    local frontfoormatter = F.get_md_frontformatter(bufnr)
+    if frontfoormatter  then
+      session_root = frontfoormatter.root or frontfoormatter.main
+    end
+  end
+  return session_root and vim.fs.abspath(session_root) or nil
+end
+
+function F.get_root()
+  return F.get_session_root() or F.get_root_dir()
+end
+
 -- get visual lines and return a table of those lines.
 -- if not visual mode, then return an empty table.
 function F.get_visual_lines()
