@@ -534,6 +534,15 @@ function F.get_root()
   return F.get_session_root() or F.get_root_dir()
 end
 
+function F.get_working_dir()
+  local cwd = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+  if cwd ~= "." then
+    return cwd
+  else
+    return F.get_root()
+  end
+end
+
 -- get visual lines and return a table of those lines.
 -- if not visual mode, then return an empty table.
 function F.get_visual_lines()

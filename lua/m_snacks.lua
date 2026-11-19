@@ -411,10 +411,7 @@ local m_snacks = {
       timeout = 5000,
     },
     picker = {
-      on_show = function(picker)
-        F.NOTIFY("on show set title")
-        m_set_title(picker)
-      end,
+      on_show = m_set_title,
       enabled = true ,
       hidden=true,
       sources = {
@@ -624,7 +621,7 @@ local m_snacks = {
     { "<leader>.",
       function()
         Snacks.explorer({
-          cwd = vim.uv.cwd(),
+          cwd = F.get_working_dir(),
           enter = true,
         })
       end, desc = "File Explorer" },
