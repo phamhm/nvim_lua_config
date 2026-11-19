@@ -45,7 +45,7 @@ map('n', '<C-q>',
 map('n', '<leader>q', F.pick_win_action("q!"),{desc = "select a window to close"})
 
 map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
-map('n', '<C-S>',F.save_bufs_then_act(vim.cmd.write),{silent = true, desc="save buffers"})
+map('n', '<leader>s',F.save_bufs_then_act(vim.cmd.write),{silent = true, desc="save buffers"})
 
 map({"v", 'n' }, F.alt_key('<C-%s-f>'),
   function()
@@ -668,7 +668,8 @@ vim.keymap.set( { 'n', 'x', 'o' }, '[[',
 local treesitter_select = function(target)
   return function()
     if vim.fn.mode() == "n" then
-      vim.cmd("normal! v")
+      vim.cmd("normal! viw")
+      return
     end
     vim.treesitter.select(target)
   end
@@ -701,3 +702,5 @@ map('n', F.alt_key('<%s-q>',3),
 map("n", F.alt_key("<%s-r>", 3),
   F.save_bufs_then_act(vim.cmd.restart),
   {desc = "restart nvim"})
+
+map("n", "<C-;>", vim.lsp.buf.rename , {desc = "lsp buf rename shortcut"})

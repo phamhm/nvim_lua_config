@@ -3,7 +3,7 @@ local F = require("utils.functions")
 local m_mini = {
   {
     'echasnovski/mini.ai',
-    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", },
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects","nvim-mini/mini.extra" },
     version = false,
     lazy = false,
     keys = {
@@ -33,6 +33,7 @@ local m_mini = {
     },
     config = function()
       local ai = require('mini.ai')
+      local extra = require('mini.extra')
 
       ai.setup({
         search_method = "cover_or_next",
@@ -54,7 +55,7 @@ local m_mini = {
           }),
 
           -- Function calls (e.g., `func(val)`)
-          F = ai.gen_spec.treesitter({
+          c = ai.gen_spec.treesitter({
             a = '@call.outer',
             i = '@call.inner',
           }),
@@ -64,6 +65,9 @@ local m_mini = {
             a = '@comment.outer',
             i = '@comment.inner',
           }),
+
+          i = extra.gen_ai_spec.indent(),
+          n = extra.gen_ai_spec.number(),
 
           -- Class definitions
           C = ai.gen_spec.treesitter({
