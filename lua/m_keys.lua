@@ -116,7 +116,7 @@ map({"n","v" }, F.alt_key("<%s-l>"), function()
 
   vim.ui.input({
     icon = "󰊭 ",
-    prompt = "󰊭 Google",
+    prompt = "󰊭 Google:",
     default = vim.trim(selected_text),
   }, query("https://www.google.com/search?q="))
 end, {desc="googling google"})
@@ -277,7 +277,7 @@ local function capture_note(lines, filetype)
   local leading = {'```'..filetype}
   local ending = {'```'}
 
-  vim.ui.input({prompt = "Note header for filetype:" .. filetype}, function(input)
+  vim.ui.input({prompt = string.format("Ft [%s] note:", filetype)}, function(input)
     local new_date = os.date("%Y-%m-%d %H:%M")
     local header = {"", string.format("# %s [%s]", input, new_date ), ""}
     local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
@@ -293,7 +293,7 @@ local function capture_from_register()
   local reg_p = vim.trim(vim.fn.getreg('+'))
   if vim.startswith(reg_p, "http") then
     F.NOTIFY("Bookmarking http:" .. reg_p)
-    vim.ui.input({ prompt = string.sub(reg_p,1, 50) }, function(input)
+    vim.ui.input({ prompt = string.sub(reg_p,1, 50) .. " :" }, function(input)
       local note_text = { string.format("[%s](%s)", input, reg_p) }
       local full_path = vim.fn.expand( vim.g.m_notes_path .. "/bookmarks.md")
       vim.fn.writefile(note_text, full_path ,"a")
@@ -362,7 +362,7 @@ map("n", "<leader>ss",
               return
             end
 
-            vim.ui.input({prompt = "New Session Name"},
+            vim.ui.input({prompt = "New Session Name:"},
               function(new_session_name)
 
                 if not new_session_name or new_session_name == "" then
@@ -525,8 +525,8 @@ map('n', "<C-a>",
   function()
     local session_dir, session_name, session_note = F.get_session_info()
     if session_name and vim.uv.fs_stat(session_note) then
-      Snacks.input(
-        {prompt="Insert todo heading  " .. session_name},
+      vim.ui.input(
+        {prompt= string.format("%s New heading:", session_name)},
         function(heading)
           if heading and vim.trim(heading) ~= "" then
             local session_note_abspath = vim.fs.abspath(session_note)

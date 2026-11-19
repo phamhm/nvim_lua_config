@@ -233,7 +233,7 @@ local function tar_selected(picker, item)
     end
   end
 
-  vim.ui.input({prompt = "tar file name"},
+  vim.ui.input({prompt = "tar file name:"},
     function(tar_name)
       picker:close()
       F.tar_files(tar_name, filenames)
@@ -410,7 +410,7 @@ local m_snacks = {
       chunk = { enabled = false },
       animate = { enabled = false}
     },
-    input = { enabled = true  },
+    input = { enabled = false  },
     terminal = { enable = false, },
     notifier = {
       enabled = true,
@@ -710,7 +710,7 @@ local m_snacks = {
 
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
     { "<leader>mp", function()
-      vim.ui.input({prompt = "Man page"}, function(word)
+      vim.ui.input({prompt = "Man page:"}, function(word)
         if word == "" then return end
         Snacks.terminal.open("man "..word)
       end)

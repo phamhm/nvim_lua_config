@@ -51,18 +51,18 @@ return {
       pattern = languages,
       callback = function(args)
         -- Enable native Neovim treesitter highlighting
-        local buf = args.buf
-        local filetype = vim.bo[buf].filetype
+        local bufnr = args.buf
+        local filetype = vim.bo[bufnr].filetype
 
         local lang = vim.treesitter.language.get_lang(filetype)
         if not lang then
           return
         end
 
-        pcall(vim.treesitter.start, buf, lang)
+        pcall(vim.treesitter.start, bufnr, lang)
 
         if ft ~= "markdown" then
-          vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
           vim.wo.foldmethod = "expr"
         end
