@@ -14,39 +14,7 @@ local m_group_styles = {
   ["DiffText"]      = { fg = "NvimLightYellow", bg = "None", sp = "None" },
   ["DiffChange"]    = { fg = "None", bg = "None" },
   ["Changed"]       = { fg = "#EEEEEE", bg = "None" },
-
-  -- ["Error"]         = { fg = "#FFFFFF", bg = "None", bold = true },
-  -- ["QuickFixLine"]  = { fg = "#CCCCCC", bold = true },
-  -- ["Pmenu"]         = { fg = "#DDDDDD", bg = "#222222"  },
-  -- ["PmenuSel"]      = { fg = "#CCCCCC", bg = "#444444" },
-  -- ["Question"]      = { fg = "#666666" },
-  -- ["Directory"]     = { fg = "#777777" },
-  -- ["MsgSeparator"]  = { fg = "#EEEEEE", bg = "#444444" },
-  -- ["MoreMsg"]       = { fg = "#EEEEEE", bg = "#444444" },
-  -- ["StatusLine"]    = { fg = "#EEEEEE", bg = "#333333" },
-  -- ["Folded"]        = { fg = "#444444" },
-  -- ["MatchParen"]    = { fg = "#FFFFFF", bold = true },
-  -- ["WinSeparator"]  = { fg = "#444444" },
-  -- ["Search"]        = { fg = "NvimLightYellow", bg = "None" },
-  -- ["SnippetTabstop"]= { fg = "NvimLightYellow", bg = "None" },
-  -- ["DiagnosticUnnecessary"] = { fg = "#888888" },
-  -- ["Todo"]              = { fg = "NvimLightYellow", bg = "None", bold = true },
-  -- ["@variable"]             = { fg = "#CCCCCC" },
-  -- ["@string.documentation"] = { fg = "#777777" },
-  -- ["@comment.warning"]      = { fg = "#000000", bg = "NvimLightYellow", bold = true },
-  -- ["@comment.error"]        = { fg = "#000000", bg = "NvimLightRed", bold = true },
-  -- ["@comment.note"]         = { fg = "#000000", bg = "#D3EDE7", bold = true },
-  -- ["LspSignatureActiveParameter"] = { bg = "None" },
-  -- ["LspReferenceTarget"]          = { bg = "None" },
-  -- ["NvimTreeGitDeletedIcon"] = { fg = "#87AFD7", bg = "None" },
-  -- ["NvimTreeGitDirtyIcon"]   = { fg = "#87AFD7", bg = "None" },
-  -- ["NvimTreeGitIgnoredIcon"] = { fg = "#87AFD7", bg = "None" },
-  -- ["NvimTreeGitMergeIcon"]   = { fg = "#87AFD7", bg = "None" },
-  -- ["NvimTreeGitNewIcon"]     = { fg = "#87AFD7", bg = "None" },
-  -- ["NvimTreeGitRenamedIcon"] = { fg = "#87AFD7", bg = "None" },
-  -- ["NvimTreeGitStagedIcon"]  = { fg = "#87AFD7", bg = "None" },
 }
-
 
 return { -- doc: https://github.com/wtfox/jellybeans.nvim
   -- "wtfox/jellybeans.nvim",
@@ -66,9 +34,6 @@ return { -- doc: https://github.com/wtfox/jellybeans.nvim
     }):each(function(group)
       vim.api.nvim_set_hl(0, group, { bg = normal_hl.bg})
     end)
-
-    -- vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = number_fg, bold = true })
-    -- vim.api.nvim_set_hl(0, 'String', { fg = "#F2F2F2", bold = false })
 
     vim.iter( {
       "SnacksPickerInputBorder",
