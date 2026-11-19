@@ -33,20 +33,24 @@ local function m_yank_selected(picker, item)
 end
 
 -- TODO: how to make multiple dirs readable
+local function set_win_title(winid, title)
+  vim.api.nvim_win_set_config(winid, {
+    title = title,
+    title_pos = "center"
+  })
+end
+
 local function m_set_title(picker, item, path)
   if picker and picker.list and picker.list.win then
-    if path and path ~= "" then
-      picker.list.win:set_title(path)
-      return nil
-    end
+    local winid =  picker.list.win.win
 
-    local source = picker.opts.source
-    local dirs = picker.opts.dirs
-    if vim.list_contains({"grep", "explorer"}, source) then
+    if path and path ~= "" then
+      set_win_title(winid, path)
+    elseif vim.list_contains({"grep", "explorer"}, picker.opts.source) then
+      local dirs = picker.opts.dirs
+      local title = ""
       if dirs and #dirs == 1 then
-        local f = unpack(dirs)
-        f = vim.fn.fnamemodify(f, ":~")
-        picker.list.win:set_title(f)
+        title = vim.fn.fnamemodify(unpack(dirs), ":~")
       elseif dirs and #dirs > 1 then
         local basenames = vim.iter(dirs)
           :map(function(path)
@@ -55,12 +59,12 @@ local function m_set_title(picker, item, path)
             return  parent_dir.."/"..basename
           end)
           :totable()
-        picker.list.win:set_title(table.concat(basenames, ", "))
+        title = table.concat(basenames, ", ")
       else
         local f = item and item._path or picker:cwd()
-        f = vim.fn.fnamemodify(f, ":~")
-        picker.list.win:set_title(f)
+        title = vim.fn.fnamemodify(f, ":~")
       end
+      set_win_title(winid, title)
     end
   end
 end
