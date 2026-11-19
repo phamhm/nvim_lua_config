@@ -615,7 +615,7 @@ function F.save_bufs_then_act(action)
   end
 
   return function()
-    F.NOTIFY("Saving All buffers")
+    print("Saving All buffers")
     vim.iter(vim.api.nvim_list_bufs())
       :filter(function(bufnr)
         return vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified
