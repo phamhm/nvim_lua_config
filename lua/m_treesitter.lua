@@ -4,7 +4,6 @@ return {
   lazy = false,
   build = ":TSUpdate",
   config = function()
-    local ts = require("nvim-treesitter")
     local languages = {
       "bash",
       "zsh",
@@ -29,6 +28,7 @@ return {
       "latex"
     }
 
+    local ts = require("nvim-treesitter")
     ts.setup({
       highlight = {
         enable = true, -- CRITICAL: This must be true
