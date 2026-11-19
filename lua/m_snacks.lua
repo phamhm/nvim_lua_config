@@ -215,8 +215,8 @@ local function tar_selected(picker, item)
     :map(function(i) return i._path end)
     :totable()
 
-  -- TODO: if only ONE file is selected, error out. 
-  -- if ONE dir is selected, let through and tar everything under the dir. 
+  -- TODO: if only ONE file is selected, error out.
+  -- if ONE dir is selected, let through and tar everything under the dir.
   if #filenames == 1 then
     local selected = unpack(filenames)
     if vim.uv.fs_stat(selected).type == "file" then
@@ -367,9 +367,9 @@ local m_grep_keys = {
 
 -- this function take the default value, and map it to the alt key that works on both osx and linux
 local function set_m_keys(default_keys)
-  local remap_keys = vim.iter(default_keys)   
+  local remap_keys = vim.iter(default_keys)
     :filter(function(key, _) return string.find(key, "M-", 1, true) end)
-    :fold({}, function(acc, key, val) 
+    :fold({}, function(acc, key, val)
     local new_key = F.alt_key(key:gsub("M%-", "%%s-"))
     acc[new_key] = val
     return acc
@@ -712,8 +712,28 @@ local m_snacks = {
       end, desc = "Grep current file's directory" },
     { "<leader>sG",
       function()
+        local session_dir, _, session_note_path = F.get_session_info()
+        if session_dir and session_dir ~= "" then
+          local bufnr = vim.fn.bufadd(session_note_path)
+          vim.bo[bufnr].buflisted = true
+          if not vim.api.nvim_buf_is_loaded(bufnr) then
+            vim.fn.bufload(bufnr)
+          end
+
+          local frontfoormatter = F.get_md_frontformatter(bufnr)
+          if frontfoormatter  then
+            local root = frontfoormatter.root or frontfoormatter.main
+            if root then
+              Snacks.picker.grep({ cwd = root })
+              return
+            else
+              F.WARN("No Session note main/root found. go to dir root")
+            end
+          end
+        end
+
         Snacks.picker.grep({ cwd = F.get_root_dir() })
-      end, desc = "Grep root" },
+      end, desc = "Grep Session root or dir root" },
 
     { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
     { "<leader>mp", function()
@@ -734,8 +754,8 @@ local m_snacks = {
     { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
     -- { alt_key("<C-w>", 2), function() Snacks.bufdelete() end, desc = "Delete Buffer" },
     { "<leader>lg", F.save_bufs_then_act(
-      function() 
-        Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) 
+      function()
+        Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") })
       end
     ), desc = "Lazygit" },
     { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },

@@ -453,11 +453,16 @@ function F.open_markdown_file(path, lnum, pinned)
   end
 end
 
-function F.get_session_paths()
-  local session_dir = vim.fs.abspath(string.format("%s/sessions/",vim.g.m_notes_path))
-  local session_name = vim.fs.basename(vim.v.this_session)
-  local session_note_path = string.format("%s/%s.md", session_dir, session_name):gsub("//", "/")
-  return session_dir, session_name, session_note_path
+function F.get_session_info()
+  local session = vim.v.this_session
+  if session and session ~="" then
+    local session_dir = vim.fs.abspath(string.format("%s/sessions/",vim.g.m_notes_path))
+    local session_name = vim.fs.basename(session)
+    local session_note_path = string.format("%s/%s.md", session_dir, session_name):gsub("//", "/")
+    return session_dir, session_name, session_note_path
+  else
+    return nil, nil, nil
+  end
 end
 
 function F.snacks_grep_markdown(path, m_confirm)

@@ -420,7 +420,7 @@ map("n", "<leader>ss",
           if new_session_name and new_session_name ~= '' then
             require('snacks').bufdelete.all()
             MiniSessions.write(new_session_name)
-            local _, _, session_note = F.get_session_paths()
+            local _, _, session_note = F.get_session_info()
             local yaml = {
               "---",
               "session_path:",
@@ -437,7 +437,7 @@ map("n", "<leader>ss",
 
 map("n", '<leader>sn',
   function()
-    local session_dir, session_name, session_note = F.get_session_paths()
+    local session_dir, session_name, session_note = F.get_session_info()
     if session_name and vim.uv.fs_stat(session_note) then
       F.snacks_grep_markdown(session_note)
     elseif not session_name or session_name == "" then
@@ -451,7 +451,7 @@ map("n", '<leader>sn',
 )
 map("n", "<leader>1",
   function()
-    local session_dir, session_name, session_note = F.get_session_paths()
+    local session_dir, session_name, session_note = F.get_session_info()
     local current_file = vim.fn.expand("%:p")
 
     -- close window if in it. Toggle behavior
@@ -523,7 +523,7 @@ map( "t", "<C-/>",
 
 map('n', "<C-a>",
   function()
-    local session_dir, session_name, session_note = F.get_session_paths()
+    local session_dir, session_name, session_note = F.get_session_info()
     if session_name and vim.uv.fs_stat(session_note) then
       Snacks.input(
         {prompt="Insert todo heading  " .. session_name},
