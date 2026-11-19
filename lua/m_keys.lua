@@ -192,7 +192,7 @@ map("n", "<leader>rR",
 )
 -- end registers manipulation
 
-vim.keymap.set({ "n", "x", "o" }, "W", function()
+map({ "n", "x", "o" }, "W", function()
   local line = vim.fn.line(".")
   require("flash").jump({
     search = {
@@ -585,7 +585,7 @@ end, { desc = "Format around inner block (keeps cursor position)" })
 
 map({"n", "i"}, "<C-t>", "<cmd>t.<cr>", {desc="ex t copy line reserve cursor column"})
 
-vim.keymap.set('n', 'm', function()
+map('n', 'm', function()
   -- Wait for user to type the mark character
   local ok, char = pcall(vim.fn.getcharstr)
   if ok and char and char:match('%a') then
@@ -613,7 +613,7 @@ map({"v", "n"}, "<leader>xe",
 
   end, {desc = "execute highlited text as lua code"})
 
-vim.keymap.set('n', '<C-down>',
+map('n', '<C-down>',
   function()
     if F.count_normal_windows() ~= 2 then
       F.WARN("Viewable windows <> 2")
@@ -629,7 +629,7 @@ vim.keymap.set('n', '<C-down>',
     end)
   end, { desc = 'Scroll other window down 1 line' })
 
-vim.keymap.set('n', '<C-up>',
+map('n', '<C-up>',
   function()
     if F.count_normal_windows() ~= 2 then
       F.WARN("Viewable windows <> 2")
@@ -648,19 +648,27 @@ vim.keymap.set('n', '<C-up>',
 -- tresitters
 
 -- Jump to start ('left') or end ('right') of next/previous function ('f')
-local mini_ai_move = function(search_method)
+local last_ai_char = {char =  "i", search_method = "next"}
+local mini_ai_move = function(search_method, repeat_last)
   return function()
+    if repeat_last then
+      MiniAi.move_cursor("left", "a", last_ai_char.char, { search_method = last_ai_char.search_method })
+      return
+    end
     local ok, char = pcall(vim.fn.getcharstr)
     if ok and char and char:match('%a') then
+      last_ai_char.char = char
+      last_ai_char.search_method = search_method
       MiniAi.move_cursor("left", "a", char, { search_method = search_method })
     end
   end
 end
-vim.keymap.set({ 'n', 'x', 'o' }, ']]',
+map({ 'n', 'x', 'o' }, "<C-.>", mini_ai_move(_, true), {desc = "repeat last mini ai move"})
+map({ 'n', 'x', 'o' }, ']]',
   mini_ai_move("next"),
   { desc = 'treesitter next mini ai start' }
 )
-vim.keymap.set( { 'n', 'x', 'o' }, '[[',
+map( { 'n', 'x', 'o' }, '[[',
   mini_ai_move("prev"),
   { desc = 'treesitter prev mini ai start' }
 )

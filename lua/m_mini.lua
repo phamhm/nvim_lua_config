@@ -67,7 +67,7 @@ local m_mini = {
           }),
 
           i = extra.gen_ai_spec.indent(),
-          n = extra.gen_ai_spec.number(),
+          N = extra.gen_ai_spec.number(),
 
           -- Class definitions
           C = ai.gen_spec.treesitter({
