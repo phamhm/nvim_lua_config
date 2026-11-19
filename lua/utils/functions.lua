@@ -60,7 +60,7 @@ function F.menu_commands(items, title, pattern, m_actions, m_keys, allow_multipl
       list = {keys = m_keys},
     },
     layout = {
-      hidden = {"preview"},
+      hidden = {"input", "preview"},
       layout = {
         min_width = 0,
         width = 0.3,
@@ -257,7 +257,9 @@ end
 function F.generate_bookmarks_picker()
   vim.cmd("fclose!")
 
-  local items = vim.iter(vim.fn.readfile(vim.fn.expand(vim.g.m_notes_path .. "/bookmarks.md")))
+  local bookmark_file = vim.fs.abspath(vim.g.m_notes_path .. "/bookmarks.md")
+
+  local items = vim.iter(vim.fn.readfile(vim.fn.expand(bookmark_file)))
     :map(function(line)
       local title, link = line:match("%[(.-)%]%((.-)%)")
       return {text = vim.trim(title), link = vim.trim(link) }
@@ -281,7 +283,17 @@ function F.generate_bookmarks_picker()
     return
   end
 
-  F.menu_commands(items, "Select Bookmark(s) to open", "", nil, nil, true)
+  local m_actions = {
+    ["m_edit_bookmark"] = function() 
+      vim.cmd.edit(bookmark_file)
+    end
+  }
+
+  local m_keys = {
+    [F.alt_key("<C-%s-e>")] = {"m_edit_bookmark", mode = {"n", "i"}}
+  }
+
+  F.menu_commands(items, "Select Bookmark(s) to open", "", m_actions, m_keys, true)
 end
 
 function F.set_title()
