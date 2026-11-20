@@ -101,12 +101,12 @@ return {
           vim.opt_local.wrap           = true
           vim.opt_local.linebreak      = true
           vim.opt_local.breakindent    = true
-          vim.opt_local.breakindentopt    = "list:-1"
+          vim.opt_local.breakindentopt = "list:-1"
           vim.opt_local.number         = false
           vim.opt_local.relativenumber = false
           vim.opt_local.colorcolumn    = ""
-          vim.opt_local.conceallevel = 0
-          vim.opt_local.number = true
+          vim.opt_local.conceallevel   = 0
+          vim.opt_local.number         = true
           vim.opt_local.relativenumber = true
         end,
       })

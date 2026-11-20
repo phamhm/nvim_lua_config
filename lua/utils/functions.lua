@@ -752,6 +752,7 @@ function F.md_add_lvl(adj)
     vim.ui.input({prompt = "Enter a new heading: ", default = string.rep("#", levels+adj) .. " "}, function(new_header) 
       if new_header and new_header ~= "" then
         vim.api.nvim_buf_set_lines(0, heading.end_line, heading.end_line, false, {new_header, ""})
+        vim.api.nvim_win_set_cursor(0, {heading.end_line+1, 0})
       end
     end)
   end
