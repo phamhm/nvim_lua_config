@@ -673,7 +673,6 @@ map('n', '<C-up>',
 -- use "m" to repeat last next search
 -- use "M" to repeat but prev search
 local last_ai_char = {char =  "i", search_method = "next"}
-local mini_ai_textobjs = vim.tbl_keys(MiniAi.config.custom_textobjects)
 
 local mini_ai_move = function(search_method, repeat_last)
   return function()
@@ -681,11 +680,10 @@ local mini_ai_move = function(search_method, repeat_last)
       MiniAi.move_cursor("left", "a", last_ai_char.char, { search_method = search_method or last_ai_char.search_method })
       return
     end
-    local txt_objs = table.concat(mini_ai_textobjs, ",")
+
     vim.api.nvim_echo({
       {"(mini.ai) ", "@character"},
-      {"next: "},
-      {txt_objs, "@variable.member"}
+      {"next "},
     }, true, {})
 
     local ok, char = pcall(vim.fn.getcharstr)
@@ -693,8 +691,7 @@ local mini_ai_move = function(search_method, repeat_last)
       if char == "?" then
         vim.api.nvim_echo({
           {"(mini.ai) ", "@character"},
-          {"prev: "},
-          {txt_objs, "@variable.member"}
+          {"prev "},
         }, true, {})
 
         search_method = "prev"
@@ -703,15 +700,10 @@ local mini_ai_move = function(search_method, repeat_last)
           return
         end
       end
-      if char:match("%a") and vim.list_contains(mini_ai_textobjs, char) then
+      if char:match("%a") then
         last_ai_char.char = char
         last_ai_char.search_method = search_method
         MiniAi.move_cursor("left", "a", char, { search_method = search_method })
-      elseif char:match("%a") then
-        vim.api.nvim_echo({
-          {"(mini.ai) ", "@character"},
-          {"txt objs not found:" .. char}
-        }, true, {})
       end
     end
     print("")
