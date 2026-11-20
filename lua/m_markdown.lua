@@ -63,20 +63,18 @@ return {
 
           map({'n', 'i'}, '>>', "<cmd>MkdnIndentListItem<CR>" , opts("Markdown indent list", bufnr))
           map({'n', 'i'}, '<<', "<cmd>MkdnDedentListItem<CR>", opts("Markdown deindent list", bufnr))
-          map({'n'}, '<leader>mh',
+          map({'n'}, '<leader>fl',
             function()
               local path = vim.fn.expand("%:p")
               F.snacks_grep_markdown(path)
             end, opts("markdown headers", bufnr))
 
-          map("n", "<leader>mq", function() 
+          map("n", "<leader>mq", function()
             local reg = string.format("```text\n%s\n```",vim.fn.getreg("+"))
             local lines = vim.split(reg, "\n")
 
             vim.api.nvim_put(lines, "l", true, false)
           end, opts("markdown quote from register @+", bufnr))
-
-
 
           map("n", "gF", function()
             local line = vim.api.nvim_get_current_line()
@@ -91,6 +89,16 @@ return {
               vim.cmd("normal! gF")
             end
           end, opts("Open markdown link or fallback to gF"))
+
+
+          map("n", "<leader>ma", 
+            function() F.md_add_lvl(0) end, 
+            opts("markdown add sibling header"))
+
+          map("n", "<leader>mA", 
+            function() F.md_add_lvl(1) end, 
+            opts("markdown add child header"))
+
 
           vim.opt_local.wrap           = true
           vim.opt_local.linebreak      = true

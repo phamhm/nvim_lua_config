@@ -705,16 +705,56 @@ function F.get_md_frontformatter(bufnr)
   end
 end
 
-function F.get_md_headings(bufnr)
-  local yaml = require('yaml')
+local function find_md_heading_block(bufnr, match)
+  local query_str = [[
+        (section
+        (atx_heading) @heading) @section
+  ]]
 
   local ft = "markdown"
-  local query = [[
-  (atx_heading
-    (atx_h1_marker)
-    heading_content: (_) @h1_text)
-  ]]
-  return get_treesitter(bufnr, ft, query)
+  local parser = vim.treesitter.get_parser(bufnr, ft)
+  local tree = parser:parse()[1]
+  local root = tree:root()
+  local query = vim.treesitter.query.parse(ft, query_str)
+  for _, node in query:iter_captures(root, bufnr, 0, -1) do
+    local text = vim.treesitter.get_node_text(node, bufnr)
+    local first_line = vim.split(text, "\n")[1]
+    if first_line == match then
+      local start_row, _, end_row, _ = node:range()
+      local start_line = start_row + 1
+      local end_line = end_row 
+      return { [ "start_line" ] = start_line, ["end_line"] = end_line, ["text"] = text }
+    end
+  end
+  return nil
+end
+
+-- 1. detect the markdown heading levels.
+-- 2. determine if adding a level or adding a sibling. 
+-- 3. insert the head at the end of the block
+function F.md_add_lvl(adj) 
+  adj = adj or 1
+  if vim.bo.filetype ~= "markdown" then
+    F.WARN("Not in a markdown file")
+    return
+  end
+
+  local line = vim.api.nvim_get_current_line()
+  local hashes = line:match("^#*") 
+  local levels = #hashes
+  if levels == 0   then
+    F.WARN("Not on a markdown header")
+    return
+  end
+
+  local heading = find_md_heading_block(0, line)
+  if heading then
+    vim.ui.input({prompt = "Enter a new heading: ", default = string.rep("#", levels+adj) .. " "}, function(new_header) 
+      if new_header and new_header ~= "" then
+        vim.api.nvim_buf_set_lines(0, heading.end_line, heading.end_line, false, {new_header, ""})
+      end
+    end)
+  end
 end
 
 return F

@@ -22,8 +22,6 @@ map( 'n', "<leader>mk",
 
 map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
 map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
--- map({ "n", "v" }, "0", "g0", {silent=true, desc = "virtual line movement"})
--- map({ "n", "v" }, "$", "g$", {silent=true, desc = "virtual line movement"})
 
 map('n', '<C-q>',
   function()
@@ -617,7 +615,8 @@ end, { desc = 'Set mark with notification' })
 
 map({"v", "n"}, "<leader>xe",
   function()
-    if vim.fn.mode() == "n" then
+    if vim.fn.mode() == "n" and vim.bo.filetype == "lua" then
+      print("load whole buffer for execution")
       vim.cmd("%lua")
       return
     end
@@ -759,3 +758,5 @@ map("n", F.alt_key("<%s-r>", 3),
   {desc = "restart nvim"})
 
 map("n", "<C-;>", vim.lsp.buf.rename , {desc = "lsp buf rename shortcut"})
+
+
