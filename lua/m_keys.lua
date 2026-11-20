@@ -116,7 +116,7 @@ map({"n","v" }, F.alt_key("<%s-l>"), function()
 
   vim.ui.input({
     icon = "󰊭 ",
-    prompt = "󰊭 Google:",
+    prompt = "󰊭 Google: ",
     default = vim.trim(selected_text),
   }, query("https://www.google.com/search?q="))
 end, {desc="googling google"})
@@ -277,7 +277,7 @@ local function capture_note(lines, filetype)
   local leading = {'```'..filetype}
   local ending = {'```'}
 
-  vim.ui.input({prompt = string.format("Ft [%s] note:", filetype)}, function(input)
+  vim.ui.input({prompt = string.format("Ft [%s] note: ", filetype)}, function(input)
     local new_date = os.date("%Y-%m-%d %H:%M")
     local header = {"", string.format("# %s [%s]", input, new_date ), ""}
     local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
@@ -293,7 +293,7 @@ local function capture_from_register()
   local reg_p = vim.trim(vim.fn.getreg('+'))
   if vim.startswith(reg_p, "http") then
     F.NOTIFY("Bookmarking http:" .. reg_p)
-    vim.ui.input({ prompt = string.sub(reg_p,1, 50) .. " :" }, function(input)
+    vim.ui.input({ prompt = string.sub(reg_p,1, 50) .. " : " }, function(input)
       local note_text = { string.format("[%s](%s)", input, reg_p) }
       local full_path = vim.fn.expand( vim.g.m_notes_path .. "/bookmarks.md")
       vim.fn.writefile(note_text, full_path ,"a")
@@ -547,7 +547,7 @@ map('n', "<C-a>",
     local session_dir, session_name, session_note = F.get_session_info()
     if session_name and vim.uv.fs_stat(session_note) then
       vim.ui.input(
-        {prompt= string.format("%s New heading:", session_name)},
+        {prompt= string.format("%s New heading: ", session_name)},
         function(heading)
           if heading and vim.trim(heading) ~= "" then
             local session_note_abspath = vim.fs.abspath(session_note)
@@ -606,7 +606,7 @@ end, { desc = "Format around inner block (keeps cursor position)" })
 
 map({"n", "i"}, "<C-t>", "<cmd>t.<cr>", {desc="ex t copy line reserve cursor column"})
 
-map('n', 'm', function()
+map('n', '<leader>m', function()
   -- Wait for user to type the mark character
   local ok, char = pcall(vim.fn.getcharstr)
   if ok and char and char:match('%a') then
@@ -668,29 +668,45 @@ map('n', '<C-up>',
 
 -- tresitters
 
--- Jump to start ('left') or end ('right') of next/previous function ('f')
+-- <%s-/> will search for mini ai next
+-- however, if enter ?, this will search for mini ai prev
+-- use "m" to repeat last next search
+-- use "M" to repeat but prev search
 local last_ai_char = {char =  "i", search_method = "next"}
 local mini_ai_move = function(search_method, repeat_last)
   return function()
     if repeat_last then
-      MiniAi.move_cursor("left", "a", last_ai_char.char, { search_method = last_ai_char.search_method })
+      MiniAi.move_cursor("left", "a", last_ai_char.char, { search_method = search_method or last_ai_char.search_method })
       return
     end
+    print("󰔱 Treesitter ")
     local ok, char = pcall(vim.fn.getcharstr)
-    if ok and char and char:match('%a') then
-      last_ai_char.char = char
-      last_ai_char.search_method = search_method
-      MiniAi.move_cursor("left", "a", char, { search_method = search_method })
+    if ok and char  then
+      if char == "?" then
+        print("󰔱 Treesitter reverse")
+        search_method = "prev"
+        ok, char = pcall(vim.fn.getcharstr)
+        if not ok or not char then
+          return
+        end
+      end
+      if char:match('%a') then
+        last_ai_char.char = char
+        last_ai_char.search_method = search_method
+        MiniAi.move_cursor("left", "a", char, { search_method = search_method })
+      end
     end
+    print("")
   end
 end
 map({ 'n', 'x', 'o' }, "<C-.>", mini_ai_move(_, true), {desc = "repeat last mini ai move"})
-map({ 'n', 'x', 'o' }, ']]',
-  mini_ai_move("next"),
+map({ 'n', 'x', 'o' }, F.alt_key("<%s-/>"), mini_ai_move("next"), {desc = "mini ai move next"})
+map({ 'n', 'x', 'o' }, 'm',
+  mini_ai_move("next", true),
   { desc = 'treesitter next mini ai start' }
 )
-map( { 'n', 'x', 'o' }, '[[',
-  mini_ai_move("prev"),
+map( { 'n', 'x', 'o' }, 'M',
+  mini_ai_move("prev", true),
   { desc = 'treesitter prev mini ai start' }
 )
 

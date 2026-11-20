@@ -69,6 +69,15 @@ return {
               F.snacks_grep_markdown(path)
             end, opts("markdown headers", bufnr))
 
+          map("n", "<leader>mq", function() 
+            local reg = string.format("```text\n%s\n```",vim.fn.getreg("+"))
+            local lines = vim.split(reg, "\n")
+
+            vim.api.nvim_put(lines, "l", true, false)
+          end, opts("markdown quote from register @+", bufnr))
+
+
+
           map("n", "gF", function()
             local line = vim.api.nvim_get_current_line()
             -- Match markdown link syntax: [text](path_or_url)
@@ -91,6 +100,8 @@ return {
           vim.opt_local.relativenumber = false
           vim.opt_local.colorcolumn    = ""
           vim.opt_local.conceallevel = 0
+          vim.opt_local.number = true
+          vim.opt_local.relativenumber = true
         end,
       })
     end,
