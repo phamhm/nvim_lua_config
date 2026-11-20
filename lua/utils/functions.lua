@@ -482,10 +482,22 @@ end
 
 function F.snacks_grep_markdown(path, m_confirm)
   Snacks.picker.grep({
+    on_show = function(picker) 
+      if picker and picker.list and picker.list.win then
+        local winid = picker.list.win.win
+        vim.api.nvim_win_set_config(winid, {
+          title = path,
+          title_pos = "center"
+        })
+      end
+      F.m_feedkey("<C-g>", "i")
+    end,
     m_source = "grep_markdown",
     search = "- ~|^#|- \\[-]|- \\[\\s]",
     dirs = {path},
-    focus = "list",
+    focus = "input",
+    live = true, -- Start in live mode (default is true)
+    supports_live = true,
     layout = {
       hidden = { 'preview'}
     },
