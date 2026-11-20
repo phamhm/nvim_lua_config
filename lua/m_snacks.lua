@@ -136,13 +136,11 @@ end
 -- FIXME: is there another uproot one?
 local function m_explorer_root(picker, item)
   -- local current_cwd = picker.opts.cwd
-  local root = F.get_root()
-
-  local Tree = require("snacks.explorer.tree")
-  Tree:refresh(root)
-  picker:set_cwd(root)
-  picker:refresh()
-  m_set_title(picker, nil, root)
+  vim.cmd("fclose!")
+  Snacks.explorer({
+    cwd = F.get_root(),
+    enter = true,
+  })
 end
 
 local TODOS     = {
