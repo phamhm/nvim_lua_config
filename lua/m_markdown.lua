@@ -90,15 +90,13 @@ return {
             end
           end, opts("Open markdown link or fallback to gF"))
 
-
-          map("n", "<leader>ma", 
-            function() F.md_add_lvl(0) end, 
+          map("n", "<leader>ma",
+            function() F.md_add_lvl(0) end,
             opts("markdown add sibling header"))
 
-          map("n", "<leader>mA", 
-            function() F.md_add_lvl(1) end, 
+          map("n", "<leader>mA",
+            function() F.md_add_lvl(1) end,
             opts("markdown add child header"))
-
 
           vim.opt_local.wrap           = true
           vim.opt_local.linebreak      = true
