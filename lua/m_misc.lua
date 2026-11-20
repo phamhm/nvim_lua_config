@@ -8,7 +8,7 @@ local function multicursor_count()
   end
 end
 
-vim.api.nvim_set_hl(0, "FlashLabel", { fg = "red", bold = true })
+vim.api.nvim_set_hl(0, "FlashLabel", { fg = "red",  bold = true })
 return {
   -- {'easymotion/vim-easymotion'},
   {
@@ -42,7 +42,7 @@ return {
     config = function()
       require('mini.icons').setup()
       require("mini.icons").mock_nvim_web_devicons()
-      local custom_theme = require('lualine.themes.tomorrow_night')
+      local custom_theme = require('lualine.themes.codedark')
 
       -- 2. Modify background (bg) colors for specific modes and sections
       -- Sections are structured as: theme.[mode].[section].[attribute]
@@ -86,6 +86,7 @@ return {
             {
               "filetype",
               icon_only = true,
+              padding = {left = 0, right = 1}
             },
             'branch',
             'diff',
