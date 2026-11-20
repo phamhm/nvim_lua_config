@@ -344,7 +344,7 @@ map("n", "<leader>ss",
   function()
     local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
     local session_commands = {
-      {text = "select", fn = MiniSessions.select},
+      {text = "select", fn = F.save_bufs_then_act(MiniSessions.select) },
       {text = "save current", fn = MiniSessions.write},
       {text = "delete", fn = function() MiniSessions.select('delete', {force = true}) end},
       {text = "rename", fn = function()

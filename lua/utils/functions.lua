@@ -744,7 +744,26 @@ end
 -- 1. detect the markdown heading levels.
 -- 2. determine if adding a level or adding a sibling. 
 -- 3. insert the head at the end of the block
-function F.md_add_lvl(adj) 
+function F.append_to_heading(line, fn) 
+  if vim.bo.filetype ~= "markdown" then
+    F.WARN("Not in a markdown file")
+    return
+  end
+
+  local hashes = line:match("^#*") 
+  local levels = #hashes
+  if levels == 0   then
+    F.WARN("Not on a markdown header")
+    return
+  end
+
+  local heading = find_md_heading_block(0, line)
+  if heading then
+    fn(heading)
+  end
+end
+
+function F.md_log_date(adj) 
   adj = adj or 1
   if vim.bo.filetype ~= "markdown" then
     F.WARN("Not in a markdown file")

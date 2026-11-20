@@ -90,13 +90,58 @@ return {
             end
           end, opts("Open markdown link or fallback to gF"))
 
+          map("n", "<leader>mA",
+            function()
+              local line = vim.api.nvim_get_current_line()
+              local hashes = line:match("^#*") 
+              local levels = #hashes
+
+              local fn = function(heading)
+                vim.ui.input({prompt = "Enter a new heading: ", default = string.rep("#", levels) .. " "}, function(new_header)
+                  if new_header and new_header ~= "" then
+                    vim.api.nvim_buf_set_lines(0, heading.end_line, heading.end_line, false, {new_header, ""})
+                    vim.api.nvim_win_set_cursor(0, {heading.end_line+1, 0})
+                  end
+                end)
+              end
+
+              F.append_to_heading(line, fn)
+            end,
+            opts("markdown add child header"))
+
           map("n", "<leader>ma",
-            function() F.md_add_lvl(0) end,
+            function() 
+              local line = vim.api.nvim_get_current_line()
+              local hashes = line:match("^#*") 
+              local levels = #hashes
+
+              local fn = function(heading)
+                vim.ui.input({prompt = "Enter a new heading: ", default = string.rep("#", levels+1) .. " "}, function(new_header)
+                  if new_header and new_header ~= "" then
+                    vim.api.nvim_buf_set_lines(0, heading.end_line, heading.end_line, false, {new_header, ""})
+                    vim.api.nvim_win_set_cursor(0, {heading.end_line+1, 0})
+                  end
+                end)
+              end
+
+              F.append_to_heading(line, fn)
+            end,
             opts("markdown add sibling header"))
 
-          map("n", "<leader>mA",
-            function() F.md_add_lvl(1) end,
-            opts("markdown add child header"))
+          map("n", "<leader>mn",
+            function() 
+              local line = vim.api.nvim_get_current_line()
+
+              local fn = function(heading)
+                local new_header = string.format("* %s", os.date("%Y-%m-%d %I:%M%p: "))
+                vim.api.nvim_buf_set_lines(0, heading.end_line, heading.end_line, false, {new_header, ""})
+                vim.api.nvim_win_set_cursor(0, {heading.end_line+1, 0})
+                vim.api.nvim_feedkeys('A', 'n', false)
+              end
+
+              F.append_to_heading(line, fn)
+            end,
+            opts("markdown append dated * to heading"))
 
           vim.opt_local.wrap           = true
           vim.opt_local.linebreak      = true
