@@ -45,7 +45,7 @@ map('n', '<C-q>',
 map('n', '<leader>q', F.pick_win_action("q!"),{desc = "select a window to close"})
 
 map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
-map('n', F.alt_key("<%s-s>"),F.save_bufs_then_act(vim.cmd.write),{silent = true, desc="save buffers"})
+map('n', F.alt_key("<%s-s>"), F.save_bufs_then_act(vim.cmd.write),{silent = true, desc="save buffers"})
 
 map({"v", 'n' }, F.alt_key('<C-%s-f>'),
   function()

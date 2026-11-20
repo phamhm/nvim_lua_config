@@ -287,7 +287,8 @@ local function m_grep(picker, item)
   end
 end
 
-local function m_edit(picker, item)
+-- this function is designed to go frontformatter's links
+local function m_follow_path(picker, item)
   local selected = vim.iter(picker:selected({fallback = true}))
     :map(function(i)
       if picker.opts.source == "grep" then
@@ -323,7 +324,7 @@ end
 
 local m_actions = {
   m_grep = m_grep,
-  m_edit = m_edit ,
+  m_follow_path = m_follow_path ,
   m_yank_selected = m_yank_selected ,
 }
 
@@ -360,8 +361,9 @@ local m_grep_keys = {
   [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
--- this function take the default value, and map it to the alt key that works on both osx and linux
-local function set_m_keys(default_keys)
+-- this function take the Snacks default keys, and 
+-- map it to the alt key that works on both osx and linux
+local function set_alt_keys(default_keys)
   local remap_keys = vim.iter(default_keys)
     :filter(function(key, _) return string.find(key, "M-", 1, true) end)
     :fold({}, function(acc, key, val)
@@ -377,7 +379,7 @@ local function set_m_keys(default_keys)
     ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
     ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
     [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
-    [F.alt_key("<C-%s-e>")] = { "m_edit", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-e>")] = { "m_follow_path", mode = { "i", "n" } },
     [F.alt_key("<C-%s-y>")] = { "m_yank_selected", mode = {"i", "n"}},
   }
   return vim.tbl_deep_extend('force', remap_keys, m_input_list_keys)
@@ -753,9 +755,9 @@ local m_snacks = {
   config = function(_, opts)
     local config = require('snacks.picker.config').get()
 
-    opts.picker.win.input.keys = set_m_keys(config.win.input.keys)
+    opts.picker.win.input.keys = set_alt_keys(config.win.input.keys)
 
-    opts.picker.win.list.keys = set_m_keys(config.win.list.keys)
+    opts.picker.win.list.keys = set_alt_keys(config.win.list.keys)
 
     require("snacks").setup(opts)
   end
