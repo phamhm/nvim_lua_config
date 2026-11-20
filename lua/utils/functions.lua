@@ -438,7 +438,7 @@ function F.open_markdown_file(path, lnum, pinned)
 
       -- Check if bufname ends with or contains the target filename
       if bufname:match(vim.pesc(path) .. "$") or bufname:find(path, 1, true) then
-        vim.api.nvim_set_current_win(win_id)
+        vim.api.nvim_set_current_win(win_id) -- move cursor the the note window
         buf_found = true
         break
       end
@@ -447,9 +447,11 @@ function F.open_markdown_file(path, lnum, pinned)
     -- vim.cmd.vsplit(filename)
     -- if
     if not buf_found then
-      vim.cmd(string.format("topleft %svsplit %s", note_width, path))
+      vim.cmd.split(path)
+      vim.cmd.wincmd("H") -- move the window to the left
     end
     local win_id = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_width(win_id, note_width)
 
     if lnum ~= nil then
       vim.api.nvim_win_set_cursor(win_id, {lnum, 0})

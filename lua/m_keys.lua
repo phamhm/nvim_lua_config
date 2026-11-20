@@ -477,6 +477,16 @@ map("n", "<leader>2",
   end, {desc = "file type note"})
 
 map("n", "<C-/>", function()
+  -- if there is only ONE window, don't do anytning if it's a term window
+  if vim.fn.winnr("$") == 1 then
+    local name = vim.api.nvim_buf_get_name(0)
+    if vim.bo.buftype == 'terminal' or vim.startswith(name, "term:") then
+      vim.cmd.startinsert()
+      return nil
+    end
+  end
+
+  -- find all the terminal buffers
   local terminal_bufs = vim.tbl_filter(function(bufnr)
     local name = vim.api.nvim_buf_get_name(bufnr)
     return vim.bo[bufnr].buftype == 'terminal' or vim.startswith(name, "term:")
@@ -486,18 +496,23 @@ map("n", "<C-/>", function()
     F.WARN(string.format("Too many terminal buffers: %s", #terminal_bufs))
     return
   elseif #terminal_bufs == 1 then
-    local bufnr = terminal_bufs[1]
+    local bufnr = unpack(terminal_bufs)
     local winid = vim.fn.bufwinid(bufnr)
     if winid ~= -1 then
       vim.api.nvim_set_current_win(winid)
     else
-      vim.cmd("belowright split")
+      -- buffer is hidden. open a new window and bring the buffer out.
+      vim.cmd.vsplit()
       vim.api.nvim_win_set_buf(0, bufnr)
     end
-  else
-    vim.cmd("belowright split | terminal")
+  else -- no terminal buffer found
+    vim.cmd.vsplit()
+    vim.cmd.term()
   end
-  vim.cmd(string.format("horizontal resize %d", 10))
+
+  -- only push down if there are more than 1 windows
+  vim.cmd.wincmd("J")
+  vim.api.nvim_win_set_height(0, 10)
   vim.cmd("startinsert")
 end , {desc = "Toggle terminal"})
 
@@ -508,7 +523,9 @@ map( "t", "<Esc>", vim.cmd.stopinsert,
 map( "t", "<C-w>w",
   function()
     vim.cmd("stopinsert")
-    F.m_feedkey("<C-w>w")
+    if #vim.api.nvim_list_wins() > 1 then
+      F.m_feedkey("<C-w>w")
+    end
   end,
   {desc = "terminal move to other windows"}
 )
@@ -516,7 +533,11 @@ map( "t", "<C-w>w",
 map( "t", "<C-/>",
   function()
     vim.cmd("stopinsert")
-    vim.api.nvim_win_close(0, false)
+
+    -- get windows count. if there are more than 1, close the term win
+    if vim.fn.winnr("$") > 1 then
+      vim.api.nvim_win_close(0, false)
+    end
   end,
   {desc = "Open or hide terminal below"}
 )
