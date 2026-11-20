@@ -703,12 +703,12 @@ local treesitter_select = function(target)
     vim.treesitter.select(target)
   end
 end
-map({"n", "v"}, F.alt_key("<%s-.>"),
+map({"n", "v"}, F.alt_key("<C-=>"),
   treesitter_select("parent"),
-  {desc = "treesitter select parent"})
-map({"n", "v"}, F.alt_key("<C-%s-.>"),
+  {desc = "treesitter select expand"})
+map({"n", "v"}, F.alt_key("<C-->"),
   treesitter_select("child"),
-  {desc = "treesitter select child"})
+  {desc = "treesitter select shrink"})
 map({"n", "v"}, F.alt_key("<%s-n>"),
   treesitter_select("next"),
   {desc = "treesitter select next"})

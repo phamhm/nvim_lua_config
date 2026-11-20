@@ -355,7 +355,7 @@ local m_grep_actions = {
   end
 }
 local m_grep_keys = {
-  [F.alt_key("<C-h>")] = {"m_cd_up", mode = {"i", "n"}},
+  [F.alt_key(F.alt_key("<C-%s-u>"))] = {"m_cd_up", mode = {"i", "n"}},
   [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
 }
 
@@ -423,6 +423,10 @@ local m_snacks = {
       sources = {
         lsp_symbols = { layout = { hidden = {"preview"}, }, },
         grep = {
+          exclude = {
+            "package-lock.json",
+            "_*",
+          },
           actions = m_grep_actions,
           win = {
             input = { keys = m_grep_keys },
@@ -474,7 +478,7 @@ local m_snacks = {
               keys = {
                 [F.alt_key("<C-%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
                 ["<C-Cr>"] = { "jump", mode = { "n", "i" } },
-                ["<C-h>"] = { 'm_explorer_up', mode = { "n", "i" } },
+                [F.alt_key("<C-%s-u>")] = { 'm_explorer_up', mode = { "n", "i" } },
                 ["<C-l>"] = { "m_tcd", mode         = { "n", "i" } },
               }
             },
