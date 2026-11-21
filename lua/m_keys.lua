@@ -586,7 +586,7 @@ map('n', F.alt_key("<%s-f>") , function()
   local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
   -- 2. Format the text block using mini.ai
-  F.m_feedkey('=ai', 'i')
+  F.m_feedkey('=ai', 'i!')
 
   -- 3. Wait for the keystrokes to finish, then snap the cursor back
   vim.schedule(function()

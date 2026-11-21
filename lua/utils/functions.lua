@@ -490,7 +490,7 @@ function F.snacks_grep_markdown(path, m_confirm)
           title_pos = "center"
         })
       end
-      F.m_feedkey("<C-g>", "i")
+      F.m_feedkey("<C-g>", "i!")
     end,
     m_source = "grep_markdown",
     search = "- ~|^#|- \\[-]|- \\[\\s]",
