@@ -245,31 +245,23 @@ map('i', "<C-v>", function()
   if code == 1 then
     -- paste from the @+ system clipboard register,
     -- select the pasted line(s) and autoindent
-    local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
     local reg_value = vim.fn.getreg('+')
     local lines = vim.split(reg_value, '[\r\n]+', {})
 
     vim.api.nvim_put(lines, "c", false, true)
+    local cursor_pos = vim.api.nvim_win_get_cursor(0)
+    vim.cmd("stopinsert")
 
-    if #lines > 1 then
-      vim.cmd("stopinsert")
+    vim.cmd('normal `[V`]=')
 
-      -- vim.cmd('normal `[V`]=')
-      F.m_feedkey('=ai', 'ntm')
-
-      vim.schedule(function()
-        vim.api.nvim_win_set_cursor(0, cursor_pos)
-      end)
-    end
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(0, cursor_pos)
+    end)
   elseif code == 0 and vim.bo.filetype == "markdown" then
     vim.cmd("PasteImage")
   end
-end, {
-  desc="paste from @*. When markdown, check whether system clipboard is an image",
-  silent = true,
-  noremap =true
-})
+end, { desc="paste from @*. When markdown, check whether system clipboard is an image"})
 
 local function capture_note(lines, filetype)
   local leading = {'```'..filetype}
@@ -594,7 +586,7 @@ map('n', F.alt_key("<%s-f>") , function()
   local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
   -- 2. Format the text block using mini.ai
-  F.m_feedkey('=ai', 'ntm')
+  F.m_feedkey('=ai', 'i')
 
   -- 3. Wait for the keystrokes to finish, then snap the cursor back
   vim.schedule(function()
