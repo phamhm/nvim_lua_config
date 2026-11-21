@@ -763,30 +763,4 @@ function F.append_to_heading(line, fn)
   end
 end
 
-function F.md_log_date(adj) 
-  adj = adj or 1
-  if vim.bo.filetype ~= "markdown" then
-    F.WARN("Not in a markdown file")
-    return
-  end
-
-  local line = vim.api.nvim_get_current_line()
-  local hashes = line:match("^#*") 
-  local levels = #hashes
-  if levels == 0   then
-    F.WARN("Not on a markdown header")
-    return
-  end
-
-  local heading = find_md_heading_block(0, line)
-  if heading then
-    vim.ui.input({prompt = "Enter a new heading: ", default = string.rep("#", levels+adj) .. " "}, function(new_header) 
-      if new_header and new_header ~= "" then
-        vim.api.nvim_buf_set_lines(0, heading.end_line, heading.end_line, false, {new_header, ""})
-        vim.api.nvim_win_set_cursor(0, {heading.end_line+1, 0})
-      end
-    end)
-  end
-end
-
 return F
