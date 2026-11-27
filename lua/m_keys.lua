@@ -24,7 +24,7 @@ map('n', '<C-q>',
     end
   end,{desc = "delete buffer and close windows"})
 
-map('n', '<leader>wq', F.pick_win_action(vim.cmd.close),{desc = "select a window to close"})
+map('n', '<leader>wc', F.pick_win_action(vim.cmd.close),{desc = "select a window to close"})
 map('n', '<leader>ws',
   function()
     -- getting current window/buffer information
@@ -241,11 +241,11 @@ local function m_paste()
     -- select the pasted line(s) and autoindent
 
     local clipboard_val = vim.trim( vim.fn.getreg('+') )
-    local lines = vim.split(clipboard_val, '[\r\n]+', {})
-
-    if #lines == 1 and vim.bo.filetype == "markdown" and vim.startswith(clipboard_val, "http") then
-      lines = { string.format("[](%s)", clipboard_val) }
+    if vim.bo.filetype == "markdown" and vim.startswith(clipboard_val, "http") then
+      vim.cmd("MkdnCreateLinkFromClipboard")
+      return 
     end
+    local lines = vim.split(clipboard_val, '[\r\n]+', {})
 
     vim.api.nvim_put(lines, "l", false, true)
 
@@ -255,7 +255,7 @@ local function m_paste()
     vim.cmd("PasteImage")
   end
 end
-map({'i', 'n'}, "<C-p>", function()
+map({'i', 'n', 'v'}, "<C-p>", function()
   F.save_view_action(m_paste)
 end, { desc="paste from @*. When markdown, check whether system clipboard is an image"})
 
@@ -409,7 +409,7 @@ map("n", "<leader>ss",
             local _, _, session_note = F.get_session_info()
             local yaml = {
               "---",
-              "session_path:",
+              "root:",
               "---"
             }
             vim.fn.writefile(yaml, session_note)
@@ -419,8 +419,8 @@ map("n", "<leader>ss",
       end} ,
       { text = "temp title str", fn = function()
         local bufname = vim.fn.expand("%")
-        
-        vim.ui.input({prompt="Temp Tittle Str:", default = bufname}, 
+
+        vim.ui.input({prompt="Temp Tittle Str:", default = bufname},
           function(temp_title_str)
             if temp_title_str and temp_title_str ~= "" then
               vim.opt.titlestring = " " .. temp_title_str
