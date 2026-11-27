@@ -1,0 +1,5 @@
+sessions/*
+.gitconfig
+spell/*
+*lock.json
+lua/m_poweron.lua

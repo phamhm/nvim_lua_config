@@ -1,0 +1,118 @@
+local F = require("utils.functions")
+
+local function multicursor_count()
+  local ns = vim.api.nvim_create_namespace('nvim.multicursor')
+  local mc_count = #vim.api.nvim_buf_get_extmarks(0, ns, 0, -1, {})
+  if mc_count>0 then
+    return string.format("[MC Count:%sx]", mc_count)
+  else
+    return ""
+  end
+end
+
+vim.api.nvim_set_hl(0, "FlashLabel", { fg = "red",  bold = true })
+return {
+  -- {'easymotion/vim-easymotion'},
+  {
+
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {
+      labels = '0' .. F.m_labels,
+      search = {
+        multi_window = false,
+      },
+      highlight = {
+        backdrop = false,
+        matches = false,
+        groups = {
+          label = "FlashLabel",
+          current = "FlashLabel",
+        },
+      },
+    },
+    keys = {
+      { "<leader>W", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "<leader>T", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "<leader>R", mode = { "n", "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    },
+  },
+  {'nvim-tree/nvim-web-devicons'},
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-mini/mini.icons' },
+
+    config = function()
+      require('mini.icons').setup()
+      require("mini.icons").mock_nvim_web_devicons()
+      local custom_theme = require('lualine.themes.codedark')
+
+      -- 2. Modify background (bg) colors for specific modes and sections
+      -- Sections are structured as: theme.[mode].[section].[attribute]
+      -- local hl = vim.api.nvim_get_hl(0, { name = "Normal" })
+      -- local bg_dec = hl.bg
+      --
+      -- -- get colorscheme bg color, then set it to the statusline.
+      -- -- this blends the statusline and the bg
+      -- if bg_dec then
+      --   local bg_hex = string.format("#%06x", bg_dec)
+      --   custom_theme.normal.a.bg = bg_hex
+      --   custom_theme.normal.b.bg = bg_hex
+      --   custom_theme.normal.c.bg = bg_hex
+      --   custom_theme.insert.a.bg = bg_hex
+      -- end
+
+      require('lualine').setup {
+        options = {
+          theme = custom_theme,
+          component_separators = '',
+          section_separators = '',
+        },
+        sections = {
+          lualine_a = {
+          },
+          lualine_b = {
+          },
+          lualine_c = {
+            { 'location', padding = {left =0 , right = 0}},
+            {
+              'mode',
+              fmt = function(str)
+                return string.format("[%s]", str:sub(1, 1))
+              end,
+              padding = {left = 1, right = 0}
+            },
+            {
+              function() return F.set_session() .. "::" end,
+              padding = {left = 1, right = 0}
+            },
+            {
+              "filename",
+              padding = {left = 0, right = 1}
+            },
+            {
+              "filetype",
+              icon_only = true,
+              padding = {left = 0, right = 1}
+            },
+            'branch',
+            'diff',
+            'diagnostics',
+            {
+              multicursor_count,
+            },
+          },
+          lualine_x = { },
+          lualine_y = { }, -- saved 'progress'
+          lualine_z = { }
+        },
+        inactive_sections = {
+          lualine_c = {
+            'filename',
+          },
+          lualine_x = { },
+        },
+      }
+    end
+  },
+}

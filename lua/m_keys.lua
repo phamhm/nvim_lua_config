@@ -1,0 +1,751 @@
+local F = require("utils.functions")
+local map = F.map
+local ts = require("mini.trailspace")
+
+local CAPTURE_NOTE_DIR = vim.fn.expand(vim.g.m_notes_path .. '/CAPTURE_NOTES')
+
+map({ 'n', 'v' }, 'j', "gj", {silent=true, desc = "virtual line movement"})
+map({ 'n', 'v' }, 'k', "gk", {silent=true, desc = "virtual line movement"})
+
+map('n', '<C-q>',
+  function()
+    -- only delete buffer if there is no other windows with the same buffer
+    local bufnr = vim.api.nvim_get_current_buf()
+    if #vim.fn.win_findbuf(bufnr) == 1 then
+      Snacks.bufdelete()
+    end
+
+    -- only close windows if there are more than 1 non-floating windows.
+    local normal_wins = vim.tbl_filter(function(win)
+      return vim.api.nvim_win_get_config(win).relative == ""
+    end, vim.api.nvim_tabpage_list_wins(0))
+    if #normal_wins > 1 then
+      vim.cmd.close()
+    end
+  end,{desc = "delete buffer and close windows"})
+
+map('n', '<leader>wq', F.pick_win_action(vim.cmd.close),{desc = "select a window to close"})
+map('n', '<leader>ws',
+  function()
+    -- getting current window/buffer information
+    local source_winid = vim.api.nvim_get_current_win()
+    local source_bufnr = vim.api.nvim_get_current_buf()
+
+    local swap_win = function()
+      -- getting the target window/buffer information
+      local target_winid = vim.api.nvim_get_current_win()
+      local target_bufnr = vim.api.nvim_get_current_buf()
+
+      -- swap the buffer number between windows
+      if target_winid ~= source_winid and target_bufnr ~= source_bufnr then
+        vim.api.nvim_win_set_buf(source_winid, target_bufnr)
+        vim.api.nvim_win_set_buf(target_winid, source_bufnr)
+      end
+    end
+
+    local pick_action = F.pick_win_action(swap_win)
+
+    pick_action()
+  end
+  ,{desc = "select a window to swap"})
+
+map({'n', 'i', 'v'}, '<C-s>', "<Esc><cmd>write<cr>" ,{silent = true, desc="save buffer"})
+map('n', F.alt_key("<%s-s>"), F.save_bufs_then_act(vim.cmd.write),{silent = true, desc="save buffers"})
+
+local function cleanup_buffer()
+  vim.cmd.stopinsert()
+
+  ts.trim()
+  ts.trim_last_lines()
+  if vim.bo.filetype == "markdown"  then
+    vim.cmd([[g/^\s*[\*-]\s*$/d]])
+  end
+  vim.cmd([[%s/\n\{3,}/\r\r/e]]) -- clean up multiple blank lines
+  vim.cmd('nohlsearch')
+
+  F.PRINT({"Cleaned up buffer", "- trim/last lines", "- remove mult empty lines"})
+end
+map({"v", 'n', 'i'}, F.alt_key('<C-%s-f>'),
+  function()
+    F.save_view_action(cleanup_buffer)
+  end,{silent = true, desc="format buffer"})
+
+map({'i', 'n'}, '<C-j>', function() vim.cmd.normal("o") end,{silent = true, desc="middle of line & new line below"})
+map({'i', 'n'}, '<C-k>', function() vim.cmd.normal("O") end,{silent = true, desc="middle of line & new line above"})
+
+-- balancing out the universe
+map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})
+
+-- Bringing the whole line up or down
+-- Normal mode
+map('n', F.alt_key("<C-%s-j>"), ':m .+1<CR>==', { silent = true, desc="move the whole block down" })
+map('i', F.alt_key("<C-%s-j>"), '<Esc>:m .+1<CR>==gi', { silent = true, desc="move the whole block down" })
+map('v', F.alt_key("<C-%s-j>"), ":m '>+1<CR>gv=gv", { silent = true, desc="move the whole block down" })
+map('n', F.alt_key("<C-%s-k>"), ':m .-2<CR>==', { silent = true, desc="move the whole block up" })
+map('i', F.alt_key("<C-%s-k>"), '<Esc>:m .-2<CR>==gi', { silent = true, desc="move the whole block up" })
+map('v', F.alt_key("<C-%s-k>"), ":m '<-2<CR>gv=gv", { silent = true, desc="move the whole block up" })
+
+-- simplify the capture. Don't need to move around.
+-- keeps these here as example of moving with vim command
+-- map("v", "<leader>td", ":'<,'>m ?^# Capture$?-2 <CR>")
+-- map("n", "<leader>td", ":m ?^# Capture$?-2 <CR>")
+-- map("v", "<leader>tc", ":'<,'>m /^# Capture$/ <CR>")
+-- map("n", "<leader>tc", ":m /^# Capture$/ <CR>")
+
+map({ "i", "v", "s", "n"}, "<C-c>",
+  function()
+    vim.cmd("fclose!")
+    F.m_feedkey("<Esc>")
+    vim.cmd('nohlsearch')
+  end, {noremap = true, desc="Esc and call no highlight"})
+
+-- shortcut to query
+local function query(query_url)
+  return function(input)
+    if input and input ~="" then
+      local encoded_input = vim.uri.encode(input)
+      vim.ui.open(query_url .. encoded_input)
+      local LOG_FILE = string.format("%s/logs/google_%s.md",vim.g.m_notes_path, os.date("%Y-%m-%d"))
+      local log = string.format("[%s] %s", os.date("%H:%M"), input)
+      vim.fn.writefile({ vim.trim(log) }, vim.fn.expand(LOG_FILE), "a")
+    end
+  end
+end
+
+map({"n","v" }, F.alt_key("<%s-l>"), function()
+  local selected_text = table.concat(F.get_visual_lines(), "\n")
+
+  vim.ui.input({
+    icon = "󰊭 ",
+    prompt = "󰊭 :",
+    default = vim.trim(selected_text),
+  }, query("https://www.google.com/search?q="))
+end, {desc="googling google"})
+-- end googling, }
+
+-- end capture
+
+map("n", "<leader>c<space>", "gcc", {remap = true, silent=true, desc = "toggle comment"})
+map("v", "<leader>c<space>", "gc", {remap = true, silent=true, desc = "toggle comment"})
+
+-- registers manipulations
+map("n", "yy", function()
+  vim.cmd.fclose()
+  Snacks.notifier.hide()
+  local line = vim.api.nvim_get_current_line()
+  vim.fn.setreg('"',  line)
+  F.PRINT({'Yanked line into @" | <C-y>x2 to add | <Spc>r+ to cp to @+', line})
+end, {desc = "yank line"})
+
+map({"n", "v"},
+  F.alt_key("<C-y>",2),
+  function()
+    vim.cmd.fclose()
+    Snacks.notifier.hide()
+    local lines = ""
+    if vim.fn.mode() == "n" then
+      lines = vim.api.nvim_get_current_line()
+    else
+      local visual_lines = F.get_visual_lines()
+      lines = table.concat(visual_lines, "\n")
+    end
+
+    local new_reg = string.format("%s\n%s", vim.fn.getreg('"'), lines):gsub("\n\n", "\n")
+
+    vim.fn.setreg('"',  new_reg )
+    F.PRINT({'Append line(s) to @"', new_reg})
+  end,
+  {desc = 'Register add lines to @"'}
+)
+
+map({"n"}, "<leader>r+",
+  function()
+    vim.fn.setreg("+", vim.fn.getreg('"'))
+    F.NOTIFY({'Copied @" into @+ :', vim.fn.getreg('"')})
+  end ,
+  {desc = 'Register Copy @" into @+'})
+
+-- map({"n", "v"}, F.alt_key("<%s-y>"),
+--   function()
+--     local lines = ""
+--     if vim.fn.mode() == "n" then
+--       lines = vim.api.nvim_get_current_line()
+--     else
+--       lines = table.concat(F.get_visual_lines(), "\n")
+--     end
+--
+--     vim.fn.setreg("+", lines)
+--     F.NOTIFY({'Yank line(s) into @+', lines})
+--   end ,
+--   {desc = 'Register Yank line(s) into @"'})
+
+map({"n", "i"}, F.alt_key('<C-%s-r>'),
+  function()
+    Snacks.picker.registers({
+      confirm = { "paste", "close" },
+      layout = { hidden = { 'preview'} },
+    })
+  end,
+  {desc = 'Select Registers to paste on confirm'}
+)
+-- end registers manipulation
+
+map({ "n", "x", "o" }, "W", function()
+  local line = vim.fn.line(".")
+  require("flash").jump({
+    search = {
+      mode = "search",
+      max_length = 0, -- Show labels immediately without typing
+    },
+    label = {
+      after = { 0, 0 }, -- Place the label right on the first character of each word
+    },
+    pattern = string.format("\\%%%dl\\<\\w", line),
+  })
+end, { desc = "Flash words on current line" })
+
+map('n', F.alt_key("<%s-o>",3), function()
+  local file = vim.fn.expand('%')
+  if vim.endswith(file, ".html") then
+    vim.ui.open(file)
+  else
+    F.WARN("Only open html file:" .. file)
+  end
+end, { desc = 'Open current buffer with system handler' })
+
+-- how to define this but ignore minifiles
+map('n', "<C-d>", '<C-d>zz', { desc = "half page down, centered" })
+map('n', "<C-u>", '<C-u>zz', { desc = "half page up, centered" })
+
+map('n', "G", function() vim.cmd("normal! G") vim.cmd("normal! zz") end, { desc = "up, centered" })
+
+-- map('n', "<leader>cl", function()
+--   F.clear_todo()
+--   F.clear_status()
+-- end, {desc = " clear global vim.g"})
+
+local function m_paste()
+  local code=1
+
+  -- only check if it's markdown because running running a zsh script is slow.
+  if vim.bo.filetype == "markdown" then
+    local clip_board_zsh_path = vim.g.m_scripts .. '/get_clipboard_type.zsh'
+    local result = vim.system({ "zsh", vim.fs.abspath(clip_board_zsh_path) }, {
+      text = true, -- Automatically decode stdout/stderr as strings
+    }):wait()
+    code = result.code
+  end
+
+  if code == 1 then
+    -- paste from the @+ system clipboard register,
+    -- select the pasted line(s) and autoindent
+
+    local clipboard_val = vim.trim( vim.fn.getreg('+') )
+    local lines = vim.split(clipboard_val, '[\r\n]+', {})
+
+    if #lines == 1 and vim.bo.filetype == "markdown" and vim.startswith(clipboard_val, "http") then
+      lines = { string.format("[](%s)", clipboard_val) }
+    end
+
+    vim.api.nvim_put(lines, "l", false, true)
+
+    vim.cmd("stopinsert")
+    vim.cmd.normal("`[V`]=")
+  elseif code == 0 and vim.bo.filetype == "markdown" then
+    vim.cmd("PasteImage")
+  end
+end
+map({'i', 'n'}, "<C-p>", function()
+  F.save_view_action(m_paste)
+end, { desc="paste from @*. When markdown, check whether system clipboard is an image"})
+
+local function capture_note(lines, filetype)
+  local leading = {'```'..filetype}
+  local ending = {'```'}
+
+  vim.ui.input({prompt = string.format("Ft [%s] note: ", filetype)}, function(input)
+    local new_date = os.date("%Y-%m-%d %H:%M")
+    local header = {"", string.format("# %s [%s]", input, new_date ), ""}
+    local target_file = string.format("%s/%s.md", CAPTURE_NOTE_DIR, filetype)
+
+    local lines_list = {header, leading, lines, ending}
+
+    local note = vim.iter(lines_list):flatten():totable()
+    vim.fn.writefile(note, target_file, "a")
+  end)
+end
+
+local function capture_from_register()
+  local reg_p = vim.trim(vim.fn.getreg('+'))
+  if vim.startswith(reg_p, "http") then
+    F.NOTIFY("Bookmarking http:" .. reg_p)
+    vim.ui.input({ prompt = string.sub(reg_p,1, 50) .. " : " }, function(input)
+      local note_text = { string.format("[%s](%s)", input, reg_p) }
+      local full_path = vim.fn.expand( vim.g.m_notes_path .. "/bookmarks.md")
+      vim.fn.writefile(note_text, full_path ,"a")
+    end)
+  elseif reg_p ~= "" then
+    F.NOTIFY("Capturing note from @p:" .. reg_p)
+    local lines = vim.split(reg_p, '\n', {plain = true})
+    local filetype = vim.bo.filetype
+    capture_note(lines, filetype)
+  elseif reg_p == "" then
+    F.WARN("empty register. nothing to capture.")
+  end
+end
+
+map({"v", "n"}, "<leader>bb",
+  function()
+    local mode = vim.fn.mode()
+    if mode == "n" then
+      capture_from_register()
+    elseif  mode == 'v' or mode == 'V' or mode == '\22' then
+      capture_note(F.get_visual_lines(), vim.bo.filetype)
+    end
+  end,
+  {desc="make notes/bookmark from highlted text"})
+
+map("n", "<C-w>f", function()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local config = vim.api.nvim_win_get_config(win)
+    if config.focusable and config.relative ~= "" then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+  print("No floating window found")
+end, { desc = "Jump to floating window" })
+
+for i = 1, 9 do
+  map("n", string.format("z%s", i), function() vim.wo.foldlevel = i - 1 end, {desc = "fold level "..i-1})
+end
+
+map("n", "<leader>ww",
+  function()
+    vim.cmd.edit(string.format("%s/%s",vim.g.m_notes_path, "index.md" ))
+    vim.cmd.norma({"Gzz", bang = true})
+  end,
+  {desc = "My Notes" }
+)
+
+map("n", "<leader>ss",
+  function()
+    local session_path = string.format("%s/sessions/",vim.g.m_notes_path)
+    local session_commands = {
+      {text = "select", fn = F.save_bufs_then_act(MiniSessions.select) },
+      {text = "save current", fn = MiniSessions.write},
+      {text = "delete", fn = function() MiniSessions.select('delete', {force = true}) end},
+      {text = "rename", fn = function()
+        local sessions = require("mini.sessions")
+        -- 1. select a session to rename
+        -- 2. rename its session file.
+        -- 3. rename its notes file
+        vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rename"},
+          function(old_session_name)
+            local current_session = vim.fs.basename(vim.v.this_session)
+            if current_session == old_session_name then
+              F.WARN("Can't rename current session")
+              return
+            end
+
+            vim.ui.input({prompt = "New Session Name:"},
+              function(new_session_name)
+
+                if not new_session_name or new_session_name == "" then
+                  return
+                end
+
+                new_session_name = new_session_name:gsub(" ","_")
+
+                local old_session_path = string.format("%s/%s", MiniSessions.config.directory, old_session_name):gsub("//", "/")
+                local new_session_path = string.format("%s/%s", MiniSessions.config.directory, new_session_name):gsub("//", "/")
+                if vim.uv.fs_stat(old_session_path) then
+                  vim.fn.rename(old_session_path, new_session_path)
+                else
+                  F.NOTIFY("Session not found:" .. old_session_path)
+                  return
+                end
+
+                local old_session_note_path = string.format("%s/%s.md", session_path, old_session_name):gsub("//", "/")
+                local new_session_note_path = string.format("%s/%s.md", session_path, new_session_name):gsub("//", "/")
+                if vim.uv.fs_stat(old_session_note_path) then
+                  vim.fn.rename(old_session_note_path, new_session_note_path)
+                end
+
+              end)
+          end
+        )
+      end},
+      {text = "rebuild", fn = function()
+        local sessions = require("mini.sessions")
+        vim.ui.select(vim.tbl_keys(sessions.detected), {prompt = "Select session to rebuild"},
+          function(session_name)
+            if session_name and session_name ~= "" then
+              require('snacks').bufdelete.all()
+              MiniSessions.write(session_name)
+              local session_note_path = string.format("%s/%s.md", session_path, session_name)
+              vim.cmd.edit(session_note_path)
+              if not vim.uv.fs_stat(session_note_path) then
+                return
+              end
+              local bufnr = vim.fn.bufnr(session_note_path)
+
+              local frontformatter, err = F.get_md_frontformatter(bufnr)
+              if frontformatter then
+                if frontformatter.main and frontformatter.main ~= "" then
+                  vim.cmd.edit(frontformatter.main)
+                end
+              else
+                F.ERROR("Yaml parse error: " .. vim.inspect(err))
+              end
+            end
+          end)
+      end},
+      {text = "new session", fn = function()
+        vim.ui.input({ prompt = 'Session Name: ' }, function(new_session_name)
+          if new_session_name and new_session_name ~= '' then
+            require('snacks').bufdelete.all()
+            MiniSessions.write(new_session_name)
+            local _, _, session_note = F.get_session_info()
+            local yaml = {
+              "---",
+              "session_path:",
+              "---"
+            }
+            vim.fn.writefile(yaml, session_note)
+            vim.cmd.edit(session_note)
+          end
+        end)
+      end} ,
+      { text = "temp title str", fn = function()
+        local bufname = vim.fn.expand("%")
+        
+        vim.ui.input({prompt="Temp Tittle Str:", default = bufname}, 
+          function(temp_title_str)
+            if temp_title_str and temp_title_str ~= "" then
+              vim.opt.titlestring = " " .. temp_title_str
+            end
+          end)
+        end
+      },
+    }
+    F.menu_commands(session_commands, "Session commands", "")
+  end, {desc = "session management"})
+
+map("n", '<leader>sn',
+  function()
+    local session_dir, session_name, session_note = F.get_session_info()
+    if session_name and vim.uv.fs_stat(session_note) then
+      F.snacks_grep_markdown(session_note)
+    elseif not session_name or session_name == "" then
+      F.ERROR("Not in a session")
+    else
+      F.ERROR("SessionNote NOT found:" .. session_note)
+      vim.cmd.edit(session_dir)
+    end
+  end,
+  {desc="open session_path"}
+)
+map("n", "<leader>1",
+  function()
+    local session_dir, session_name, session_note = F.get_session_info()
+    local current_file = vim.fn.expand("%:p")
+
+    -- close window if in it. Toggle behavior
+    if current_file == session_note and #vim.api.nvim_list_wins() > 1 then
+      vim.cmd.wincmd("w")
+      return
+    end
+
+    if session_name and vim.uv.fs_stat(session_note) then
+      F.open_markdown_file(session_note, nil, true)
+    elseif not session_name or session_name == "" then
+      F.ERROR("Not in a session")
+    else
+      F.ERROR("SessionNote NOT found:" .. session_note)
+      vim.cmd.edit(session_dir)
+    end
+  end, {desc = "session note"})
+
+map("n", "<leader>2",
+  function()
+    local filename = CAPTURE_NOTE_DIR .. "/" .. vim.bo.filetype .. ".md"
+    vim.cmd.vsplit(filename)
+  end, {desc = "file type note"})
+
+map({"n", "t"}, "<C-/>", function()
+  if vim.fn.mode() == "t" then
+    vim.cmd.stopinsert()
+    return nil
+  end
+  -- if there is only ONE window, don't do anytning if it's a term window
+  if vim.fn.winnr("$") == 1 then
+    local name = vim.api.nvim_buf_get_name(0)
+    if vim.bo.buftype == 'terminal' or vim.startswith(name, "term:") then
+      vim.cmd.startinsert()
+      return nil
+    end
+  end
+
+  -- find all the terminal buffers
+  local terminal_bufs = vim.tbl_filter(function(bufnr)
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    return vim.bo[bufnr].buftype == 'terminal' or vim.startswith(name, "term:")
+  end, vim.api.nvim_list_bufs())
+
+  if #terminal_bufs > 1 then
+    F.WARN(string.format("Too many term bufs: %s. Close all", #terminal_bufs))
+    vim.iter(terminal_bufs):each(function(bufnr)
+      vim.api.nvim_buf_delete(bufnr, { force = true })
+    end)
+    return nil
+  elseif #terminal_bufs == 1 then
+    local bufnr = unpack(terminal_bufs)
+    local winid = vim.fn.bufwinid(bufnr)
+    if winid ~= -1 then
+      vim.api.nvim_set_current_win(winid)
+    else
+      -- buffer is hidden. open a new window and bring the buffer out.
+      vim.cmd.vsplit()
+      vim.api.nvim_win_set_buf(0, bufnr)
+    end
+  else -- no terminal buffer found
+    vim.cmd.vsplit()
+    vim.cmd.term()
+  end
+
+  -- only push down if there are more than 1 windows
+  vim.cmd.wincmd("J")
+  vim.api.nvim_win_set_height(0, 10)
+  vim.cmd("startinsert")
+end , {desc = "Toggle terminal"})
+
+map( "t", "<Esc>", vim.cmd.stopinsert,
+  {desc = "stop insert"}
+)
+
+map( "t", "<C-w>w",
+  function()
+    vim.cmd("stopinsert")
+    if #vim.api.nvim_list_wins() > 1 then
+      F.m_feedkey("<C-w>w")
+    end
+  end,
+  {desc = "terminal move to other windows"}
+)
+
+map('n', "<C-a>",
+  function()
+    local session_dir, session_name, session_note = F.get_session_info()
+    if session_name and vim.uv.fs_stat(session_note) then
+      vim.ui.input(
+        {prompt= string.format("%s New heading: ", session_name)},
+        function(heading)
+          if heading and vim.trim(heading) ~= "" then
+            local session_note_abspath = vim.fs.abspath(session_note)
+            local target_buf = nil
+            -- 1. Search all loaded buffers for a matching path
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_loaded(buf) then
+                local buf_name = vim.api.nvim_buf_get_name(buf)
+                if buf_name == session_note_abspath then
+                  target_buf = buf
+                  break
+                end
+              end
+            end
+
+            local m_heading = {"", "# "..heading }
+            if target_buf then
+              vim.api.nvim_buf_set_lines(target_buf, -1, -1, false, m_heading)
+              vim.api.nvim_buf_call(target_buf, vim.cmd.write )
+            else
+              if not vim.uv.fs_stat(session_note_abspath) then
+                F.ERROR("Session Note file does NOT exist")
+                return
+              end
+
+              local status = vim.fn.writefile(m_heading, session_note_abspath, "a")
+              if status ~= 0 then
+                F.WARN("Failled to append heading to session note")
+              end
+            end
+          end
+        end)
+    elseif not session_name or session_name == "" then
+      F.ERROR("Not in a session")
+      return
+    else
+      F.ERROR("SessionNote NOT found:" .. session_note)
+      vim.cmd.edit(session_dir)
+      return
+    end
+  end, {desc = "add note to session"})
+
+-- Map =ai to format without losing your cursor position
+map('n', F.alt_key("<%s-f>") , function()
+  -- 1. Save the current window and cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+
+  vim.cmd.normal("=ai")
+
+  vim.api.nvim_win_set_cursor(0, cursor_pos)
+end, { desc = "Format around inner block (keeps cursor position)" })
+
+map({"n", "i"}, "<C-t>", "<cmd>t.<cr>", {desc="ex t copy line reserve cursor column"})
+
+map('n', '<leader>m', function()
+  -- Wait for user to type the mark character
+  local ok, char = pcall(vim.fn.getcharstr)
+  if ok and char and char:match('%a') then
+    vim.cmd.normal({'m' .. char, bang = true})
+    F.NOTIFY(string.format('Mark set: %s', char))
+  end
+end, { desc = 'Set mark with notification' })
+
+map({"v", "n"}, "<leader>xe",
+  function()
+    if vim.fn.mode() == "n" and vim.bo.filetype == "lua" then
+      F.NOTIFY("Load whole buffer for Lua")
+      vim.cmd("%lua")
+      return
+    end
+
+    local lines = F.get_visual_lines()
+
+    local selected_text = table.concat(lines, "\n")
+    local fn, err = loadstring(selected_text)
+    if fn then
+      fn()
+    else
+      F.ERROR("Lua error: " .. err)
+    end
+
+  end, {desc = "execute highlited text as lua code"})
+
+map('n', '<C-down>',
+  function()
+    if F.count_normal_windows() ~= 2 then
+      F.WARN("Viewable windows <> 2")
+      return
+    end
+
+    local current_win_id = vim.api.nvim_get_current_win()
+
+    local cursor_pos = vim.api.nvim_win_get_cursor(current_win_id)
+    F.m_feedkey('<c-w>w<c-e><c-w>wh')
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(current_win_id, cursor_pos)
+    end)
+  end, { desc = 'Scroll other window down 1 line' })
+
+map('n', '<C-up>',
+  function()
+    if F.count_normal_windows() ~= 2 then
+      F.WARN("Viewable windows <> 2")
+      return
+    end
+
+    local win_id = vim.api.nvim_get_current_win()
+
+    local cursor_pos = vim.api.nvim_win_get_cursor(win_id)
+    F.m_feedkey('<c-w>w<c-y><c-w>wh')
+    vim.schedule(function()
+      vim.api.nvim_win_set_cursor(win_id, cursor_pos)
+    end)
+  end, { desc = 'Scroll other window up 1 line' })
+
+-- tresitters
+
+-- <%s-/> will search for mini ai next
+-- however, if enter ?, this will search for mini ai prev
+-- use "m" to repeat last next search
+-- use "M" to repeat but prev search
+local last_ai_char = {char =  "i", search_method = "next"}
+
+local mini_ai_move = function(search_method, repeat_last)
+  return function()
+    if repeat_last then
+      MiniAi.move_cursor("left", "a", last_ai_char.char, { search_method = search_method or last_ai_char.search_method })
+      return
+    end
+
+    vim.api.nvim_echo({
+      {"(mini.ai) ", "@character"},
+      {"Enter Mini Ai [" .. search_method .. "] text obj "},
+    }, true, {})
+
+    local ok, char = pcall(vim.fn.getcharstr)
+    if ok and char  then
+      if char == "?" then
+        vim.api.nvim_echo({
+          {"(mini.ai) ", "@character"},
+          {"prev "},
+        }, true, {})
+
+        search_method = "prev"
+        ok, char = pcall(vim.fn.getcharstr)
+        if not ok or not char then
+          return
+        end
+      end
+      if char:match("%a") then
+        last_ai_char.char = char
+        last_ai_char.search_method = search_method
+        MiniAi.move_cursor("left", "a", char, { search_method = search_method })
+      end
+    end
+    print("")
+  end
+end
+map({ 'n', 'x', 'o' }, 'm/', mini_ai_move("next"), {desc = "mini ai move next"})
+map({ 'n', 'x', 'o' }, 'M/', mini_ai_move("prev"), {desc = "mini ai move prev"})
+map({ 'n', 'x', 'o' }, 'mm',
+  mini_ai_move("next", true),
+  { desc = 'treesitter next mini ai start' }
+)
+map( { 'n', 'x', 'o' }, 'MM',
+  mini_ai_move("prev", true),
+  { desc = 'treesitter prev mini ai start' }
+)
+
+local treesitter_select = function(target)
+  return function()
+    F.PRINT("= expand | - shrink | n next | N extend next | p prev | P extend prev")
+    if vim.fn.mode() == "n" then
+      vim.cmd.normal({"viw", bang=true})
+      return
+    end
+    vim.treesitter.select(target)
+  end
+end
+map({"n", "v"}, "m=",
+  treesitter_select("parent"),
+  {desc = "treesitter select expand"})
+map({"n", "v"}, "m-",
+  treesitter_select("child"),
+  {desc = "treesitter select shrink"})
+map({"n", "v"}, "mn",
+  treesitter_select("next"),
+  {desc = "treesitter select next"})
+map({"n", "v"}, "mN",
+  treesitter_select("extend_next"),
+  {desc = "treesitter select next"})
+map({"n", "v"}, "mp",
+  treesitter_select("prev"),
+  {desc = "treesitter select prev"})
+map({"n", "v"}, "mP",
+  treesitter_select("extend_prev"),
+  {desc = "treesitter select prev"})
+
+-- end treesitter
+
+map('n', "<C-x><C-c>",
+  F.save_bufs_then_act("qa!"),
+  {desc="force quit everything"})
+
+map("n", "<C-x><C-r>",
+  F.save_bufs_then_act(vim.cmd.restart),
+  {desc = "restart nvim"})
+
+map("n", "<C-;>", vim.lsp.buf.rename , {desc = "lsp buf rename shortcut"})

@@ -1,0 +1,777 @@
+-- TODO: clean up diagnostics
+
+-- Rules for keys
+-- 1. If prefix C-, only expand Snacks.actions. Don't overwrite them.
+-- 2. Custom Actions starts with C-%s
+local F = require("utils.functions")
+
+-- disable autocompletion in the windows. will work on vim.ui.open
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("snacks_no_completion", { clear = true }),
+  pattern = "snacks_*",
+  callback = function()
+    vim.b.minicompletion_disable = true
+  end,
+})
+
+local function m_yank_selected(picker, item)
+  local selected = vim.iter(picker:selected({fallback = true}))
+  :map(
+      function(i)
+        local text = i.text
+        if i.file and i.pos then
+          local row, col = unpack(i.pos)
+          local prefix = string.format("%s:%d:%d:", i.file, row, col+1)
+          text = text:gsub(prefix, "", 1)
+        end
+        return text
+      end):totable()
+
+  local lines = table.concat(selected, "\n")
+  vim.fn.setreg('"', lines)
+  F.PRINT({'Yank selected into @"', lines})
+end
+
+-- TODO: how to make multiple dirs readable
+local function set_win_title(winid, title)
+  vim.api.nvim_win_set_config(winid, {
+    title = title,
+    title_pos = "center"
+  })
+end
+
+local function m_set_title(picker, item, path)
+  local winid =  vim.tbl_get(picker, "list", "win", "win") or nil
+  if winid then
+    if path and path ~= "" then
+      set_win_title(winid, path)
+    elseif vim.list_contains({"grep", "explorer"}, picker.opts.source) then
+      local dirs = picker.opts.dirs
+      local title = ""
+      if dirs and #dirs == 1 then
+        title = vim.fn.fnamemodify(unpack(dirs), ":~")
+      elseif dirs and #dirs > 1 then
+        local basenames = vim.iter(dirs)
+          :map(function(path)
+            local parent_dir = vim.fn.fnamemodify(path, ":h:t")
+            local basename = vim.fs.basename(path)
+            return  parent_dir.."/"..basename
+          end)
+          :totable()
+        title = table.concat(basenames, ", ")
+      else
+        local f = item and item._path or picker:cwd()
+        title = vim.fn.fnamemodify(f, ":~")
+      end
+      set_win_title(winid, title)
+    end
+  end
+end
+
+-- Picker explorer actions
+local function m_tcd(picker, item)
+  Snacks.picker.actions.tcd(picker, item)
+  m_set_title(picker, item)
+end
+
+local function m_explorer_up(picker, item)
+  local explorer_actions = require("snacks.explorer.actions").actions
+  explorer_actions.explorer_up(picker)
+  m_set_title(picker)
+end
+
+local function m_list_up(picker, item)
+  local idx = item.idx - 1
+  if idx == 0 then
+    idx = #picker.finder.items
+  end
+
+  local next_item = picker.finder.items[idx]
+  m_set_title(picker, next_item)
+  Snacks.picker.actions.list_up(picker, item)
+end
+
+local function m_list_down(picker, item)
+  local idx = item.idx + 1
+  local next_item =picker.finder.items[idx]
+  m_set_title(picker, next_item)
+  Snacks.picker.actions.list_down(picker, item)
+end
+
+local function m_move_selected(picker, item)
+  local selected = vim.iter(picker:selected()):map(function(selected) return selected._path end):totable()
+
+  local current_path_dir = item._path
+  if vim.uv.fs_stat(current_path_dir).type == "file" then
+    current_path_dir = vim.fs.dirname(current_path_dir)
+  end
+
+  local prompt = string.format("Move %s file(s) to %s :\n\n%s", #selected,current_path_dir, table.concat(selected, "\n") )
+
+  local choice = vim.fn.confirm(prompt, "&Yes\n&No", 1)
+  if choice == 1 then
+    vim.iter(selected):each(
+      function(old_path)
+        local from = old_path
+
+        local from_path = vim.fs.dirname(from)
+        local filename = vim.fs.basename(from)
+
+        local to = current_path_dir .. "/" .. filename
+
+        Snacks.rename.rename_file({
+          from = from,
+          to = to
+        })
+      end)
+
+    local Tree = require("snacks.explorer.tree")
+    Tree:refresh(current_path_dir)
+    Tree:open(current_path_dir)
+    picker:refresh()
+  end
+end
+
+-- FIXME: is there another uproot one?
+local function m_explorer_root(picker, item)
+  -- local current_cwd = picker.opts.cwd
+  local pattern = vim.tbl_get(picker, "input", "filter", "pattern") or ""
+
+  vim.cmd("fclose!")
+  Snacks.explorer({
+    cwd = F.get_root(),
+    enter = true,
+    pattern = pattern or "",
+  })
+end
+
+local TODOS     = {
+  ["TODO"]      = { fg = "green", bold   = true },
+  ["NOTE"]      = { fg = "pink", bold   = true },
+  ["FIXME"]     = { fg = "cyan", bold   = true },
+  ["WARN"]      = { fg = "yellow", bold = true },
+  ["IMPORTANT"] = { fg = "red", bold    = true },
+}
+for key, style in pairs(TODOS) do
+  vim.api.nvim_set_hl(0, key .. "Hl", style)
+end
+local function m_todo_from_root()
+  local todo_keys = vim.iter(vim.tbl_keys(TODOS))
+    :map(function(i) return i .. ":" end)
+    :totable()
+  local current_cwd = vim.fn.expand("%:p")
+
+  local root = F.get_root()
+  if root and vim.uv.fs_stat(root) then
+    Snacks.picker.grep({
+      search = table.concat(todo_keys, "|"),
+      cwd = root,
+      layout = {
+        hidden = {'input', 'preview'}
+      },
+      on_show = function(picker)
+        picker.list.win:set_title("TODO Root:" .. root)
+      end,
+      format = function(item, picker)
+        local m_todo
+        local m_msg
+        local todo_len = 8
+        for todo, _ in pairs(TODOS) do
+          if item.line:upper():match(todo..":") then
+            local t = vim.split(item.line, todo .. ":")
+            t = vim.list_slice(t, 2)
+            m_msg = table.concat(t, " ")
+            m_todo = todo .. string.rep(" ", math.max(0, todo_len - #todo))
+            break
+          end
+        end
+
+        if not m_todo or m_todo == "" then
+          F.WARN("unrecognizable m_todo")
+          picker:close()
+          return {}
+        end
+
+        local hlgroup = vim.trim(m_todo):upper() .. "Hl"
+        local location = string.format("%s %-25s",MiniIcons.get('file', item.file), vim.trim(item.file))
+        return {
+          { m_todo or "", hlgroup },
+          { location, "Comment" },
+          { m_msg or "", "Normal" },
+        }
+      end,
+    })
+  end
+end
+
+local function diff_selected(picker)
+  picker:close()
+  local selected = picker:selected()
+  if #selected == 2 then
+    vim.cmd("tabnew " .. selected[1].file)
+    vim.cmd("vert diffs " .. selected[2].file)
+    Snacks.notify.info("Diffing " .. selected[1].file .. " & " .. selected[2].file)
+  else
+    F.WARN("Need 2 files to diff. Found " .. #selected)
+  end
+end
+
+local function tar_selected(picker, item)
+  local selected = picker:selected({fallback = true})
+  local count= 0
+  local filenames = vim.iter(picker:selected({fallback = true}))
+    :map( function(i) return i.file end)
+    :totable()
+
+  -- TODO: if only ONE file is selected, error out.
+  -- if ONE dir is selected, let through and tar everything under the dir.
+  if #filenames == 1 then
+    local selected = unpack(filenames)
+    if vim.uv.fs_stat(selected).type == "file" then
+      F.WARN("Not tarring one file")
+      return
+    end
+  end
+
+  vim.ui.input({prompt = "tar file name: "},
+    function(tar_name)
+      picker:close()
+      F.tar_files(tar_name, filenames)
+    end
+  )
+end
+
+local function m_grep(picker, item)
+
+  --eLooking at all selected and select only dirs or files
+  local selected = vim.iter(picker:selected({fallback = true}))
+    :map(function(i)
+      if picker.opts.source == "grep" then
+        local line =  vim.trim(i.line)
+        if vim.startswith(line, "-") then
+          line = line:gsub("^-", "")
+          line = vim.trim(line)
+        end
+        return line
+      else
+        return i._path or i.item or i.text
+      end
+    end)
+    :filter(
+      function(path)
+        path = vim.trim(path)
+        local fs_stat = vim.uv.fs_stat(vim.fs.abspath(path))
+        return fs_stat and vim.list_contains({"file", "directory"}, fs_stat.type)
+      end)
+    :totable()
+
+  if #selected > 0 then
+    vim.cmd("fclose!")
+    if #selected == 1 then
+      Snacks.picker.grep({
+        dirs = {unpack(selected)},
+        layout = {
+          hidden = {"preview"},
+        },
+        on_show = function(picker)
+          picker.list.win:set_title(unpack(selected))
+        end
+      })
+    else
+      Snacks.picker.grep({
+        dirs = selected,
+      })
+    end
+  else
+    F.ERROR("Didn't select a file/directory to Grep")
+  end
+end
+
+-- this function is designed to go frontformatter's links
+local function m_follow_path(picker, item)
+  local selected = vim.iter(picker:selected({fallback = true}))
+    :map(function(i)
+      if picker.opts.source == "grep" then
+        local line =  vim.trim(i.line)
+        if vim.startswith(line, "-") then
+          line = line:gsub("^-", "")
+          line = vim.trim(line)
+        end
+        return line
+      else
+        return i._path or i.item or i.text
+      end
+    end)
+    :filter(
+      function(line)
+        line = vim.trim(line)
+        local fs_stat = vim.uv.fs_stat(vim.fs.abspath(line))
+        return fs_stat and vim.list_contains({"file", "directory"}, fs_stat.type)
+      end)
+    :totable()
+
+  if #selected == 1 then
+    vim.cmd("fclose!")
+    vim.cmd.edit(unpack(selected))
+  elseif #selected >1 then
+    vim.cmd("fclose!")
+    F.PRINT("Multiple Selected. Switch to Grep")
+    m_grep(picker, item)
+  else
+    F.ERROR("Didn't select a file/directory to open")
+  end
+end
+
+local m_actions = {
+  m_grep = m_grep,
+  m_follow_path = m_follow_path ,
+  m_yank_selected = m_yank_selected ,
+}
+
+local m_grep_actions = {
+  m_cd_up = function(picker, item)
+    local current_cwd
+    if picker.opts.cwd then
+      current_cwd = picker.opts.cwd
+    elseif picker.opts.dirs then
+      F.ERROR("Can only go up with cwd, not dirs")
+      return
+    else
+      F.ERROR("Expected picker.opts.cwd/dirs, found none")
+      return
+    end
+
+    local new_cwd = vim.fs.dirname(current_cwd)
+    F.PRINT("Changing cwd to " .. new_cwd)
+    picker:set_cwd(new_cwd)
+    picker:find()
+    m_set_title(picker)
+  end,
+
+  m_cd_root = function(picker, item)
+    local root = F.get_root()
+
+    picker:set_cwd(root)
+    picker:find()
+    m_set_title(picker)
+  end
+}
+local m_grep_keys = {
+  [F.alt_key(F.alt_key("<C-%s-u>"))] = {"m_cd_up", mode = {"i", "n"}},
+  [F.alt_key("<C-%s-r>")] = {"m_cd_root", mode = {"i", "n"}},
+}
+
+-- this function take the Snacks default keys, and
+-- map it to the alt key that works on both osx and linux
+local function set_alt_keys(default_keys)
+  local remap_keys = vim.iter(default_keys)
+    :filter(function(key, _) return string.find(key, "M-", 1, true) end)
+    :fold({}, function(acc, key, val)
+    local new_key = F.alt_key(key:gsub("M%-", "%%s-"))
+    acc[new_key] = val
+    return acc
+  end)
+
+  local m_input_list_keys = {
+    [F.alt_key("<%s-p>")] = { "toggle_preview", mode = { "i", "n" } },
+    ["<C-c>"] = { "cancel", mode = { "i", "n" } },
+    ["<C-q>"] = { "cancel", mode = { "i", "n" } },
+    ["<C-tab>"] = { "list_down", mode = { "i", "n" } },
+    ["<C-S-tab>"] = { "list_up", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-g>")] = { "m_grep", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-e>")] = { "m_follow_path", mode = { "i", "n" } },
+    [F.alt_key("<C-%s-y>")] = { "m_yank_selected", mode = {"i", "n"}},
+  }
+  return vim.tbl_deep_extend('force', remap_keys, m_input_list_keys)
+end
+
+local m_snacks = {
+  "folke/snacks.nvim",
+  priority = 1000,
+  lazy = false,
+  ---@type snacks.Config
+  opts = {
+    image = {enabled = true, doc = { inline = true , float = true}},
+    lazygit = {
+      -- Override default theme colors mapped from Neovim highlights
+      theme = {
+        activeBorderColor = { fg = "MatchParen", bold = false },
+        inactiveBorderColor = { fg = "Comment" },
+      },
+      win = {
+        width = 0.9,
+        height = 0.9,
+      },
+    },
+    scratch = { enabled = false, root = "/tmp/"},
+    explorer = {enabled = true, trash = true},
+    bigfile = { enabled = true },
+    indent = {
+      enabled = true,
+      indent = { only_scope = true },
+      chunk = { enabled = false },
+      animate = { enabled = false}
+    },
+    input = { enabled = false  },
+    terminal = { enable = false, },
+    notifier = {
+      enabled = true,
+      timeout = 5000,
+    },
+    picker = {
+      on_show = m_set_title,
+      enabled = true ,
+      hidden=true,
+      sources = {
+        lsp_symbols = { layout = { hidden = {"preview"}, }, },
+        grep = {
+          exclude = {
+            "package-lock.json",
+            "_*",
+          },
+          actions = m_grep_actions,
+          win = {
+            input = { keys = m_grep_keys },
+            list = { keys = m_grep_keys },
+          },
+          layout = {
+            hidden = {"preview"},
+          }
+        },
+        select = {
+          -- Set the layout preset (e.g., "select", "dropdown", "ivy", "vscode", "telescope")
+          layout = {
+            -- hidden = {"preview", "input"},
+            layout = {
+              box = "vertical",
+              min_width = 0,
+              width = 0.3,
+              height = 0.4,
+              backdrop = false,
+              border = "none",
+              title = " {title} {live} {flags}",
+              -- align = "left",
+              -- title_pos = "left",
+              { win = "input", height = 1, border = "rounded" },
+              {
+                box = "horizontal",
+                { win = "list", border = "rounded", title="{title}" },
+                { win = "preview", title = "{preview}", width = 0.6, border = "rounded" },
+              },
+            }
+          },
+          focus = 'list',
+        },
+        explorer = {
+          auto_close = true,
+          actions = {
+            tar_selected    = tar_selected,
+            diff_selected   = diff_selected,
+            m_tcd           = m_tcd,
+            m_explorer_up   = m_explorer_up,
+            m_move_selected   = m_move_selected,
+            list_up         = m_list_up,
+            list_down       = m_list_down,
+            m_explorer_root = m_explorer_root,
+            m_confirm       = m_confirm,
+          },
+          win = {
+            input = {
+              keys = {
+                [F.alt_key("<C-%s-r>")] = { "m_explorer_root", mode = { "n", "i" } },
+                ["<Cr>"]                = { "jump", mode            = { "n", "i" } },
+                ["<C-Cr>"]              = { "jump", mode            = { "n", "i" } },
+                [F.alt_key("<C-%s-u>")] = { 'm_explorer_up', mode   = { "n", "i" } },
+                ["<C-l>"]               = { "m_tcd", mode           = { "n", "i" } },
+              }
+            },
+            list = {
+              keys = {
+                -- ["<C-c>"] = { 'cancel', mode        = { "n", 'i' } },
+                [F.alt_key("<C-%s-u>")] = { 'm_explorer_up', mode = { "n", "i" } },
+                ["<C-h>"] = { 'm_explorer_up', mode = { "n" } },
+                ["<C-l>"] = { "m_tcd", mode         = { "n" } },
+                [F.alt_key("Z")]     = { 'tar_selected', mode  = { "n" } },
+                [F.alt_key("<C-%s-d>")]     = { 'diff_selected', mode = { "n" } },
+                [F.alt_key("<C-%s-p>")]     = { "m_move_selected", mode = { "n" } },
+                [F.alt_key("<C-%s-r>")] = { "m_explorer_root", mode = { "n" } },
+              }
+            }
+          },
+          focus = "input",
+          layout = {
+            preset = "vscode",
+            hidden = {"preview"},
+          }
+        },
+        files = {
+          focus = {},
+          layout = {
+            hidden = {},
+          },
+          exclude = {
+            ".git",
+            "node_modules",
+            ".env",
+            "target",
+            "build",
+            "archive",
+            "assets",
+            ".*env*",
+            "*env*",
+            "*pycache*",
+            "*backup*",
+            "todo_notes",
+            "templates",
+            "DISCARDED", "DONE", "TODO",
+            "attachments"
+          },
+          -- in Snacks.picker.files list, <C-s> open the file in Snacks.scratch
+          actions = { },
+        }
+      },
+      actions = m_actions,
+      win = {
+        input = {
+          keys = {}
+        },
+        list = {
+          keys = {},
+          wo = {
+            wrap = true,
+            number = false,
+            relativenumber = false,
+          },
+        },
+      },
+      layout = {
+        -- options include default, ivy, dropdown, vertical, sidebar, telescope
+        hidden = {"input", "preview"},
+        layout = {
+          min_width = 0,
+          width = 0.7,
+          height = 0.6,
+          box = "horizontal",
+          {
+            box = "vertical",
+            { win = "input", height = 1, border = "rounded" },
+            { win = "list", border = "rounded" },
+          },
+          {
+            win = "preview",
+            title = "{preview}",
+            width = 0.7, -- 70% of the picker width goes to the preview window
+            border = "rounded"
+          },
+        },
+      }
+    },
+    quickfile = { enabled = true },
+    scope = { enabled = true },
+    scroll = { enabled = true },
+    statuscolumn = {
+      enabled = false ,
+      git =  {
+        enabled = true,
+        patterns = { "MiniDiffSign" },
+      }
+    },
+    words = { enabled = false },
+    styles = {
+      list = {
+        keys = {
+        }
+      },
+      input = {
+        -- relative = "editor",
+        -- position = "center",
+        row = vim.o.lines/2-10,
+        keys = { }
+      },
+    },
+
+    dashboard = {
+      preset = {
+        header = [[
+    Meowwww
+    /\_/\
+    ( o.o )
+    > ^ <
+    __J"L__
+    ]],
+        keys = {
+          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = "󰒅 ", key = "S", desc = "Session Select", action = ":lua require('mini.sessions').select()" },
+          { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        }
+      },
+      sections = {
+        { section = "header" },
+        { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 3, padding = 1, limit= 10},
+        -- { icon = " ", title = "Projects", section = "projects", indent = 3, padding = 1 },
+        { section = "startup" },
+      },
+    }
+  },
+  keys = {
+    {
+      "z=",
+      function()
+        if vim.v.count == 0 then
+          Snacks.picker.spelling()
+        else
+          vim.cmd("normal! " .. vim.v.count .. " z=")
+        end
+      end,
+      desc = "Spelling Suggestions",
+    },
+    { "<C-Tab>", function() Snacks.picker.buffers() end, desc = "Buffers" },
+    { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command History" },
+    -- { "<C-n>", function() Snacks.picker.notifications() end, desc = "Notification History" },
+    { "<leader>sh",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
+    { "<leader>.",
+      function()
+        Snacks.explorer({
+          cwd = F.get_working_dir(),
+          enter = true,
+        })
+      end, desc = "File Explorer" },
+    -- { "<C-e>", function() Snacks.explorer.reveal() end, desc = "File Explorer Reveal" },
+    { "<leader>f/", function() Snacks.picker.lines({layout = {hidden = {"preview"}}}) end, desc = "snacks picker lines" },
+    { "<leader>ft", m_todo_from_root, desc = "find todo from root" },
+    { "<leader>fk",function() Snacks.picker.keymaps({layout = {hidden = {"preview"}}}) end,desc = "keymaps" },
+    { "<leader>fo",function() Snacks.picker.recent({layout = {hidden = {"preview"}}}) end,desc = "recents" },
+    { "<leader>fp",function() Snacks.picker.projects() end,desc = "projects" },
+    -- this won't close any current floating windows.
+    { "<leader>fs",function()  Snacks.picker.smart({layout = {hidden = {"preview"}}}) end,desc = "smart" },
+    { "<leader>fd",function() Snacks.picker.diagnostics_buffer() end, desc="buffer diagnostics"},
+    { "<leader>fD",function() Snacks.picker.diagnostics() end, desc="diagnostics"},
+    { "<leader>fg",function() Snacks.picker.git_status() end, desc="git status" },
+    { "<leader>fr", function() Snacks.picker.resume() end, desc="resume"},
+    { "<leader>h",function() Snacks.picker.help({ layout = { hidden = {"preview"} } }) end,desc = "Help Page" },
+    { "<leader>H", function() vim.cmd.help(vim.bo.filetype) end, desc = "get help for current file type" },
+    { "<leader>fl", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+    { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+    { "<leader>fu", function() Snacks.picker.undo({layout = {hidden = {"input"}}}) end, desc ="Undo History"  },
+    { "<leader>fM", function() Snacks.picker.marks() end, desc ="full marks"  },
+    { "<leader>fm",
+      function()
+        Snacks.picker.marks({
+          transform = function(item)
+            -- Only keep marks matching a-z or A-Z
+            return item.label and item.label:match("^[a-zA-Z]$") ~= nil
+          end
+        })
+      end,
+      desc ="only letter marks"
+    },
+    { "<leader>fz", function() Snacks.zen() end, desc ="Zen"  },
+    {"<leader>fc",
+      function()
+        F.menu_commands({
+          -- { text = "Toggle Scratch Buffer"  ,  fn = Snacks.scratch },
+          { text = "Clear all registers", fn = F.clear_registers },
+          { text = "Rename File", fn = Snacks.rename.rename_file },
+          { text = "Quickfix List" , fn = Snacks.picker.qflist},
+          { text = "Marks" , fn = Snacks.picker.marks},
+          { text = "Stash", fn = Snacks.picker.git_stash },
+          { text = "Branches", fn = Snacks.picker.git_branches },
+          { text = "Log", fn = Snacks.picker.git_log },
+          { text = "Log Line", fn = Snacks.picker.git_log_line },
+          { text = "Diff (Hunks)", fn = Snacks.picker.git_diff },
+          { text = "Log File", fn = Snacks.picker.git_log_file },
+          { text = "Issues (open)", fn = Snacks.picker.gh_issue },
+          { text = "Issues (all)", fn = function() Snacks.picker.gh_issue({ state = "all" }) end },
+          { text = "Pull Requests (all)", fn = function() Snacks.picker.gh_pr({ state = "all" }) end },
+          { text = "Config Files", fn = function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end },
+          { text = "Pull Requests (open)", fn = Snacks.picker.gh_pr },
+          { text = "Browse", fn = Snacks.gitbrowse  },
+          { text = "Git Files", fn = Snacks.picker.git_files },
+          { text = "Buffer Lines" , fn = Snacks.picker.grep},
+          { text = "Visual selection or word", fn = Snacks.picker.grep_word, },
+          { text = "Search History" , fn = Snacks.picker.search_history},
+          { text = "Autocmds" , fn = Snacks.picker.autocmds},
+          { text = "Commands" , fn = Snacks.picker.commands},
+          { text = "Highlights" , fn = Snacks.picker.highlights},
+          { text = "Icons" , fn = Snacks.picker.icons},
+          { text = "Jumps" , fn = Snacks.picker.jumps},
+          { text = "Location List" , fn = Snacks.picker.loclist},
+          { text = "Man Pages" , fn = Snacks.picker.man},
+          { text = "Search for Plugin Spec" , fn = Snacks.picker.lazy},
+          { text = "Colorschemes" , fn = Snacks.picker.colorschemes},
+          -- { text = "Select Scratch Buffer"  ,  fn = Snacks.scratch.select },
+        },"Snacks menu", "^" )
+      end, desc = "misc snacks commands"
+    },
+    -- seabch
+    { "<leader>sg",
+      function()
+        local cwd = vim.fn.expand('%:p:h')
+        Snacks.picker.grep({ cwd = cwd })
+      end, desc = "Grep current file's directory" },
+    { "<leader>sG",
+      function()
+        Snacks.picker.grep({ cwd = F.get_root() })
+      end, desc = "Grep Session root or dir root" },
+
+    { "<leader>sb", function() Snacks.picker.grep_buffers() end, desc = "Grep open buffers"},
+    { "<leader>mp", function()
+      vim.ui.input({prompt = "Man page: "}, function(word)
+        if word == "" then return end
+        Snacks.terminal.open("man "..word)
+      end)
+    end, desc = "man page" },
+
+    -- LSP
+    { "K", function() vim.lsp.buf.hover()  end, nowait = true, desc = "LSP Hover Doc" },
+    { "grd", function() Snacks.picker.lsp_definitions() end, desc = "LSP Goto Definition" },
+    { "grD", function() Snacks.picker.lsp_declarations() end, desc = "LSP Goto Declaration" },
+    { "grr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "LSP References" },
+    { "gri", function() Snacks.picker.lsp_implementations() end, desc = "LSP Goto Implementation" },
+    { "grt", function() Snacks.picker.lsp_type_definitions() end, desc = "LSP Goto T[y]pe Definition" },
+    { "<leader>gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
+    { "<leader>gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
+    -- { alt_key("<C-w>", 2), function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+    { "<leader>lg", F.save_bufs_then_act(
+      function()
+        Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") })
+      end
+    ), desc = "Lazygit" },
+    { "<leader>gl", function() Snacks.lazygit.log() end, desc = "lazy git log" },
+    { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+    -- { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
+    -- { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+    { "<leader>`",  F.generate_bookmarks_picker, desc = "Open Link Picker" }
+  },
+  init = function()
+    -- 6. Create a user command or keymap to run it
+    -- vim.api.nvim_create_user_command("PickLink", open_markdown_links_picker, {desc="opening a snack picker for bookmark"})
+
+    -- prevent snacks from create history
+    vim.api.nvim_create_autocmd("VimEnter", {
+      group = vim.api.nvim_create_augroup("no_picker_hist", { clear = true }),
+      callback = function()
+        require("snacks.picker.util.history") -- Preload file
+        vim.api.nvim_clear_autocmds({ group = "snacks_history" })
+      end,
+    })
+  end,
+  config = function(_, opts)
+    local config = require('snacks.picker.config').get()
+
+    opts.picker.win.input.keys = set_alt_keys(config.win.input.keys)
+
+    opts.picker.win.list.keys = set_alt_keys(config.win.list.keys)
+
+    require("snacks").setup(opts)
+  end
+}
+
+if m_snacks.keys then
+  vim.iter(m_snacks.keys)
+    :each(function(key) key.desc = key.desc and "[hp]"..key.desc or "[hp][Snacks no desc]" end)
+end
+
+return m_snacks
