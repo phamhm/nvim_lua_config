@@ -71,7 +71,9 @@ map({"v", 'n', 'i'}, F.alt_key('<C-%s-f>'),
   end,{silent = true, desc="format buffer"})
 
 map({'i', 'n'}, '<C-j>', function() vim.cmd.normal("o") end,{silent = true, desc="middle of line & new line below"})
+map({'i', 'n'}, '<C-x><C-j>', function() vim.cmd("normal! o") end,{silent = true, desc="middle of line & new line below"})
 map({'i', 'n'}, '<C-k>', function() vim.cmd.normal("O") end,{silent = true, desc="middle of line & new line above"})
+map({'i', 'n'}, '<C-x><C-k>', function() vim.cmd("normal! O") end,{silent = true, desc="middle of line & new line above"})
 
 -- balancing out the universe
 map('i', '<C-l>', '<Del>', { noremap = true, silent = true, desc="delete next letter"})

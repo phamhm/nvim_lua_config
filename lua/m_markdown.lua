@@ -75,6 +75,8 @@ return {
             vim.api.nvim_put(lines, "l", true, false)
           end, opts("markdown quote from register @+", bufnr))
 
+          map("n", "<leader>m:", ":Mkdn", opts( "open command for mkdn" ))
+
           map("n", "gF", function()
             local line = vim.api.nvim_get_current_line()
             -- Match markdown link syntax: [text](path_or_url)
