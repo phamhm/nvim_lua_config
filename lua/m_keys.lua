@@ -249,7 +249,11 @@ local function m_paste()
     end
     local lines = vim.split(clipboard_val, '[\r\n]+', {})
 
-    vim.api.nvim_put(lines, "l", false, true)
+    if #lines>1 then
+      vim.api.nvim_put(lines, "l", false, true)
+    else 
+      vim.api.nvim_put(lines, "c", false, true)
+    end
 
     vim.cmd("stopinsert")
     vim.cmd.normal("`[V`]=")

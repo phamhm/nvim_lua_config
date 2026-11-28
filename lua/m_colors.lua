@@ -17,7 +17,7 @@ local m_group_styles = {
 
 
   ["@markup.link.url"]   = {  bold = true },
-  ["@markup.link.label"] = { fg    = "lightgreen",  bold = true },
+  ["@markup.link.label"] = { fg    = "lightgreen" },
 
   RenderMarkdownH1       = { fg    = '#f38ba8', bold     = true },
   RenderMarkdownH2       = { fg    = '#fab387', bold     = true },
